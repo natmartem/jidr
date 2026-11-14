@@ -1,11 +1,12 @@
 /* Jidr service worker.
-   - index.html: network first (so a new upload shows up the next time you open the app online),
+   - index.html, course.js, jidr-audio.json: network first (a new upload shows up the next time you open the app online),
      falling back to the saved copy when offline or the network is slow.
    - everything else (icons, fonts, manifest): saved on first install, served from the phone.
    If you ever change an icon, a font or the manifest, bump CACHE so phones fetch the new files. */
-const CACHE = "jidr-static-v1";
+const CACHE = "jidr-static-v2";
 const ASSETS = [
   "index.html",
+  "course.js",
   "manifest.webmanifest",
   "icons/icon-192.png",
   "icons/icon-512.png",
@@ -40,16 +41,18 @@ self.addEventListener("fetch", e => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
 
-  if (req.mode === "navigate") {
+  const fresh = req.mode === "navigate" || /\/(course\.js|jidr-audio\.json)$/.test(url.pathname);
+  if (fresh) {
+    const keyName = url.pathname.split("/").pop() || "index.html";
     const network = fetch(req, { cache: "no-cache" }).then(res => {
       if (!res.ok) throw new Error("bad status");
       const copy = res.clone();
-      caches.open(CACHE).then(c => c.put("index.html", copy));
+      caches.open(CACHE).then(c => c.put(keyName, copy));
       return res;
     });
     const timeout = new Promise((_, reject) => setTimeout(reject, 4000));
     e.respondWith(
-      Promise.race([network, timeout]).catch(() => caches.match("index.html"))
+      Promise.race([network, timeout]).catch(() => caches.match(keyName).then(hit => hit || network))
     );
     return;
   }

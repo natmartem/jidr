@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Jidr Recorder</title>
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+:root{--bg:#EEF2F1;--surface:#FFF;--ink:#12232A;--mute:#566B70;--line:#D2DCDA;--accent:#0B5F66;--accent-ink:#FFF;--tint:#DCEBEA;--rec:#C62828;--good:#1F7A3F;--good-tint:#DDF0E3;--bad-tint:#F8DEDB;
+  --f-body:'Onest',system-ui,sans-serif;--f-ar:'Amiri','Noto Naskh Arabic',serif;--f-display:'Unbounded','Onest',system-ui,sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0D1A1E;--surface:#14262B;--ink:#E6F0EE;--mute:#93AAAE;--line:#263C42;--accent:#5CC4C9;--accent-ink:#06282B;--tint:#1B3A3F;--rec:#FF6B6B;--good:#5BC47E;--good-tint:#16301F;--bad-tint:#3A1B19;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body);padding:0 max(16px,env(safe-area-inset-left,0px)) 80px}
+.wrap{max-width:720px;margin:0 auto}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0 10px;border-bottom:1px solid var(--line)}
+h1{font:700 17px var(--f-display);margin:0}
+h2{font:700 14px var(--f-display);margin:0}
+p{margin:0}
+.muted,small{color:var(--mute)}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;font-weight:500}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bar{height:8px;border-radius:6px;background:var(--tint);overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.card ol{margin:0;padding-left:20px}
+details.sec{background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-top:10px}
+details.sec>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;cursor:pointer}
+details.sec>summary::-webkit-details-marker{display:none}
+.cnt{font-size:13px;color:var(--mute);white-space:nowrap}
+.cnt.full{color:var(--good);font-weight:600}
+.it{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:10px 16px;border-top:1px solid var(--line)}
+.it.done{background:linear-gradient(90deg,transparent,var(--good-tint))}
+.ar{font-family:var(--f-ar);direction:rtl;unicode-bidi:isolate;font-size:34px;line-height:1.55;text-align:right}
+.it.ph .ar{font-size:28px}
+.it .meta{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 10px;font-size:13px;color:var(--mute)}
+.ctrls{display:flex;gap:8px;align-items:center}
+.rec{width:52px;height:52px;border-radius:50%;border:3px solid var(--rec);background:var(--surface);display:grid;place-items:center}
+.rec i{width:22px;height:22px;border-radius:50%;background:var(--rec);transition:all .15s}
+.rec.on{background:var(--rec)}
+.rec.on i{border-radius:4px;width:18px;height:18px;background:var(--surface)}
+.play{width:44px;height:44px;border-radius:50%;border:0;background:var(--tint);color:var(--accent);display:grid;place-items:center}
+.play:disabled{opacity:.3}
+.timer{font:600 13px var(--f-display);color:var(--rec);min-width:28px}
+.hidedone .it.done{display:none}
+.msg{border-radius:10px;padding:10px 12px;font-size:14px}
+.msg.ok{background:var(--good-tint)}
+.msg.bad{background:var(--bad-tint)}
+.foot{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px));z-index:6}
+.foot .wrap{display:flex;gap:8px;align-items:center;justify-content:space-between}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Jidr · recording studio</h1>
+  <div class="bar"><i id="pbar" style="width:0"></i></div>
+  <div class="row" style="justify-content:space-between"><small id="ptext"></small>
+    <label class="row" style="font-size:14px"><input type="checkbox" id="hide"> Hide recorded</label></div>
+</header>
+<section class="card">
+  <h2>Thank you for helping!</h2>
+  <ol>
+    <li>Tap the red button, say the word once, tap again to stop. It plays back so you can check it.</li>
+    <li>Read exactly what is written, with the vowel marks, in Standard Arabic (fuṣḥā), at a normal pace.</li>
+    <li>For letters, say the sound shown (for example “ba”), not the letter's name.</li>
+    <li>Not happy? Just record again. Everything is saved on this phone as you go, so you can stop and come back later.</li>
+    <li>When you're done (or done for today), tap <b>Send recordings</b> at the bottom and send the file to Natalia.</li>
+  </ol>
+  <div id="msg"></div>
+</section>
+<div id="list"></div>
+<section class="card">
+  <h2>Moving to another phone?</h2>
+  <p class="muted">Load a recordings file you sent earlier to continue where you left off.</p>
+  <label class="btn" style="align-self:flex-start">Load recordings file<input type="file" id="load" accept=".json,application/json" hidden></label>
+</section>
+</div>
+<div class="foot"><div class="wrap"><small id="ftext"></small><button type="button" class="btn primary" id="send">Send recordings</button></div></div>
+<audio id="player"></audio>
+<script src="course.js"></script>
+<script>
+"use strict";
+const C=window.COURSE,$=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const MAXS={L:4,W:6,P:12};
+/* ---- item list: letters first, then each step's words and phrases ---- */
+const SECTIONS=[{t:"Letter sounds",items:C.letters.map(l=>({key:"L:"+l[0],ar:l[0],say:l[8],tr:l[2],en:l[1]}))}];
+C.steps.forEach((s,i)=>{const items=(s.words||[]).map(w=>({key:"W:"+w[0],ar:w[0],tr:w[1],en:w[2]})).concat((s.phrases||[]).map(p=>({key:"P:"+p[0],ar:p[0],tr:p[1],en:p[2],ph:1})));
+  if(items.length)SECTIONS.push({t:"Step "+(i+1)+" · "+s.t[0],items})});
+const ALL=SECTIONS.flatMap(s=>s.items);
+/* ---- storage (IndexedDB on this phone) ---- */
+function db(){return new Promise((res,rej)=>{const r=indexedDB.open("jidr-rec",1);r.onupgradeneeded=()=>r.result.createObjectStore("clips");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function op(mode,fn){const d=await db();return new Promise((res,rej)=>{const t=d.transaction("clips",mode),r=fn(t.objectStore("clips"));t.oncomplete=()=>res(r&&r.result);t.onerror=()=>rej(t.error)})}
+const put=(k,v)=>op("readwrite",s=>s.put(v,k));
+const getAll=async()=>{const d=await db();return new Promise((res,rej)=>{const out={},t=d.transaction("clips"),c=t.objectStore("clips").openCursor();c.onsuccess=()=>{const cur=c.result;if(cur){out[cur.key]=cur.value;cur.continue()}else res(out)};c.onerror=()=>rej(c.error)})};
+let CLIPS={};
+/* ---- UI ---- */
+function msg(kind,text){$("#msg").innerHTML=text?`<div class="msg ${kind}">${text}</div>`:""}
+function progress(){
+  const n=ALL.filter(i=>CLIPS[i.key]).length;
+  $("#pbar").style.width=Math.round(n/ALL.length*100)+"%";
+  $("#ptext").textContent=n+" of "+ALL.length+" recorded";
+  $("#ftext").textContent=n?n+" ready to send":"Nothing recorded yet";
+  document.querySelectorAll("details.sec").forEach((d,i)=>{const s=SECTIONS[i],k=s.items.filter(x=>CLIPS[x.key]).length,c=d.querySelector(".cnt");c.textContent=k+"/"+s.items.length;c.classList.toggle("full",k===s.items.length)});
+}
+function rowHtml(it){
+  const kind=it.key[0];
+  return `<div class="it${it.ph?" ph":""}${CLIPS[it.key]?" done":""}" data-key="${esc(it.key)}">
+   <div class="ar" lang="ar">${esc(it.ar)}</div>
+   <div class="ctrls"><span class="timer"></span><button type="button" class="play" data-play aria-label="Play" ${CLIPS[it.key]?"":"disabled"}>▶</button><button type="button" class="rec" data-rec aria-label="Record"><i></i></button></div>
+   <div class="meta">${kind==="L"?`<b>Say: ${esc(it.say)}</b>`:`<span>${esc(it.tr)}</span><span>· ${esc(it.en)}</span>`}</div></div>`;
+}
+function renderList(){
+  const firstOpen=SECTIONS.findIndex(s=>s.items.some(i=>!CLIPS[i.key]));
+  $("#list").innerHTML=SECTIONS.map((s,i)=>`<details class="sec"${i===firstOpen?" open":""}><summary><h2>${esc(s.t)}</h2><span class="cnt"></span></summary>${s.items.map(rowHtml).join("")}</details>`).join("");
+  progress();
+}
+/* ---- recording ---- */
+let stream=null,rec=null,recKey=null,chunks=[],tick=null,stopTimer=null;
+const MIME=["audio/webm;codecs=opus","audio/mp4","audio/ogg;codecs=opus","audio/webm"].find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m))||"";
+async function getStream(){
+  if(stream&&stream.active)return stream;
+  stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+  return stream;
+}
+async function startRec(row){
+  if(rec)stopRec();
+  if(!window.MediaRecorder||!navigator.mediaDevices){msg("bad","This browser cannot record audio. Please open the link in Chrome or Safari.");return}
+  let s;try{s=await getStream()}catch(e){msg("bad","Microphone access was blocked. Allow the microphone for this site in the browser settings, then reload the page.");return}
+  msg();
+  const key=row.dataset.key;recKey=key;chunks=[];
+  rec=new MediaRecorder(s,Object.assign(MIME?{mimeType:MIME}:{},{audioBitsPerSecond:32000}));
+  rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  rec.onstop=()=>saveClip(key,new Blob(chunks,{type:(rec&&rec.mimeType)||MIME||"audio/webm"}),row);
+  rec.start();
+  row.querySelector("[data-rec]").classList.add("on");
+  const t0=Date.now(),tm=row.querySelector(".timer");
+  tick=setInterval(()=>{tm.textContent=((Date.now()-t0)/1000).toFixed(0)+"s"},250);
+  stopTimer=setTimeout(stopRec,MAXS[key[0]]*1000);
+}
+function stopRec(){
+  clearInterval(tick);clearTimeout(stopTimer);
+  if(rec&&rec.state!=="inactive")rec.stop();
+  document.querySelectorAll(".rec.on").forEach(b=>b.classList.remove("on"));
+  document.querySelectorAll(".timer").forEach(t=>t.textContent="");
+}
+async function saveClip(key,blob,row){
+  rec=null;recKey=null;
+  if(blob.size<500){msg("bad","That recording was empty. Try again and speak after the button turns red.");return}
+  const d=await new Promise(res=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result).split(",")[1]);fr.readAsDataURL(blob)});
+  const clip={m:(blob.type||"audio/webm").split(";")[0],d};
+  try{await put(key,clip)}catch(e){msg("bad","Could not save on this phone (storage full or private mode).");return}
+  CLIPS[key]=clip;row.classList.add("done");row.querySelector("[data-play]").disabled=false;
+  playKey(key);progress();
+  /* move on to the next item that still needs a recording */
+  const rows=[...document.querySelectorAll(".it")],i=rows.indexOf(row);
+  const nx=rows.slice(i+1).find(r=>!CLIPS[r.dataset.key]);
+  if(nx){const sec=nx.closest("details");if(sec&&!sec.open)sec.open=true;setTimeout(()=>nx.scrollIntoView({behavior:"smooth",block:"center"}),900)}
+}
+const urls={};
+function playKey(key){
+  const c=CLIPS[key];if(!c)return;
+  if(urls[key])URL.revokeObjectURL(urls[key]);
+  const bin=atob(c.d),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+  urls[key]=URL.createObjectURL(new Blob([u],{type:c.m}));
+  const p=$("#player");p.src=urls[key];p.play().catch(()=>{});
+}
+/* ---- export / import ---- */
+function bundle(){
+  const clips={};ALL.forEach(i=>{if(CLIPS[i.key])clips[i.key]=CLIPS[i.key]});
+  Object.keys(CLIPS).forEach(k=>{if(!clips[k])clips[k]=CLIPS[k]});
+  return JSON.stringify({app:"jidr-audio",v:1,made:new Date().toISOString(),clips});
+}
+async function send(){
+  const n=Object.keys(CLIPS).length;if(!n){msg("bad","Record something first.");return}
+  const text=bundle(),file=new File([text],"jidr-audio.json",{type:"application/json"});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],title:"Jidr recordings"});msg("ok","Sent. Thank you!");return}catch(e){if(e&&e.name==="AbortError")return}
+  }
+  const a=document.createElement("a");a.href=URL.createObjectURL(file);a.download="jidr-audio.json";document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
+  msg("ok","Saved as jidr-audio.json in your Downloads. Send that file to Natalia.");
+}
+async function load(file){
+  let o;try{o=JSON.parse(await file.text())}catch(e){return msg("bad","That is not a recordings file.")}
+  if(!o||o.app!=="jidr-audio"||!o.clips)return msg("bad","That is not a recordings file.");
+  let n=0;for(const k of Object.keys(o.clips)){const c=o.clips[k];if(/^[LWP]:/.test(k)&&c&&typeof c.m==="string"&&typeof c.d==="string"){await put(k,{m:c.m,d:c.d});CLIPS[k]={m:c.m,d:c.d};n++}}
+  renderList();msg("ok","Loaded "+n+" recordings.");
+}
+/* ---- events ---- */
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  const row=b.closest(".it");
+  if(b.dataset.rec!==undefined){if(recKey&&recKey===row.dataset.key)return stopRec();return startRec(row)}
+  if(b.dataset.play!==undefined)return playKey(row.dataset.key);
+  if(b.id==="send")return send();
+});
+$("#hide").addEventListener("change",e=>$("#list").classList.toggle("hidedone",e.target.checked));
+$("#load").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];e.target.value="";if(f)load(f)});
+document.addEventListener("visibilitychange",()=>{if(document.hidden){stopRec();if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}}});
+(async()=>{try{CLIPS=await getAll()}catch(e){msg("bad","This browser cannot save recordings (private mode?). Please use a normal window.")}renderList()})();
+</script>
+</body>
+</html>

@@ -16,925 +16,1064 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="stylesheet" href="fonts/fonts.css">
 <style>
-/* Layout concept: a sticky header with tabs, then one column of cards. Root letters are always amber so the eye learns to find them. */
+/* One column of cards under a sticky header. Root letters are always amber; the letter being asked about is pink. */
 :root{
   --bg:#EEF2F1; --surface:#FFFFFF; --ink:#12232A; --mute:#566B70; --line:#D2DCDA;
   --accent:#0B5F66; --accent-ink:#FFFFFF; --tint:#DCEBEA;
-  --root:#B4630A; --root-tint:#F7E6D0;
+  --root:#B4630A; --root-tint:#F7E6D0; --hit:#C2185B;
   --good:#1F7A3F; --good-tint:#DDF0E3; --bad:#B3261E; --bad-tint:#F8DEDB;
   --f-display:'Unbounded','Onest',system-ui,sans-serif;
   --f-body:'Onest','Noto Sans','Segoe UI',system-ui,sans-serif;
   --f-ar:'Amiri','Noto Naskh Arabic','Geeza Pro','Traditional Arabic',serif;
+  color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#0D1A1E; --surface:#14262B; --ink:#E6F0EE; --mute:#93AAAE; --line:#263C42;
   --accent:#5CC4C9; --accent-ink:#06282B; --tint:#1B3A3F;
-  --root:#F0A04B; --root-tint:#3A2A14;
+  --root:#F0A04B; --root-tint:#3A2A14; --hit:#FF79B0;
   --good:#5BC47E; --good-tint:#16301F; --bad:#FF8A80; --bad-tint:#3A1B19; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0D1A1E; --surface:#14262B; --ink:#E6F0EE; --mute:#93AAAE; --line:#263C42;
   --accent:#5CC4C9; --accent-ink:#06282B; --tint:#1B3A3F;
-  --root:#F0A04B; --root-tint:#3A2A14;
+  --root:#F0A04B; --root-tint:#3A2A14; --hit:#FF79B0;
   --good:#5BC47E; --good-tint:#16301F; --bad:#FF8A80; --bad-tint:#3A1B19; color-scheme:dark}
 
 *{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 var(--f-body);
-  padding-block:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-bottom:env(safe-area-inset-bottom,0px)}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
-.wrap{max-width:760px;margin:0 auto;padding-block:0 56px}
+.wrap{max-width:760px;margin:0 auto;padding-block:0 64px}
 h1,h2,h3,p{margin:0}
 h2{font:700 15px/1.3 var(--f-display);letter-spacing:.01em;text-wrap:balance}
 h3{font:600 15px/1.3 var(--f-body)}
 small,.muted{color:var(--mute)}
-button{font:inherit;color:inherit;cursor:pointer}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
 
-.ar{font-family:var(--f-ar);direction:rtl;unicode-bidi:isolate;line-height:1.55}
+.ar{font-family:var(--f-ar);direction:rtl;unicode-bidi:isolate;line-height:1.6}
 .rt{color:var(--root)}
+.hit{color:var(--hit)}
 .l-ru{color:var(--mute)}
-body[data-lang="en"] .l-ru{display:none}
-body[data-lang="ru"] .l-en{display:none}
+body[data-lang="en"] .l-ru,body[data-lang="en"] .t-ru{display:none}
+body[data-lang="ru"] .l-en,body[data-lang="ru"] .t-en,body[data-lang="both"] .t-ru{display:none}
+body[data-lang="ru"] .l-ru{color:inherit}
 body[data-lang="both"] .l-en+.l-ru::before{content:" · "}
 .bl .l-en,.bl .l-ru{display:block}
 body[data-lang="both"] .bl .l-en+.l-ru::before{content:none}
 
 /* header */
-.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--bg);padding-block:12px 0;border-bottom:1px solid var(--line)}
-.bar-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px}
-.brand{display:flex;align-items:center;gap:10px;min-width:0}
-.brand-ar{font-size:34px;line-height:1;color:var(--root)}
-.brand b{font:700 15px var(--f-display);display:block}
-.brand small{font-size:12px}
-.lang{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--bg);padding-top:10px;border-bottom:1px solid var(--line)}
+.bar-row{display:flex;align-items:center;justify-content:space-between;gap:8px 12px}
+.brand{display:flex;align-items:center;gap:8px;min-width:0}
+.brand-ar{font-size:30px;line-height:1;color:var(--root)}
+.brand b{font:700 15px var(--f-display)}
+.lang{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex:none}
 .lang button{border:0;background:transparent;padding:5px 9px;font-size:12px;color:var(--mute)}
 .lang button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 .stats{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .pill{display:inline-flex;align-items:center;gap:4px;border-radius:999px;background:var(--tint);padding:2px 10px;font-size:12.5px;font-variant-numeric:tabular-nums}
 .pill.root{background:var(--root-tint);color:var(--root)}
-.tabs{display:grid;grid-template-columns:repeat(5,1fr);margin-top:8px}
-.tabs button{border:0;background:transparent;padding:10px 2px 9px;font-weight:500;font-size:13px;color:var(--mute);border-bottom:3px solid transparent}
+.pill.warn{background:var(--bad-tint);color:var(--bad)}
+.pill.pop{animation:pop .4s}
+.tabs{display:grid;grid-template-columns:repeat(5,1fr);margin-top:6px}
+.tabs button{border:0;background:transparent;padding:10px 2px 9px;font-weight:500;font-size:13.5px;color:var(--mute);border-bottom:3px solid transparent}
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
 
-main{padding-top:18px;display:flex;flex-direction:column;gap:14px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
-.lead{max-width:62ch;color:var(--mute)}
-.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;font-weight:500}
+main{padding-top:16px;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.lead{color:var(--mute)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;font-weight:500;text-align:center}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.btn.primary .l-ru{color:inherit;opacity:.85}
+.btn.primary .l-ru,.hero .l-ru,.dr.main .l-ru,.seg button[aria-pressed="true"] .l-ru,.lang .l-ru{color:inherit;opacity:.85}
+.btn.big{padding:13px 18px;font-size:16px;width:100%}
+.btn.link{border:0;background:none;padding:4px 0;color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;align-self:flex-start}
+.seg button{border:0;background:var(--surface);padding:7px 12px;font-size:13.5px;color:var(--mute)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.bar{height:8px;border-radius:6px;background:var(--tint);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:6px;transition:width .3s}
+.bar.root i{background:var(--root)}
 
-/* vowel marks */
-.marks{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px;margin-top:10px}
-.mk{background:var(--tint);border-radius:10px;padding:8px 6px;text-align:center}
-.mk .ar{font-size:34px;line-height:1.3}
-.mk b{display:block;font-size:13px}
-.mk small{font-size:11.5px;display:block;min-width:0}
+/* small controls */
+.spk{flex:none;display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;border:0;background:var(--tint);color:var(--accent)}
+.spk.big{width:64px;height:64px}
+.spk.big svg{width:30px;height:30px}
+.spk.playing{background:var(--accent);color:var(--accent-ink)}
+.trv{border:1px dashed var(--line);background:transparent;border-radius:6px;padding:0 7px;font-size:12px;color:var(--mute);min-height:26px}
+.trs{font-style:italic;color:var(--mute);font-size:13.5px}
+.pchip{display:inline-block;border-radius:6px;background:var(--root-tint);padding:0 8px;font-size:18px;line-height:1.5}
+.tag{display:inline-block;font-size:11.5px;border-radius:5px;padding:0 6px;background:var(--tint);color:var(--mute)}
 
-/* letter groups */
-.glist{display:flex;flex-direction:column;gap:10px}
-.grp{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.grp-h{width:100%;display:flex;align-items:center;gap:12px;border:0;background:transparent;padding:12px 16px;text-align:left}
-.grp-n{flex:none;width:28px;height:28px;border-radius:50%;background:var(--tint);display:grid;place-items:center;font:700 12px var(--f-display)}
-.grp.done .grp-n{background:var(--good);color:var(--surface)}
-.grp-t{flex:1;min-width:0}
-.grp-t b{display:block}
-.grp-t small{display:block}
-.grp-l{font-size:26px;letter-spacing:.12em;direction:rtl;font-family:var(--f-ar);white-space:nowrap}
-.grp-b{padding:4px 16px 16px;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line)}
-.lcard{display:grid;grid-template-columns:76px minmax(0,1fr);gap:4px 14px;padding:12px 0;border-bottom:1px dashed var(--line)}
-.lcard:last-of-type{border-bottom:0}
-.big{font-size:60px;line-height:1.2;text-align:center;color:var(--accent)}
-.lc-meta{min-width:0;display:flex;flex-direction:column;gap:3px}
-.lc-meta .nm{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline}
+/* path */
+.hero{background:var(--accent);color:var(--accent-ink);border:0}
+.hero .muted,.hero small{color:inherit;opacity:.8}
+.hero .btn{background:var(--accent-ink);color:var(--accent);border-color:var(--accent-ink);font-weight:600}
+.hero-ar{font-size:44px;line-height:1.4;letter-spacing:.08em}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi{background:var(--tint);border-radius:10px;padding:8px 10px}
+.kpi b{display:block;font:700 18px var(--f-display);font-variant-numeric:tabular-nums}
+.kpi small{font-size:12px}
+.steps{display:flex;flex-direction:column;gap:8px}
+.st{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.st:disabled{cursor:default}
+.st.locked{opacity:.55}
+.st.cur{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.st-n{width:30px;height:30px;border-radius:50%;background:var(--tint);display:grid;place-items:center;font:700 12px var(--f-display)}
+.st.done .st-n{background:var(--good);color:var(--surface)}
+.st.cur .st-n{background:var(--accent);color:var(--accent-ink)}
+.st-t{min-width:0}
+.st-t b{display:block;font-weight:600;line-height:1.3}
+.st-t small{display:block;font-size:12.5px}
+.st-ar{font-size:24px;line-height:1.3;color:var(--root);max-width:34vw;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+
+/* step page */
+.back{align-self:flex-start;border:0;background:none;color:var(--accent);padding:2px 0;font-weight:500}
+.kind{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.lcard{display:grid;grid-template-columns:84px minmax(0,1fr);gap:4px 14px;padding:10px 0;border-top:1px dashed var(--line)}
+.lcard:first-of-type{border-top:0}
+.big{font-size:64px;line-height:1.2;text-align:center;color:var(--accent)}
+.lc-meta{min-width:0;display:flex;flex-direction:column;gap:4px}
+.nm{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
 .tr{font-style:italic;color:var(--mute)}
 .dots{display:inline-block;background:var(--root-tint);color:var(--root);border-radius:6px;padding:0 8px;font-size:12.5px;font-weight:500;align-self:flex-start}
 .snd{font-size:13.5px}
 .snd .lg{display:inline-block;width:24px;font-size:11px;font-weight:600;color:var(--mute)}
-.forms{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.forms{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:6px}
 .fm{text-align:center;min-width:56px;background:var(--tint);border-radius:8px;padding:2px 8px 3px}
 .fm .ar{font-size:30px;line-height:1.35;display:block}
 .fm small{font-size:10.5px;display:block}
-.tip{background:var(--root-tint);border-radius:10px;padding:10px 12px;font-size:13.5px}
-.tip .ar{font-size:22px;color:var(--ink)}
-.tip b{color:var(--root)}
+.alike{grid-column:1 / -1;font-size:13px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.alike .ar{font-size:24px;line-height:1.2}
+.alike .me{color:var(--accent)}
+.marks{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+.mk{background:var(--tint);border-radius:10px;padding:6px;text-align:center}
+.mk .ar{font-size:32px;line-height:1.4}
+.mk b{display:block;font-size:13px}
+.mk small{font-size:11.5px;display:block}
+.wl{display:flex;flex-direction:column}
+.wr{display:grid;grid-template-columns:minmax(104px,40%) minmax(0,1fr);gap:4px 12px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.wr:first-child{border-top:0}
+.wr .w-ar{font-size:32px;line-height:1.45;text-align:center}
+.wr.ph{grid-template-columns:1fr}
+.wr.ph .w-ar{font-size:30px;text-align:right}
+.w-i{min-width:0;display:flex;flex-direction:column;gap:4px}
+.w-i .row{gap:6px}
+.wr.locked .w-ar{opacity:.45}
+.need{font-size:12px;color:var(--mute)}
+.rootbig{font-size:52px;line-height:1.3;letter-spacing:.25em;color:var(--root);text-align:center}
+.patbig{font-size:46px;line-height:1.4;text-align:center}
+.sticky-cta{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:5;display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.sticky-cta .btn.primary{box-shadow:0 6px 20px rgba(0,0,0,.18)}
 
-/* roots */
-.unit{display:flex;flex-direction:column;gap:8px}
-.unit>h2{padding-top:6px}
-details.root{background:var(--surface);border:1px solid var(--line);border-radius:12px}
-details.root>summary{list-style:none;display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer}
-details.root>summary::-webkit-details-marker{display:none}
-.r-ar{font-size:34px;line-height:1.3;letter-spacing:.18em;color:var(--root);min-width:84px;text-align:center}
+/* letters + roots tabs */
+.ltiles{display:flex;flex-wrap:wrap;gap:8px;direction:rtl}
+.lt{width:56px;height:62px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font:32px/1 var(--f-ar);display:grid;place-items:center;position:relative}
+.lt.off{opacity:.4}
+.lt[aria-expanded="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.lt .au{position:absolute;top:3px;left:4px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+details.rt-d{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+details.rt-d>summary{list-style:none;display:flex;align-items:center;gap:12px;padding:10px 14px;cursor:pointer}
+details.rt-d>summary::-webkit-details-marker{display:none}
+.r-ar{font-size:30px;line-height:1.3;letter-spacing:.2em;color:var(--root);min-width:84px;text-align:center}
 .r-t{flex:1;min-width:0}
-.r-t b{display:block}
 .r-t small{display:block}
 .chev{flex:none;transition:transform .15s;color:var(--mute)}
 details[open] .chev{transform:rotate(90deg)}
-.words{list-style:none;margin:0;padding:0 16px 8px;display:flex;flex-direction:column}
-.w{display:grid;grid-template-columns:minmax(96px,34%) minmax(0,1fr);gap:4px 12px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
-.w-ar{font-size:32px;line-height:1.4;text-align:center}
-.w-i{min-width:0;display:flex;flex-direction:column;gap:2px}
-.w.locked .w-ar{opacity:.55}
-.tag{display:inline-block;font-size:11px;border-radius:5px;padding:0 6px;background:var(--tint);color:var(--mute);margin-left:4px}
-.need{font-size:12px;color:var(--root)}
-.need .ar{font-size:18px;margin-inline:2px}
-.ok{font-size:12px;color:var(--good)}
+details.rt-d .wl{padding:0 14px 8px}
+.pcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.pc{background:var(--tint);border-radius:10px;padding:8px 10px;text-align:center}
+.pc .ar{font-size:30px;display:block;line-height:1.5}
+.pc small{display:block;font-size:12px}
+.pc .ex{font-size:20px;color:var(--ink)}
 
-/* patterns */
-.pat-t{font-size:40px;text-align:center;line-height:1.4;margin:6px 0 2px}
-.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}
-.chip{background:var(--tint);border-radius:10px;padding:8px 10px;text-align:center;min-width:0}
-.chip .ar{font-size:28px;display:block}
-.chip.locked .ar{opacity:.55}
-.chip b{display:block;font-size:13px}
-.chip small{font-size:12px}
+/* practice */
+.drills{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.dr{display:flex;flex-direction:column;gap:4px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.dr b{font-weight:600}
+.dr .ar{font-size:26px;line-height:1.3;color:var(--root)}
+.dr:disabled{opacity:.5}
+.dr.main{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.dr.main small,.dr.main .ar{color:inherit;opacity:.85}
 
-/* practice + quiz */
-.start-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
-.qhead{display:flex;align-items:center;gap:12px}
-.prog{flex:1;height:8px;border-radius:6px;background:var(--tint);overflow:hidden}
-.prog i{display:block;height:100%;background:var(--accent);transition:width .25s}
-.qbox{text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center;padding:8px 0 4px}
-.qbig{font-size:96px;line-height:1.3;color:var(--accent)}
-.qword{font-size:64px;line-height:1.4}
-.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
-.opt{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:10px;min-height:54px;text-align:center;min-width:0}
-.opt .ar{font-size:36px;line-height:1.3}
-.opt:hover:not(:disabled){border-color:var(--accent)}
-.opt.right{background:var(--good-tint);border-color:var(--good)}
-.opt.wrong{background:var(--bad-tint);border-color:var(--bad)}
-.fb{border-radius:10px;padding:10px 12px;font-size:14px}
+/* quiz */
+.quiz{display:flex;flex-direction:column;gap:12px}
+.qhead{display:flex;align-items:center;gap:10px}
+.qhead .x{border:0;background:none;font-size:24px;line-height:1;color:var(--mute);padding:4px 6px}
+.qhead .bar{flex:1}
+.combo{font:700 14px var(--f-display);color:var(--root);min-width:44px;text-align:right}
+.combo.pop{animation:pop .35s}
+.qlabel{font-weight:600;color:var(--mute);text-align:center}
+.qbox{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;min-height:110px;justify-content:center}
+.q-letter{font-size:104px;line-height:1.25;color:var(--accent)}
+.q-word{font-size:60px;line-height:1.45}
+.q-phrase{font-size:38px;line-height:1.6}
+.q-mean{font:600 22px/1.35 var(--f-body)}
+.q-snd{font:700 34px var(--f-display);color:var(--accent)}
+.q-root{font-size:34px;line-height:1.4}
+.q-root .r{color:var(--root);letter-spacing:.25em}
+.q-root .plus{font:600 22px var(--f-body);color:var(--mute);margin:0 8px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opts.one{grid-template-columns:1fr}
+.opt{border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:10px;min-height:58px;text-align:center;min-width:0;overflow-wrap:anywhere}
+.opt .ar{font-size:34px;line-height:1.35}
+.opt .ar.sm{font-size:26px}
+.opt small{display:block;font-size:12px}
+.opt.right{background:var(--good-tint);border-color:var(--good);animation:pop .3s}
+.opt.wrong{background:var(--bad-tint);border-color:var(--bad);animation:shake .3s}
+.built{min-height:72px;border-bottom:2px solid var(--line);font-size:48px;line-height:1.45;text-align:center;padding:0 8px}
+.built.ok{border-color:var(--good);color:var(--good)}
+.built.no{border-color:var(--bad)}
+.tiles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.tile{min-width:52px;height:58px;padding:0 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);font:32px/1 var(--f-ar)}
+.tile.w{font-size:26px}
+.tile:disabled{opacity:.25}
+.fb{border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
 .fb.right{background:var(--good-tint)}
 .fb.wrong{background:var(--bad-tint)}
-.fb .ar{font-size:24px}
-.score{font:700 44px var(--f-display);text-align:center;color:var(--accent)}
-.unlock{display:flex;flex-wrap:wrap;gap:8px}
-.unlock span{background:var(--root-tint);border-radius:10px;padding:4px 10px;text-align:center}
-.unlock .ar{font-size:26px;display:block}
-.unlock small{font-size:11.5px}
-@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.04)}100%{transform:scale(1)}}
-.opt.right{animation:pop .3s}
-@media (prefers-reduced-motion:reduce){.opt.right{animation:none}.prog i,.chev{transition:none}}
-@media (max-width:420px){.grp-l{font-size:22px}.big{font-size:52px}.qbig{font-size:80px}.qword{font-size:52px}.lcard{grid-template-columns:64px minmax(0,1fr)}}
+.fb .ar{font-size:30px;line-height:1.45}
+.fb .row{gap:8px}
+.score{font:700 46px var(--f-display);text-align:center;color:var(--accent)}
+.unl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.unl>span{background:var(--root-tint);border-radius:10px;padding:2px 12px;font-size:28px}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-weight:600;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:20;white-space:nowrap}
+#toast.on{opacity:1}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:30;overflow:hidden}
+.confetti i{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;animation:fall 1.8s ease-in forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(540deg);opacity:.6}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.06)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 
-/* manage tab */
-.mg{display:flex;flex-direction:column;gap:10px}
-.mg .lead{max-width:none}
-.ta{width:100%;min-height:96px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);color:var(--ink);font:16px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-.ta.sm{min-height:64px}
+/* manage */
+.ta{width:100%;min-height:90px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);color:var(--ink);font:16px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.ta.sm{min-height:60px}
 label.btn{display:inline-block}
 .msg{border-radius:10px;padding:10px 12px;font-size:14px;overflow-wrap:anywhere}
 .msg.ok{background:var(--good-tint)}
 .msg.bad{background:var(--bad-tint)}
 .msg ul{margin:4px 0 0;padding-left:18px}
-.packrow{display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid var(--line)}
-.packrow:first-of-type{border-top:0}
+.packrow,.kv{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid var(--line);font-size:14px}
+.packrow:first-child,.kv:first-child{border-top:0}
 .packrow>div{flex:1;min-width:0}
 .packrow b,.packrow small{display:block}
-.kv{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-top:1px solid var(--line);font-size:14px}
-.kv:first-of-type{border-top:0}
 .kv span:last-child{text-align:right}
+.mono{font:13px ui-monospace,Menlo,Consolas,monospace;overflow-wrap:anywhere}
+
+@media (max-width:400px){.q-letter{font-size:88px}.q-word{font-size:50px}.q-phrase{font-size:32px}.big{font-size:54px}.lcard{grid-template-columns:70px minmax(0,1fr)}.tabs button{font-size:12.5px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.confetti{display:none}}
 </style>
 </head>
-<body>
+<body data-lang="both">
 <div class="wrap">
   <header class="top">
     <div class="bar-row">
-      <div class="brand">
-        <span class="ar brand-ar" lang="ar">جذر</span>
-        <div><b>Jidr</b><small>jidr = root. Learn the root, get the family.</small></div>
-      </div>
+      <div class="brand"><span class="ar brand-ar" lang="ar">جذر</span><b>Jidr</b></div>
       <div class="lang" role="group" aria-label="Explanation language">
         <button type="button" data-lang="en" aria-pressed="false">EN</button>
-        <button type="button" data-lang="both" aria-pressed="true">EN + RU</button>
+        <button type="button" data-lang="both" aria-pressed="true">EN+RU</button>
         <button type="button" data-lang="ru" aria-pressed="false">RU</button>
       </div>
     </div>
     <div class="stats" id="stats" aria-live="polite"></div>
-    <nav class="tabs" id="tabs" role="tablist" aria-label="Sections">
-      <button type="button" role="tab" data-tab="letters">Letters</button>
-      <button type="button" role="tab" data-tab="roots">Roots</button>
-      <button type="button" role="tab" data-tab="patterns">Patterns</button>
-      <button type="button" role="tab" data-tab="practice">Practice</button>
-      <button type="button" role="tab" data-tab="manage">Manage</button>
+    <nav class="tabs" id="tabs" aria-label="Sections">
+      <button type="button" data-tab="path"><span class="t-en">Path</span><span class="t-ru">Путь</span></button>
+      <button type="button" data-tab="practice"><span class="t-en">Practice</span><span class="t-ru">Тренинг</span></button>
+      <button type="button" data-tab="letters"><span class="t-en">Letters</span><span class="t-ru">Буквы</span></button>
+      <button type="button" data-tab="roots"><span class="t-en">Roots</span><span class="t-ru">Корни</span></button>
+      <button type="button" data-tab="manage"><span class="t-en">More</span><span class="t-ru">Ещё</span></button>
     </nav>
   </header>
   <main id="view"></main>
 </div>
+<div id="toast" role="status"></div>
+<audio id="player" preload="none"></audio>
+<script src="course.js"></script>
 <script>
-// Dots: [English, Russian]
-const D={
-  n:["no dots","без точек"],
-  a1:["1 dot above","1 точка сверху"],a2:["2 dots above","2 точки сверху"],a3:["3 dots above","3 точки сверху"],
-  b1:["1 dot below","1 точка снизу"],b2:["2 dots below","2 точки снизу"],i1:["1 dot inside the curve","1 точка внутри изгиба"]
-};
-// [char, name, translit, EN sound, RU sound, dots, joins-to-next, shape family, group]
-const L=[
-["ا","alif","ā","a long “a”, like the a in father","долгий «а», как в «ма-ама». Просто палочка","n",0,"alif",1],
-["ب","bāʾ","b","b as in bat","«б»","b1",1,"ba",1],
-["ت","tāʾ","t","t as in tea","«т»","a2",1,"ba",1],
-["ث","thāʾ","th","th as in think, tongue tip between the teeth","в русском нет: кончик языка между зубами, как шепелявое «с»","a3",1,"ba",1],
-["ج","jīm","j","j as in jam","«дж», как в «джаз»","i1",1,"jim",2],
-["ح","ḥāʾ","ḥ","a breathy h from deep in the throat, like fogging a mirror","выдох из глубины горла, как будто дышишь на стекло. Не русское «х»","n",1,"jim",2],
-["خ","khāʾ","kh","like “ch” in Scottish loch","как русское «х»","a1",1,"jim",2],
-["د","dāl","d","d as in dog","«д»","n",0,"dal",3],
-["ذ","dhāl","dh","th as in this, tongue between the teeth","звонкий вариант: «з» с языком между зубами","a1",0,"dal",3],
-["ر","rāʾ","r","a quick rolled r","как русское «р», только короче","n",0,"ra",3],
-["ز","zāy","z","z as in zoo","«з»","a1",0,"ra",3],
-["س","sīn","s","s as in sun","«с». Три «зубца»","n",1,"sin",4],
-["ش","shīn","sh","sh as in ship","«ш»","a3",1,"sin",4],
-["ص","ṣād","ṣ","a heavy s: say s with the tongue pulled back and low","«с» с оттянутым назад языком, как в слове «сон», но глубже","n",1,"sad",4],
-["ض","ḍād","ḍ","a heavy d, same trick as ṣ","тяжёлое «д», тот же приём, что у ṣ","a1",1,"sad",4],
-["ط","ṭāʾ","ṭ","a heavy t","тяжёлое «т»","n",1,"ta",5],
-["ظ","ẓāʾ","ẓ","a heavy dh","тяжёлое «з» с языком между зубами","a1",1,"ta",5],
-["ع","ʿayn","ʿ","a squeezed-throat “ah”, no English match","«а» со сжатым горлом. В русском нет","n",1,"ayn",5],
-["غ","ghayn","gh","a gargled r, like the French r","картавое «г», как французское r или южнорусское «г»","a1",1,"ayn",5],
-["ف","fāʾ","f","f as in fan","«ф»","a1",1,"fa",6],
-["ق","qāf","q","a k said far back in the throat","«к» глубоко в горле","a2",1,"fa",6],
-["ك","kāf","k","k as in kite","«к»","n",1,"kaf",6],
-["ل","lām","l","l as in lamp","«л». Высокая палочка","n",1,"lam",6],
-["م","mīm","m","m as in moon","«м». Маленькая петля","n",1,"mim",6],
-["ن","nūn","n","n as in net","«н»","a1",1,"ba",6],
-["ه","hāʾ","h","h as in hat, just a breath","лёгкий выдох «х»","n",1,"ha",7],
-["و","wāw","w / ū","w as in water, or a long “oo”","«в» как в английском water, или долгое «у»","n",0,"waw",7],
-["ي","yāʾ","y / ī","y as in yes, or a long “ee”","«й» или долгое «и»","b2",1,"ba",7],
-["ة","tāʾ marbūṭa","-a","the “a” ending of words like madrasa (only at the end of a word)","окончание «-а», как в «мадраса» (только в конце слова)","a2",0,"ha",7]
-];
-
-const GROUPS=[
-{id:1,t:"Start here",en:"One stick and the boat family. The body is the same, the dots decide the letter.",ru:"Палочка и семейство «лодочек». Форма одна, букву решают точки.",L:"ابتث"},
-{id:2,t:"The hook family",en:"One shape, three letters: dot inside, no dot, dot above.",ru:"Одна форма, три буквы: точка внутри, без точки, точка сверху.",L:"جحخ"},
-{id:3,t:"Short stoppers",en:"Four letters that never join the next letter. Two pairs, each split by one dot.",ru:"Четыре буквы, которые не соединяются со следующей. Две пары, в каждой отличие в одной точке.",L:"دذرز"},
-{id:4,t:"Teeth and loops",en:"s and sh, then the heavy twins ṣ and ḍ.",ru:"s и sh, затем «тяжёлые» близнецы ṣ и ḍ.",L:"سشصض"},
-{id:5,t:"Heavy and throat",en:"Heavy ṭ and ẓ, then the throat pair ʿ and gh.",ru:"Тяжёлые ṭ и ẓ, затем горловая пара ʿ и gh.",L:"طظعغ"},
-{id:6,t:"Everyday six",en:"f and q (dots tell them apart), then k, l, m, n.",ru:"f и q (различаются точками), затем k, l, m, n.",L:"فقكلمن"},
-{id:7,t:"Last letters",en:"h, w, y, plus the ending ة that closes many nouns.",ru:"h, w, y и окончание ة, которое замыкает многие существительные.",L:"هوية"}
-];
-
-// words: [arabic, translit, EN, RU, patterns]
-// patterns: pl = place (ma-), dr = doer (fāʿil), dn = done (mafʿūl), mu = mu- doer, fm = -a ending
-const ROOTS0=[
-{u:1,r:"كتب",tr:"k-t-b",en:"write",ru:"писать",w:[
-["كَتَبَ","kataba","he wrote","он написал",""],
-["كِتاب","kitāb","book","книга",""],
-["كاتِب","kātib","writer","писатель","dr"],
-["مَكتَب","maktab","office, desk","офис, письменный стол","pl"],
-["مَكتَبة","maktaba","library, bookshop","библиотека, книжный магазин","pl fm"],
-["مَكتوب","maktūb","written","написано","dn"]]},
-{u:1,r:"درس",tr:"d-r-s",en:"study",ru:"учиться",w:[
-["دَرَسَ","darasa","he studied","он учился",""],
-["دَرس","dars","lesson","урок",""],
-["مَدرَسة","madrasa","school","школа","pl fm"],
-["مُدَرِّس","mudarris","teacher","учитель","mu"],
-["دِراسة","dirāsa","studies","учёба, изучение","fm"]]},
-{u:1,r:"علم",tr:"ʿ-l-m",en:"know",ru:"знать",w:[
-["عَلِمَ","ʿalima","he knew","он знал",""],
-["عِلم","ʿilm","knowledge, science","знание, наука",""],
-["عالِم","ʿālim","scientist","учёный","dr"],
-["مُعَلِّم","muʿallim","teacher","учитель","mu"],
-["تَعليم","taʿlīm","education","образование",""]]},
-{u:1,r:"كلم",tr:"k-l-m",en:"speak",ru:"говорить",w:[
-["كَلام","kalām","speech","речь",""],
-["كَلِمة","kalima","word","слово","fm"],
-["كَلَّمَ","kallama","he spoke to","он говорил с",""],
-["مُتَكَلِّم","mutakallim","speaker","говорящий","mu"]]},
-{u:1,r:"فهم",tr:"f-h-m",en:"understand",ru:"понимать",w:[
-["فَهِمَ","fahima","he understood","он понял",""],
-["فَهم","fahm","understanding","понимание",""],
-["مَفهوم","mafhūm","understood, clear","понятно, ясно","dn"],
-["تَفاهُم","tafāhum","mutual understanding","взаимопонимание",""]]},
-{u:2,r:"طبخ",tr:"ṭ-b-kh",en:"cook",ru:"готовить еду",w:[
-["طَبَخَ","ṭabakha","he cooked","он приготовил",""],
-["طَبخ","ṭabkh","cooking","готовка",""],
-["طَبّاخ","ṭabbākh","cook, chef","повар",""],
-["مَطبَخ","maṭbakh","kitchen","кухня","pl"]]},
-{u:2,r:"طعم",tr:"ṭ-ʿ-m",en:"food, taste",ru:"еда, вкус",w:[
-["طَعام","ṭaʿām","food","еда",""],
-["طَعم","ṭaʿm","taste","вкус",""],
-["مَطعَم","maṭʿam","restaurant","ресторан","pl"]]},
-{u:2,r:"شرب",tr:"sh-r-b",en:"drink",ru:"пить",w:[
-["شَرِبَ","shariba","he drank","он пил",""],
-["شُرب","shurb","drinking","питьё",""],
-["مَشروب","mashrūb","a drink","напиток","dn"],
-["شَراب","sharāb","drink, syrup","напиток, сироп",""]]},
-{u:2,r:"سكن",tr:"s-k-n",en:"live, dwell",ru:"жить, обитать",w:[
-["سَكَنَ","sakana","he lived","он жил",""],
-["ساكِن","sākin","resident","житель","dr"],
-["مَسكَن","maskan","dwelling","жильё","pl"],
-["سُكون","sukūn","calm, stillness","покой, тишина",""]]},
-{u:2,r:"فتح",tr:"f-t-ḥ",en:"open",ru:"открывать",w:[
-["فَتَحَ","fataḥa","he opened","он открыл",""],
-["مِفتاح","miftāḥ","key","ключ",""],
-["مَفتوح","maftūḥ","open","открыто","dn"],
-["فَتحة","fatḥa","opening; the vowel mark “a”","отверстие; значок «а»","fm"]]},
-{u:3,r:"ولد",tr:"w-l-d",en:"give birth",ru:"рождать",w:[
-["وَلَد","walad","boy","мальчик",""],
-["والِد","wālid","father","отец","dr"],
-["والِدة","wālida","mother","мать","dr fm"],
-["وِلادة","wilāda","birth","рождение","fm"],
-["مَولِد","mawlid","birthplace, birthday","место и день рождения","pl"]]},
-{u:3,r:"صدق",tr:"ṣ-d-q",en:"truth, friend",ru:"правда, друг",w:[
-["صَديق","ṣadīq","friend","друг",""],
-["صَداقة","ṣadāqa","friendship","дружба","fm"],
-["صَدَقَ","ṣadaqa","he told the truth","он сказал правду",""],
-["صادِق","ṣādiq","honest","честный","dr"]]},
-{u:3,r:"حبب",tr:"ḥ-b-b",en:"love",ru:"любить",w:[
-["حُبّ","ḥubb","love","любовь",""],
-["حَبيب","ḥabīb","dear, beloved","дорогой, любимый",""],
-["مَحَبّة","maḥabba","affection","привязанность, любовь","fm"],
-["أُحِبّ","uḥibb","I love, I like","я люблю, мне нравится",""]]},
-{u:3,r:"عمل",tr:"ʿ-m-l",en:"work, do",ru:"работать, делать",w:[
-["عَمِلَ","ʿamila","he worked, did","он работал, делал",""],
-["عَمَل","ʿamal","work","работа",""],
-["عامِل","ʿāmil","worker","рабочий","dr"],
-["مَعمَل","maʿmal","lab, factory","лаборатория, завод","pl"]]},
-{u:3,r:"سفر",tr:"s-f-r",en:"travel",ru:"путешествовать",w:[
-["سَفَر","safar","travel","поездка, путешествие",""],
-["سافَرَ","sāfara","he travelled","он поехал",""],
-["مُسافِر","musāfir","traveller, passenger","путешественник, пассажир","mu"],
-["سَفارة","safāra","embassy","посольство","fm"],
-["سَفير","safīr","ambassador","посол",""]]},
-{u:3,r:"جمع",tr:"j-m-ʿ",en:"gather",ru:"собирать",w:[
-["جَمَعَ","jamaʿa","he gathered","он собрал",""],
-["جامِعة","jāmiʿa","university","университет","dr fm"],
-["جُمعة","jumʿa","Friday, a gathering","пятница, собрание","fm"],
-["مَجموعة","majmūʿa","group","группа","fm"],
-["جَميع","jamīʿ","all","все",""]]},
-{u:4,r:"",tr:"",en:"no root, just learn them",ru:"без корня, просто выучить",w:[
-["نَعَم","naʿam","yes","да",""],
-["لا","lā","no","нет",""],
-["شُكرًا","shukran","thank you","спасибо",""],
-["عَفوًا","ʿafwan","you are welcome; excuse me","пожалуйста; извините",""],
-["مَرحَبًا","marḥaban","hello","привет",""],
-["أَهلًا","ahlan","hi, welcome","здравствуйте, добро пожаловать",""],
-["مِن","min","from","из, от",""],
-["في","fī","in","в",""],
-["مَع","maʿa","with","с",""],
-["هَذا","hādhā","this","это",""]]}
-];
-const UNITS0={1:["School and words","Школа и слова"],2:["Home and food","Дом и еда"],3:["People and life","Люди и жизнь"],4:["Everyday glue","Повседневные слова"]};
-
-// slots: 1 = root letter slot (ف ع ل stand in for any root)
-const PATS0={
- pl:{t:"The place",parts:[["مَ",0],["ف",1],["ْ",0],["ع",1],["َ",0],["ل",1]],tr:"ma-f-ʿa-l",
-  en:"A ma- start usually names the place where the action happens. Cook → kitchen, study → school.",
-  ru:"Начало ма- обычно называет место действия. Готовить → кухня, учиться → школа."},
- dr:{t:"The one who does it",parts:[["ف",1],["ا",0],["ع",1],["ِ",0],["ل",1]],tr:"fā-ʿi-l",
-  en:"A long ā after the first root letter gives the doer. Write → writer, live → resident.",
-  ru:"Долгое ā после первой буквы корня даёт «того, кто делает». Писать → писатель, жить → житель."},
- dn:{t:"The thing that was done",parts:[["مَ",0],["ف",1],["ْ",0],["ع",1],["و",0],["ل",1]],tr:"maf-ʿūl",
-  en:"ma- at the start and ū before the last root letter: the result. Open → opened, drink → a drink.",
-  ru:"Ма- в начале и ū перед последней буквой корня: результат. Открыть → открыто, пить → напиток."},
- mu:{t:"The doer, stretched verbs",parts:[["مُ",0],["ف",1],["َ",0],["ع",1],["ِ",0],["ل",1]],tr:"mu-f-ʿi-l",
-  en:"A mu- start marks a person doing the action for the stretched verbs. Teach → teacher, travel → traveller.",
-  ru:"Начало му- обозначает человека, который делает действие, для «растянутых» глаголов. Учить → учитель, ехать → путешественник."},
- fm:{t:"The -a ending",parts:[["ف",1],["َ",0],["ع",1],["ْ",0],["ل",1],["َ",0],["ة",0]],tr:"fa-ʿ-la",
-  en:"The ة ending is often feminine or means one single thing: school, word, mother, friendship.",
-  ru:"Окончание ة часто означает женский род или «одну штуку»: школа, слово, мать, дружба."}
-};
+"use strict";
+/* ================= basics ================= */
+const C=window.COURSE;
+const APP_VERSION="2.0.0",STATE_VER=2;
 const $=(s,r)=>(r||document).querySelector(s);
-const ZWJ="‍";
-const DIA=/[ً-ٰٟ]/g;
-const norm=s=>s.replace(DIA,"").replace(/[أإآ]/g,"ا").replace(/ى/g,"ي");
+const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const bi=(en,ru)=>`<span class="l-en">${en}</span><span class="l-ru">${ru}</span>`;
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const pick=a=>a[Math.floor(Math.random()*a.length)];
+const uniq=a=>[...new Set(a)];
+const ZWJ="‍";
+const HAR=/[ً-ٰٟـ]/;
+const PUNCT=/[\s؟،.!?,]/;
+const SEAT={"أ":"اء","إ":"اء","آ":"اء","ؤ":"وء","ئ":"يء","ى":"ي"};
+const BASE={"أ":"ا","إ":"ا","آ":"ا","ؤ":"و","ئ":"ي","ى":"ي"};
+const skel=s=>[...s].filter(c=>!HAR.test(c)).join("");
+const nrm=s=>[...skel(s)].map(c=>BASE[c]||c).join("");
+const today=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5);
+function clusters(ar){const out=[];for(const ch of ar){if(HAR.test(ch)&&out.length)out[out.length-1]+=ch;else out.push(ch)}return out}
 
-/* ---------- saved data (lives on this phone) ----------
-   Two localStorage keys: "jidr-state" (progress and settings) and "jidr-packs" (lessons you added).
-   They are separate from the code, so adding lessons or updating the app never touches progress.
-   If the saved shape ever changes, bump STATE_VER and upgrade old saves inside migrate(). */
-const APP_VERSION="1.0.0",STATE_VER=1;
-let S={ver:STATE_VER,learned:[],lang:"both",tab:"letters",best:0,lastBackup:0};
-let PACKS=[];
-let storageOK=true;
-function migrate(s){
-  if(typeof s.ver!=="number")s.ver=1;
-  if(!Array.isArray(s.learned))s.learned=[];
-  // example for a future version:  if(s.ver<2){ /* upgrade fields */ s.ver=2 }
-  return s;
-}
-try{const raw=localStorage.getItem("jidr-state");if(raw)S=migrate(Object.assign(S,JSON.parse(raw)))}catch(e){}
-try{const raw=localStorage.getItem("jidr-packs");const a=raw?JSON.parse(raw):[];if(Array.isArray(a))PACKS=a.filter(p=>p&&p.id&&Array.isArray(p.roots))}catch(e){}
-try{localStorage.setItem("jidr-probe","1");localStorage.removeItem("jidr-probe")}catch(e){storageOK=false}
-const save=()=>{try{localStorage.setItem("jidr-state",JSON.stringify(S))}catch(e){storageOK=false}};
-const savePacks=a=>{try{localStorage.setItem("jidr-packs",JSON.stringify(a));return true}catch(e){return false}};
-
-/* ---------- data prep ---------- */
-const LET=L.map(a=>({c:a[0],n:a[1],tr:a[2],en:a[3],ru:a[4],dots:D[a[5]],conn:!!a[6],fam:a[7],g:a[8]}));
+/* ================= letters ================= */
+const LET=C.letters.map(a=>({c:a[0],n:a[1],tr:a[2],en:a[3],ru:a[4],dots:C.dots[a[5]],conn:!!a[6],fam:a[7],say:a[8],key:"L:"+a[0]}));
 const byC={};LET.forEach(l=>byC[l.c]=l);
-GROUPS.forEach(g=>{g.letters=Array.from(g.L).map(c=>byC[c])});
-let ROOTS=[],UNITS={},PATS={},ALLW=[];
-const wLetters=w=>new Set(Array.from(norm(w.ar)).filter(ch=>byC[ch]));
-/* Built-in course (ROOTS0, UNITS0, PATS0) plus every lesson pack the person added. Run again after packs change. */
-function buildData(){
-  UNITS=Object.assign({},UNITS0);
-  PATS=Object.assign({},PATS0);
-  ROOTS=ROOTS0.map(r=>Object.assign({},r,{u:String(r.u)}));
-  PACKS.forEach(p=>{
-    Object.keys(p.units||{}).forEach(k=>{if(!UNITS[k])UNITS[k]=p.units[k]});
-    Object.keys(p.pats||{}).forEach(k=>{if(!PATS[k])PATS[k]=p.pats[k]});
-    p.roots.forEach(r=>ROOTS.push(Object.assign({},r,{u:String(r.u)})));
-  });
-  ROOTS.forEach(r=>{if(!UNITS[r.u])UNITS[r.u]=["Unit "+r.u,"Раздел "+r.u]});
-  ALLW=[];
-  ROOTS.forEach(r=>r.w.forEach(w=>ALLW.push({id:ALLW.length,ar:w[0],tr:w[1],en:w[2],ru:w[3],p:String(w[4]||"").split(" ").filter(k=>PATS[k]),root:r})));
-  ALLW.forEach(w=>{w.L=[...wLetters(w)]});
-}
-buildData();
-
-const learnedSet=()=>{const s=new Set();GROUPS.forEach(g=>{if(S.learned.includes(g.id))g.letters.forEach(l=>s.add(l.c))});return s};
-let LS=learnedSet();
-const readable=w=>w.L.every(c=>LS.has(c));
-const readableWords=()=>ALLW.filter(readable);
-const learnedLetters=()=>LET.filter(l=>LS.has(l.c));
-
+C.sounds.forEach((g,i)=>{for(const c of g.L)if(byC[c])byC[c].sg=i});
+function reqLetters(ar){const o=new Set();for(const ch of ar){if(HAR.test(ch)||PUNCT.test(ch))continue;for(const c of (SEAT[ch]||ch))if(byC[c])o.add(c)}return [...o]}
 function forms(l){
+  if(l.c==="ء")return [["alone","отдельно",l.c]];
   if(l.c==="ة")return [["alone","отдельно",l.c],["end","в конце",ZWJ+l.c]];
   if(l.conn)return [["alone","отдельно",l.c],["start","в начале",l.c+ZWJ],["middle","в середине",ZWJ+l.c+ZWJ],["end","в конце",ZWJ+l.c]];
   return [["alone","отдельно",l.c],["end","в конце",ZWJ+l.c]];
 }
-const DIAT=/[ً-ٰٟ]/;
-function clusters(ar){const out=[];for(const ch of Array.from(ar)){if(DIAT.test(ch)&&out.length)out[out.length-1]+=ch;else out.push(ch)}return out}
-function hl(ar,root){
-  const rl=Array.from(norm(root.r));let i=0,html="";
-  for(const c of clusters(ar)){
-    if(i<rl.length&&norm(c)===rl[i]){html+=`<span class="rt">${c}</span>`;i++}else html+=esc(c);
+
+/* ================= saved data (lives on this phone) =================
+   localStorage "jidr-state": progress + settings. "jidr-packs": lessons added in the app.
+   Recordings loaded from a file live in IndexedDB. Code updates never touch any of these.
+   If the saved shape changes, bump STATE_VER and upgrade inside migrate(). */
+const DEF={ver:STATE_VER,done:[],srs:{},lang:"both",tab:"path",xp:0,streak:0,lastDay:0,tr:"off",auto:true,letView:"shape",lastBackup:0};
+let S=Object.assign({},DEF,{done:[],srs:{}});
+let PACKS=[],storageOK=true;
+function migrate(s){
+  s=Object.assign({},DEF,{done:[],srs:{}},s||{});
+  if(!s.ver||s.ver<2){ /* v1 tracked letter groups of the old layout; the path is new, so it starts fresh */
+    s.done=[];s.srs={};if(s.tab&&!["path","practice","letters","roots","manage"].includes(s.tab))s.tab="path";delete s.learned;delete s.best;s.ver=2;
   }
-  return html;
+  if(!Array.isArray(s.done))s.done=[];
+  if(!s.srs||typeof s.srs!=="object")s.srs={};
+  if(!["en","ru","both"].includes(s.lang))s.lang="both";
+  if(!["off","tap"].includes(s.tr))s.tr="off";
+  return s;
 }
-const spaced=r=>Array.from(r).join(" ");
-const dotsHtml=l=>`<span class="dots">${bi(l.dots[0],l.dots[1])}</span>`;
+try{const raw=localStorage.getItem("jidr-state");if(raw)S=migrate(JSON.parse(raw))}catch(e){}
+try{localStorage.setItem("jidr-probe","1");localStorage.removeItem("jidr-probe")}catch(e){storageOK=false}
+const save=()=>{try{localStorage.setItem("jidr-state",JSON.stringify(S))}catch(e){storageOK=false}};
+const savePacks=a=>{try{localStorage.setItem("jidr-packs",JSON.stringify(a));return true}catch(e){return false}};
 
-/* ---------- header ---------- */
-function renderStats(){
-  LS=learnedSet();
-  const rw=readableWords().length;
-  $("#stats").innerHTML=
-    `<span class="pill">${LS.size} ${bi("letters","букв")}</span>`+
-    `<span class="pill root">${rw} / ${ALLW.length} ${bi("words you can read","слов можно прочитать")}</span>`+
-    (storageOK?"":`<span class="pill" style="background:var(--bad-tint);color:var(--bad)">⚠ ${bi("progress is not being saved","прогресс не сохраняется")}</span>`);
-  document.body.dataset.lang=S.lang;
-  document.querySelectorAll(".lang button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lang===S.lang)));
-  document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===S.tab)));
-}
-
-/* ---------- Letters tab ---------- */
-let openGroup=null;
-function vowelCard(){
-  const m=[["بَ","ba","fatḥa","а"],["بِ","bi","kasra","и"],["بُ","bu","ḍamma","у"],["بْ","b","sukūn",bi("no vowel","без гласной")],["بّ","bb","shadda",bi("doubled","удвоение")]];
-  return `<section class="card"><h2>${bi("Vowel marks","Знаки гласных")}</h2>
-  <p class="lead" style="margin-top:6px">${bi("Arabic letters are consonants. Small marks above or below add the short vowels. Real texts often leave them out, so we show them while you learn.","Буквы арабского обозначают согласные. Маленькие значки сверху и снизу добавляют краткие гласные. В обычных текстах их часто нет, пока вы учитесь, они показаны.")}</p>
-  <div class="marks">${m.map(x=>`<div class="mk"><span class="ar">${x[0]}</span><b>${x[1]}</b><small>${x[2]}</small><small>${x[3]}</small></div>`).join("")}</div>
-  <p class="lead" style="margin-top:10px">${bi("Long vowels use a letter: <span class=\"ar\" style=\"font-size:20px\">بَا</span> bā, <span class=\"ar\" style=\"font-size:20px\">بِي</span> bī, <span class=\"ar\" style=\"font-size:20px\">بُو</span> bū.","Долгие гласные пишутся буквой: <span class=\"ar\" style=\"font-size:20px\">بَا</span> bā, <span class=\"ar\" style=\"font-size:20px\">بِي</span> bī, <span class=\"ar\" style=\"font-size:20px\">بُو</span> bū.")}</p></section>`;
-}
-function famTips(g){
-  const seen={};g.letters.forEach(l=>{(seen[l.fam]=seen[l.fam]||[]).push(l)});
-  const tips=[];
-  Object.keys(seen).forEach(f=>{
-    const mem=seen[f];const later=LET.filter(l=>l.fam===f&&l.g>g.id);
-    const earlier=LET.filter(l=>l.fam===f&&l.g<g.id);
-    const all=earlier.concat(mem);
-    if(all.length<2&&!later.length)return;
-    tips.push(`<div class="tip"><b>${bi("Look-alikes","Похожие")}</b> ${all.map(l=>`<span class="ar">${l.c}</span> <small>${l.dots[0]}</small>`).join(" &nbsp;·&nbsp; ")}`+
-      (later.length?` <br><small>${bi("Joining later:","Присоединятся позже:")} ${later.map(l=>`<span class="ar">${l.c}</span>`).join(" ")}</small>`:"")+`</div>`);
+/* ================= content model ================= */
+let STEPS=[],WORDS=[],PHRASES=[],ITEMS={},ROOTM={};
+function buildData(){
+  ROOTM=Object.assign({},C.roots);
+  STEPS=C.steps.map(s=>Object.assign({},s));
+  PACKS.forEach(p=>{
+    Object.keys(p.roots||{}).forEach(r=>{if(!ROOTM[r])ROOTM[r]=p.roots[r]});
+    p.steps.forEach((s,i)=>STEPS.push(Object.assign({},s,{id:p.id+":"+i,kind:s.root?"root":"theme",pack:p.id})));
   });
-  return tips.join("");
+  WORDS=[];PHRASES=[];ITEMS={};
+  LET.forEach(l=>{l.step=null;ITEMS[l.key]=l;l.type="L"});
+  STEPS.forEach((st,si)=>{
+    st.si=si;st.letters=st.L?[...st.L].map(c=>byC[c]).filter(Boolean):[];
+    st.letters.forEach(l=>{l.step=st});
+    st.W=(st.words||[]).map(w=>({type:"W",key:"W:"+w[0],ar:w[0],tr:w[1],en:w[2],ru:w[3],root:w[4]||"",pat:C.pats[w[5]]?w[5]:"",step:st,need:reqLetters(w[0])}));
+    st.P=(st.phrases||[]).map(p=>({type:"P",key:"P:"+p[0],ar:p[0],tr:p[1],en:p[2],ru:p[3],step:st,need:reqLetters(p[0]),parts:p[0].split(/\s+/).filter(Boolean)}));
+    st.W.forEach(w=>{WORDS.push(w);ITEMS[w.key]=w});
+    st.P.forEach(p=>{PHRASES.push(p);ITEMS[p.key]=p});
+  });
+}
+const isDone=st=>S.done.includes(st.id);
+const learned=it=>it.step?isDone(it.step):false;
+const knownLetters=()=>LET.filter(learned);
+const knownSet=()=>new Set(knownLetters().map(l=>l.c));
+const readable=(it,ks)=>it.need.every(c=>ks.has(c));
+const curIndex=()=>{const i=STEPS.findIndex(s=>!isDone(s));return i<0?STEPS.length:i};
+const isOpen=st=>isDone(st)||st.si<=curIndex();
+
+/* highlight root letters (amber) inside a vocalised word */
+function hl(ar,root){
+  if(!root)return esc(ar);
+  const rl=[...nrm(root)];let i=0,h="";
+  for(const c of clusters(ar)){if(i<rl.length&&nrm(c)===rl[i]){h+=`<span class="rt">${c}</span>`;i++}else h+=esc(c)}
+  return h;
+}
+const patT=code=>{const t=C.pats[code].t;return clusters(t).map(c=>/^[فعل]/.test(c)?`<span class="rt">${c}</span>`:c).join("")};
+const spaced=r=>[...r].join(" ");
+
+/* ================= audio ================= */
+const AUD={};const player=$("#player");let playingBtn=null;
+const SPK=`<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a4.5 4.5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+const hasA=k=>!!AUD[k];
+const spk=(k,big)=>hasA(k)?`<button type="button" class="spk${big?" big":""}" data-play="${esc(k)}" aria-label="Play">${SPK}</button>`:"";
+function addClips(o,src){
+  if(!o||o.app!=="jidr-audio"||!o.clips||typeof o.clips!=="object")return -1;
+  let n=0;
+  Object.keys(o.clips).forEach(k=>{const c=o.clips[k];
+    if(/^[LWP]:/.test(k)&&c&&typeof c.m==="string"&&/^audio\//.test(c.m)&&typeof c.d==="string"&&c.d.length<3e6&&/^[A-Za-z0-9+/=]+$/.test(c.d.slice(0,200))){
+      if(AUD[k]&&AUD[k].url)URL.revokeObjectURL(AUD[k].url);AUD[k]={m:c.m,d:c.d,src};n++}});
+  return n;
+}
+function play(k,btn){
+  const a=AUD[k];if(!a)return;
+  try{
+    if(!a.url){const bin=atob(a.d),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);a.url=URL.createObjectURL(new Blob([u],{type:a.m}))}
+    if(playingBtn)playingBtn.classList.remove("playing");
+    playingBtn=btn||null;if(btn)btn.classList.add("playing");
+    player.src=a.url;const p=player.play();if(p&&p.catch)p.catch(()=>{});
+  }catch(e){}
+}
+player.addEventListener("ended",()=>{if(playingBtn)playingBtn.classList.remove("playing");playingBtn=null});
+function idb(){return new Promise((res,rej)=>{if(!window.indexedDB)return rej(new Error("no idb"));const r=indexedDB.open("jidr",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function idbOp(mode,fn){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction("kv",mode),st=t.objectStore("kv"),r=fn(st);t.oncomplete=()=>res(r&&r.result);t.onerror=()=>rej(t.error)})}
+const idbGet=k=>idbOp("readonly",s=>s.get(k));
+const idbSet=(k,v)=>idbOp("readwrite",s=>s.put(v,k));
+const idbDel=k=>idbOp("readwrite",s=>s.delete(k));
+async function loadAudio(){
+  Object.keys(AUD).forEach(k=>{if(AUD[k].url)URL.revokeObjectURL(AUD[k].url);delete AUD[k]});
+  try{const r=await fetch("jidr-audio.json",{cache:"no-cache"});if(r.ok)addClips(await r.json(),"host")}catch(e){}
+  try{const loc=await idbGet("audio");if(loc)addClips(loc,"local")}catch(e){}
+  if(!Q)render();else renderStats();
+}
+const audioCount=()=>Object.keys(AUD).filter(k=>ITEMS[k]).length;
+
+/* ================= progress, XP, streak ================= */
+const IV=[0,1,2,4,8,16,32];
+function grade(key,ok){
+  const r=S.srs[key]||{b:0,d:0,n:0,w:0};
+  if(ok){r.b=Math.min(6,r.b+1);r.d=today()+IV[r.b]}else{r.b=Math.max(0,r.b-2);r.d=today();r.w=(r.w||0)+1}
+  r.n=(r.n||0)+1;S.srs[key]=r;
+}
+function bumpStreak(){const d=today();if(S.lastDay===d)return;S.streak=S.lastDay===d-1?S.streak+1:1;S.lastDay=d}
+const streakNow=()=>S.lastDay>=today()-1?S.streak:0;
+const learnedItems=()=>[...knownLetters(),...WORDS.filter(learned),...PHRASES.filter(learned)];
+const dueItems=()=>learnedItems().filter(it=>{const r=S.srs[it.key];return !r||r.d<=today()});
+function markDone(st){
+  if(!isDone(st))S.done.push(st.id);
+  [...st.letters,...st.W,...st.P].forEach(it=>{if(!S.srs[it.key])S.srs[it.key]={b:1,d:today()+1,n:0,w:0}});
+  save();
+}
+
+/* ================= header ================= */
+let lastXP=null;
+function renderStats(){
+  const ks=knownSet(),wl=WORDS.filter(learned).length,rd=WORDS.filter(w=>readable(w,ks)).length;
+  const due=dueItems().length;
+  $("#stats").innerHTML=
+    `<span class="pill" title="streak">🔥 ${streakNow()}</span>`+
+    `<span class="pill${lastXP!==null&&lastXP!==S.xp?" pop":""}">★ ${S.xp} XP</span>`+
+    `<span class="pill">${ks.size}/${LET.length} ${bi("letters","букв")}</span>`+
+    `<span class="pill root">${rd} ${bi("words you can read","слов читаете")}</span>`+
+    (due&&!Q?`<span class="pill">${due} ${bi("to review","на повтор")}</span>`:"")+
+    (storageOK?"":`<span class="pill warn">⚠ ${bi("progress not saved","прогресс не сохраняется")}</span>`);
+  lastXP=S.xp;
+  document.body.dataset.lang=S.lang;
+  $$(".lang button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lang===S.lang)));
+  $$("#tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===S.tab&&!Q)));
+}
+function toast(html){const t=$("#toast");t.innerHTML=html;t.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("on"),1600)}
+function confetti(){
+  if(matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches)return;
+  const box=document.createElement("div");box.className="confetti";
+  const cols=["#0B5F66","#B4630A","#1F7A3F","#C2185B","#F0A04B","#5CC4C9"];
+  for(let i=0;i<36;i++){const p=document.createElement("i");p.style.left=Math.random()*100+"vw";p.style.background=pick(cols);p.style.animationDelay=Math.random()*.5+"s";p.style.transform=`rotate(${Math.random()*180}deg)`;box.appendChild(p)}
+  document.body.appendChild(box);setTimeout(()=>box.remove(),2600);
+}
+
+/* ================= shared pieces ================= */
+const trBtn=it=>S.tr==="tap"&&it.tr?`<button type="button" class="trv" data-tr="${esc(it.tr)}">Aa</button>`:"";
+const patChip=w=>w.pat?`<span class="pchip ar" title="${esc(C.pats[w.pat].en)}">${patT(w.pat)}</span>`:"";
+function wordRow(w,locked){
+  return `<div class="wr${locked?" locked":""}"><div class="w-ar ar" lang="ar">${hl(w.ar,w.root)}</div>
+  <div class="w-i"><div>${bi(esc(w.en),esc(w.ru))}</div><div class="row">${patChip(w)}${spk(w.key)}${trBtn(w)}${locked?`<span class="need">🔒 ${bi("step","шаг")} ${w.step.si+1}</span>`:""}</div></div></div>`;
+}
+function phraseRow(p){
+  return `<div class="wr ph"><div class="w-ar ar" lang="ar">${esc(p.ar)}</div>
+  <div class="w-i"><div>${bi(esc(p.en),esc(p.ru))}</div><div class="row">${spk(p.key)}${trBtn(p)}</div></div></div>`;
 }
 function letterCard(l){
+  const fam=LET.filter(x=>x.fam===l.fam),sg=l.sg!=null?C.sounds[l.sg]:null;
   return `<div class="lcard"><div class="big ar">${l.c}</div>
-  <div class="lc-meta"><div class="nm"><b>${l.n}</b><span class="tr">${l.tr}</span></div>
-  ${dotsHtml(l)}
-  <div class="snd"><span class="lg">EN</span>${l.en}</div><div class="snd"><span class="lg">RU</span>${l.ru}</div></div>
-  <div class="forms">${forms(l).map(f=>`<div class="fm"><span class="ar">${f[2]}</span><small>${bi(f[0],f[1])}</small></div>`).join("")}</div></div>`;
+  <div class="lc-meta"><div class="nm"><b>${l.n}</b><span class="tr">${l.tr}</span>${spk(l.key)}</div>
+   <span class="dots">${bi(l.dots[0],l.dots[1])}</span>
+   <div class="snd"><span class="lg">EN</span>${l.en}</div><div class="snd"><span class="lg">RU</span>${l.ru}</div></div>
+  <div class="forms">${forms(l).map(f=>`<div class="fm"><span class="ar">${f[2]}</span><small>${bi(f[0],f[1])}</small></div>`).join("")}</div>
+  ${fam.length>1?`<div class="alike"><small>${bi("Looks like","Похожа на")}</small>${fam.map(x=>`<span class="ar${x===l?" me":""}">${x.c}</span>`).join("")}</div>`:""}
+  ${sg?`<div class="alike"><small>${bi("Sounds like","Звучит похоже")}</small>${[...sg.L].map(c=>`<span class="ar${c===l.c?" me":""}">${c}</span>`).join("")}<small>${bi(sg.en,sg.ru)}</small></div>`:""}</div>`;
 }
-function renderLetters(){
-  let h=vowelCard()+`<div class="glist">`;
-  GROUPS.forEach(g=>{
-    const done=S.learned.includes(g.id),open=openGroup===g.id;
-    h+=`<div class="grp${done?" done":""}"><button type="button" class="grp-h" data-grp="${g.id}" aria-expanded="${open}">
-      <span class="grp-n">${done?"✓":g.id}</span>
-      <span class="grp-t"><b>${g.t}</b><small>${g.letters.length} ${bi("letters","букв")}${done?" · "+bi("known","знаю"):""}</small></span>
-      <span class="grp-l">${g.L.split("").join(" ")}</span></button>`;
-    if(open){
-      const prev=g.id>1&&!S.learned.includes(g.id-1);
-      h+=`<div class="grp-b"><p class="lead bl">${bi(g.en,g.ru)}</p>${prev?`<p class="muted">${bi("Tip: groups work best in order. Group "+(g.id-1)+" first.","Совет: лучше идти по порядку. Сначала группа "+(g.id-1)+".")}</p>`:""}
-      ${g.letters.map(letterCard).join("")}${famTips(g)}
-      <div class="row"><button type="button" class="btn primary" data-drill="${g.id}">${bi("Drill these letters","Тренировать эти буквы")}</button>
-      <button type="button" class="btn" data-know="${g.id}">${done?bi("Unmark as known","Снять отметку"):bi("I already know these","Я уже знаю эти буквы")}</button></div></div>`;
-    }
-    h+=`</div>`;
-  });
-  return h+`</div>`;
+function vowelCard(){
+  const m=[["بَ","ba","fatḥa","а"],["بِ","bi","kasra","и"],["بُ","bu","ḍamma","у"],["بْ","b","sukūn",bi("no vowel","без гласной")],["بّ","bb","shadda",bi("doubled","удвоение")],["بً","ban","tanwīn",bi("-an ending","окончание -ан")]];
+  return `<section class="card"><h2>${bi("Vowel marks","Знаки гласных")}</h2>
+  <p class="lead">${bi("Letters are consonants. Small marks add short vowels. Long vowels use a letter: ا ā, ي ī, و ū. A small ٰ above a letter is a hidden long ā, as in هٰذا.","Буквы — это согласные. Маленькие значки добавляют краткие гласные. Долгие гласные пишутся буквой: ا ā, ي ī, و ū. Маленький ٰ над буквой — скрытое долгое ā, как в هٰذا.")}</p>
+  <div class="marks">${m.map(x=>`<div class="mk"><span class="ar">${x[0]}</span><b>${x[1]}</b><small>${x[2]}</small><small>${x[3]}</small></div>`).join("")}</div></section>`;
 }
+const stepPreview=st=>st.L?spaced(st.L):st.root?spaced(st.root):st.pat?C.pats[st.pat].t:(st.P[0]||st.W[0]||{ar:""}).ar;
+const kindLabel=st=>({letters:bi("New letters","Новые буквы"),root:bi("Root","Корень"),pattern:bi("Pattern","Шаблон"),grammar:bi("Grammar","Грамматика"),theme:bi("Words","Слова")})[st.kind]||"";
+const counts=st=>[st.letters.length?`${st.letters.length} ${bi("letters","букв")}`:"",st.W.length?`+${st.W.length} ${bi("words","слов")}`:"",st.P.length?`+${st.P.length} ${bi("phrases","фраз")}`:""].filter(Boolean).join(" · ");
 
-/* ---------- Roots tab ---------- */
-function wordRow(w){
-  const ok=readable(w);const miss=w.L.filter(c=>!LS.has(c));
-  const tags=w.p.map(p=>`<span class="tag">${PATS[p].tr}</span>`).join("");
-  return `<li class="w${ok?"":" locked"}"><div class="w-ar ar" lang="ar">${w.root.r?hl(w.ar,w.root):esc(w.ar)}</div>
-  <div class="w-i"><div><b>${w.tr}</b>${tags}</div><div>${bi(esc(w.en),esc(w.ru))}</div>
-  ${ok?`<span class="ok">✓ ${bi("you can read this","вы можете это прочитать")}</span>`:`<span class="need">${bi("needs","нужны")}: ${miss.map(c=>`<span class="ar">${c}</span>`).join(" ")}</span>`}</div></li>`;
+/* ================= Path tab ================= */
+let UI={step:null,openL:null};
+function renderPath(){
+  const ci=curIndex(),cur=STEPS[ci],ks=knownSet();
+  const wl=WORDS.filter(learned).length,pl=PHRASES.filter(learned).length,due=dueItems().length;
+  let h="";
+  if(cur){
+    h+=`<section class="card hero"><span class="kind" style="color:inherit;opacity:.8">${bi("Next","Дальше")} · ${bi("step","шаг")} ${ci+1} · ${kindLabel(cur)}</span>
+    <h2 style="font-size:18px">${bi(esc(cur.t[0]),esc(cur.t[1]))}</h2>
+    <div class="hero-ar ar">${esc(stepPreview(cur))}</div><small>${counts(cur)}</small>
+    <button type="button" class="btn big" data-step="${cur.id}">${ci===0&&!S.done.length?bi("Start","Начать"):bi("Continue","Продолжить")}</button></section>`;
+  }else h+=`<section class="card hero"><h2>${bi("Path complete!","Путь пройден!")}</h2><p>${bi("Keep the streak with daily review, or add new lessons in More.","Держите серию ежедневным повтором или добавьте уроки во вкладке «Ещё».")}</p></section>`;
+  if(due&&S.done.length)h+=`<button type="button" class="dr main" data-drill="review"><b>${bi("Daily review","Ежедневный повтор")}</b><small>${due} ${bi("items are due · 12 quick questions","к повтору · 12 быстрых вопросов")}</small></button>`;
+  h+=`<section class="card"><div class="kpis">
+   <div class="kpi"><b>${ks.size}<small>/${LET.length}</small></b><small>${bi("letters","букв")}</small></div>
+   <div class="kpi"><b>${wl}</b><small>${bi("words learned","слов выучено")}</small></div>
+   <div class="kpi"><b>${pl}</b><small>${bi("phrases","фраз")}</small></div></div>
+   <div class="bar"><i style="width:${Math.round(S.done.length/STEPS.length*100)}%"></i></div>
+   <small>${S.done.length}/${STEPS.length} ${bi("steps done","шагов пройдено")}</small></section>`;
+  h+=`<div class="steps">`+STEPS.map(st=>{
+    const done=isDone(st),open=isOpen(st),isCur=st.si===ci;
+    return `<button type="button" class="st${done?" done":""}${isCur?" cur":""}${open?"":" locked"}" ${open?`data-step="${st.id}"`:"disabled"}>
+     <span class="st-n">${done?"✓":open?st.si+1:"🔒"}</span>
+     <span class="st-t"><b>${bi(esc(st.t[0]),esc(st.t[1]))}</b><small>${kindLabel(st)} · ${counts(st)}</small></span>
+     <span class="st-ar ar">${esc(stepPreview(st))}</span></button>`}).join("")+`</div>`;
+  return h;
 }
-function renderRoots(){
-  let h=`<p class="lead">${bi("Every root is three consonants. Stamp a pattern on it and you get a family of words. The root letters are amber so you learn to spot them.","Каждый корень это три согласных. Добавьте шаблон и получите семью слов. Буквы корня выделены янтарным, чтобы глаз учился их находить.")}</p>`;
-  const units=Object.keys(UNITS).filter(u=>ROOTS.some(r=>r.u===u)).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
-  units.forEach((u,ui)=>{
-    const rs=ROOTS.filter(r=>r.u===u);
-    h+=`<section class="unit"><h2>${bi(esc(UNITS[u][0]),esc(UNITS[u][1]))}</h2>`;
-    rs.forEach((r,i)=>{
-      const words=ALLW.filter(w=>w.root===r),n=words.filter(readable).length;
-      h+=`<details class="root"${ui===0&&i===0?" open":""}><summary>
-        <span class="r-ar ar" lang="ar">${r.r?spaced(r.r):"•••"}</span>
-        <span class="r-t"><b>${r.tr||bi("Everyday words","Слова на каждый день")}</b><small>${bi(esc(r.en),esc(r.ru))}</small></span>
-        <span class="pill${n===words.length?" root":""}">${n}/${words.length}</span><span class="chev">›</span></summary>
-        <ul class="words">${words.map(wordRow).join("")}</ul></details>`;
-    });
-    h+=`</section>`;
-  });
+function renderStep(){
+  const st=STEPS.find(s=>s.id===UI.step);if(!st){UI.step=null;return renderPath()}
+  const done=isDone(st);
+  let h=`<button type="button" class="back" data-back>← ${bi("Path","Путь")}</button>
+  <section class="card"><span class="kind">${bi("Step","Шаг")} ${st.si+1} · ${kindLabel(st)}</span>
+   <h2 style="font-size:19px">${bi(esc(st.t[0]),esc(st.t[1]))}</h2>
+   ${st.en?`<p class="lead bl">${bi(esc(st.en),esc(st.ru))}</p>`:""}</section>`;
+  if(st.si===0)h+=vowelCard();
+  if(st.letters.length)h+=`<section class="card"><h2>${bi("Letters","Буквы")}</h2>${st.letters.map(letterCard).join("")}</section>`;
+  if(st.root&&st.kind!=="grammar")h+=`<section class="card"><div class="rootbig ar">${spaced(st.root)}</div><p style="text-align:center">${ROOTM[st.root]?bi(esc(ROOTM[st.root][0]),esc(ROOTM[st.root][1])):""}</p></section>`;
+  if(st.pat)h+=`<section class="card"><div class="patbig ar">${patT(st.pat)}</div><p style="text-align:center">${bi(esc(C.pats[st.pat].en),esc(C.pats[st.pat].ru))}</p></section>`;
+  if(st.W.length)h+=`<section class="card"><h2>${bi("Words","Слова")} <small>· ${st.W.length}</small></h2><div class="wl">${st.W.map(w=>wordRow(w)).join("")}</div></section>`;
+  if(st.P.length)h+=`<section class="card"><h2>${bi("Phrases","Фразы")} <small>· ${st.P.length}</small></h2><div class="wl">${st.P.map(phraseRow).join("")}</div></section>`;
+  h+=`<div class="sticky-cta"><button type="button" class="btn primary big" data-stepquiz="${st.id}">${done?bi("Drill again","Повторить"):bi("I'm ready: drill it","Готово: тренировка")}</button></div>`;
+  if(!done)h+=`<button type="button" class="btn link" data-skip="${st.id}" style="align-self:center">${bi("I already know this, skip","Я это знаю, пропустить")}</button>`;
   return h;
 }
 
-/* ---------- Patterns tab ---------- */
-function patTemplate(p){return p.parts.map(x=>x[1]?`<span class="rt">${x[0]}</span>`:x[0]).join("")}
-function renderPatterns(){
-  let h=`<p class="lead">${bi("The same few shapes repeat across hundreds of roots. Learn the shape once, then every new root comes with a free guess at its family.","Несколько одних и тех же форм повторяются в сотнях корней. Выучите форму один раз, и у каждого нового корня появится готовая догадка о его семье.")}</p>`;
-  Object.keys(PATS).forEach(k=>{
-    const p=PATS[k],ws=ALLW.filter(w=>w.p.includes(k));
-    h+=`<section class="card"><h2>${p.t}</h2><div class="pat-t ar">${patTemplate(p)}</div>
-    <p class="tr" style="text-align:center">${p.tr}</p><p class="bl" style="margin-top:6px">${bi(p.en,p.ru)}</p>
-    <div class="chips">${ws.map(w=>`<div class="chip${readable(w)?"":" locked"}"><span class="ar">${hl(w.ar,w.root)}</span><b>${w.tr}</b><small>${bi(esc(w.en),esc(w.ru))}</small></div>`).join("")}</div></section>`;
-  });
-  return h;
+/* ================= question generators =================
+   Each takes an item and returns a question or null when it does not fit.
+   choice: {opts:[{k,html}],ans}   tiles: {tiles:[str],target:str,join,mode}            */
+const LBL={
+  findL:["Find the letter","Найдите букву"], whatS:["Which sound?","Какой звук?"], hear:["Which one do you hear?","Что вы слышите?"],
+  descr:["Which letter fits this sound?","Какая буква так звучит?"], hit:["Which letter is pink?","Какая буква выделена?"],
+  mean:["What does it mean?","Что это значит?"], findW:["Find the word","Найдите слово"], listenW:["What did you hear?","Что прозвучало?"],
+  spell:["Build the word","Соберите слово"], root:["Tap the root letters in order","Нажмите корневые буквы по порядку"],
+  make:["Root + pattern = ?","Корень + шаблон = ?"], pat:["Which pattern?","Какой шаблон?"],
+  order:["Put the words in order","Расставьте слова по порядку"], gap:["Fill the gap","Заполните пропуск"]
+};
+const pool={}; /* filled per quiz: letters, words, phrases the learner may see */
+function lookAlikes(l,n,within){
+  const L=within||pool.L;const same=shuffle(L.filter(x=>x!==l&&x.fam===l.fam)),snd=shuffle(L.filter(x=>x!==l&&x.sg!=null&&x.sg===l.sg&&x.fam!==l.fam));
+  const rest=shuffle(L.filter(x=>x!==l&&!same.includes(x)&&!snd.includes(x)));
+  return uniq(same.concat(snd,rest)).slice(0,n);
 }
-/* ---------- Quiz engine ---------- */
+const bigAr=(ar,cls)=>`<div class="ar ${cls}" lang="ar">${ar}</div>`;
+const meanHtml=it=>`<div class="q-mean">${bi(esc(it.en),esc(it.ru))}</div>`;
+function gL_pick(l){
+  const ds=lookAlikes(l,3);if(ds.length<1)return null;
+  const prompt=hasA(l.key)?spk(l.key,true):`<div class="q-snd">${esc(l.tr)}</div><small>${l.n}</small>`;
+  return {kind:"choice",item:l,label:LBL.findL,prompt,audio:hasA(l.key)?l.key:null,opts:shuffle([l,...ds]).map(x=>({k:x.c,html:`<span class="ar">${x.c}</span>`})),ans:l.c};
+}
+function gL_name(l){
+  const ds=lookAlikes(l,3);if(ds.length<1)return null;
+  return {kind:"choice",item:l,label:LBL.whatS,prompt:bigAr(l.c,"q-letter"),opts:shuffle([l,...ds]).map(x=>({k:x.c,html:`<b>${esc(x.tr)}</b><small>${x.n}</small>`})),ans:l.c};
+}
+function gL_sound(l){
+  if(l.sg==null)return null;
+  const grp=pool.L.filter(x=>x.sg===l.sg);if(grp.length<2)return null;
+  const extra=lookAlikes(l,4).filter(x=>!grp.includes(x)).slice(0,Math.max(0,3-(grp.length-1)));
+  const sg=C.sounds[l.sg],a=hasA(l.key);
+  const prompt=a?spk(l.key,true):`<div class="q-snd">${esc(l.tr)}</div><p class="bl" style="max-width:34ch">${bi(esc(l.en),esc(l.ru))}</p>`;
+  return {kind:"choice",item:l,label:a?LBL.hear:LBL.descr,prompt,audio:a?l.key:null,opts:shuffle(grp.concat(extra)).map(x=>({k:x.c,html:`<span class="ar">${x.c}</span>`})),ans:l.c,after:`<small>${bi(esc(sg.en),esc(sg.ru))}</small>`};
+}
+function gL_inword(l){
+  if(l.c==="ء")return null;
+  const ws=shuffle(pool.W.filter(w=>skel(w.ar).length>=3&&skel(w.ar).includes(l.c)));if(!ws.length)return null;
+  const w=ws[0],cl=clusters(w.ar),idx=cl.map((c,i)=>c[0]===l.c?i:-1).filter(i=>i>=0);const at=pick(idx);
+  const html=cl.map((c,i)=>i===at?`<span class="hit">${c}</span>`:esc(c)).join("");
+  const ds=lookAlikes(l,3);if(!ds.length)return null;
+  return {kind:"choice",item:l,label:LBL.hit,prompt:bigAr(html,"q-word"),opts:shuffle([l,...ds]).map(x=>({k:x.c,html:`<span class="ar">${x.c}</span>`})),ans:l.c,showItem:w};
+}
+function similarWords(w,n){
+  const sk=nrm(w.ar);
+  return shuffle(pool.W.filter(x=>x!==w&&nrm(x.ar)!==sk)).map(x=>{const xs=nrm(x.ar);let s=0;for(const c of new Set(xs))if(sk.includes(c))s++;if(x.root&&x.root===w.root)s+=3;s-=Math.abs(xs.length-sk.length)*.5;return [s+Math.random(),x]}).sort((a,b)=>b[0]-a[0]).slice(0,n).map(a=>a[1]);
+}
+function gW_mean(w){
+  const ds=shuffle(pool.W.filter(x=>x!==w&&x.en!==w.en)).sort((a,b)=>(b.step===w.step)-(a.step===w.step)).slice(0,3);if(ds.length<2)return null;
+  return {kind:"choice",item:w,label:LBL.mean,prompt:bigAr(esc(w.ar),"q-word"),opts:shuffle([w,...ds]).map(x=>({k:x.key,html:bi(esc(x.en),esc(x.ru))})),ans:w.key,one:true};
+}
+function gW_pick(w){
+  const ds=similarWords(w,3);if(ds.length<2)return null;
+  return {kind:"choice",item:w,label:LBL.findW,prompt:meanHtml(w),opts:shuffle([w,...ds]).map(x=>({k:x.key,html:`<span class="ar">${esc(x.ar)}</span>`})),ans:w.key};
+}
+function gW_listen(w){
+  if(!hasA(w.key))return null;const ds=similarWords(w,3);if(ds.length<2)return null;
+  return {kind:"choice",item:w,label:LBL.listenW,prompt:spk(w.key,true),audio:w.key,opts:shuffle([w,...ds]).map(x=>({k:x.key,html:`<span class="ar">${esc(x.ar)}</span>`})),ans:w.key};
+}
+function gW_spell(w){
+  const s=skel(w.ar);if(/\s/.test(s)||s.length<2||s.length>7)return null;
+  const own=[...s],extra=[];
+  shuffle(own).forEach(c=>{if(extra.length<2&&byC[BASE[c]||c]){const d=lookAlikes(byC[BASE[c]||c],2,LET).map(x=>x.c).find(x=>!own.includes(x)&&!extra.includes(x));if(d)extra.push(d)}});
+  return {kind:"tiles",mode:"spell",item:w,label:LBL.spell,prompt:meanHtml(w)+spk(w.key),tiles:shuffle(own.concat(extra)),target:s,join:"",need:own.length};
+}
+function rootInWord(w){
+  if(!w.root)return false;const r=[...nrm(w.root)],s=nrm(w.ar);let i=0;for(const c of s)if(c===r[i])i++;
+  return i===r.length&&new Set(r).size===r.length&&s.length>r.length;
+}
+function gW_root(w){
+  if(!rootInWord(w))return null;
+  return {kind:"tiles",mode:"root",item:w,label:LBL.root,prompt:bigAr(esc(w.ar),"q-word")+`<small>${bi(esc(w.en),esc(w.ru))}</small>`,tiles:[...skel(w.ar)],target:nrm(w.root),join:"",need:[...w.root].length,keep:true};
+}
+function gW_make(w){
+  if(!w.root||!w.pat)return null;
+  const fam=pool.W.filter(x=>x.root===w.root&&x!==w&&nrm(x.ar)!==nrm(w.ar));if(fam.length<2)return null;
+  const prompt=`<div class="q-root ar"><span class="r">${spaced(w.root)}</span><span class="plus">+</span>${patT(w.pat)}</div>`;
+  return {kind:"choice",item:w,label:LBL.make,prompt,opts:shuffle([w,...shuffle(fam).slice(0,3)]).map(x=>({k:x.key,html:`<span class="ar">${esc(x.ar)}</span>`})),ans:w.key};
+}
+function gW_pat(w){
+  if(!w.pat)return null;
+  const others=shuffle(Object.keys(C.pats).filter(k=>k!==w.pat&&C.pats[k].t!==C.pats[w.pat].t)).slice(0,3);
+  return {kind:"choice",item:w,label:LBL.pat,prompt:bigAr(hl(w.ar,w.root),"q-word"),opts:shuffle([w.pat,...others]).map(k=>({k,html:`<span class="ar sm">${patT(k)}</span><small>${bi(esc(C.pats[k].en),esc(C.pats[k].ru))}</small>`})),ans:w.pat};
+}
+function gP_mean(p){
+  const ds=shuffle(pool.P.filter(x=>x!==p&&x.en!==p.en)).slice(0,3);if(ds.length<1)return null;
+  return {kind:"choice",item:p,label:LBL.mean,prompt:bigAr(esc(p.ar),"q-phrase"),opts:shuffle([p,...ds]).map(x=>({k:x.key,html:bi(esc(x.en),esc(x.ru))})),ans:p.key,one:true};
+}
+function gP_order(p){
+  if(p.parts.length<2)return null;
+  const tiles=p.parts.slice();
+  if(p.parts.length>=2){const d=shuffle(pool.W.map(w=>w.ar).filter(a=>!p.parts.includes(a)))[0];if(d)tiles.push(d)}
+  return {kind:"tiles",mode:"order",item:p,label:LBL.order,prompt:meanHtml(p)+spk(p.key),tiles:shuffle(tiles),target:p.parts.join(" "),join:" ",need:p.parts.length,words:true};
+}
+function gP_gap(p){
+  if(p.parts.length<2)return null;
+  const gi=Math.floor(Math.random()*p.parts.length),gw=p.parts[gi];
+  const ds=shuffle(uniq(pool.W.map(w=>w.ar).concat(pool.P.flatMap(x=>x.parts))).filter(a=>nrm(a)!==nrm(gw))).slice(0,3);if(ds.length<2)return null;
+  const html=p.parts.map((w,i)=>i===gi?`<span class="hit">＿＿</span>`:esc(w)).join(" ");
+  return {kind:"choice",item:p,label:LBL.gap,prompt:bigAr(html,"q-phrase")+`<small>${bi(esc(p.en),esc(p.ru))}</small>`,opts:shuffle([gw,...ds]).map(a=>({k:a,html:`<span class="ar sm">${esc(a)}</span>`})),ans:gw};
+}
+const TIERS={L:[[gL_name,gL_pick],[gL_pick,gL_sound,gL_inword],[gL_inword,gL_sound,gL_pick]],
+  W:[[gW_mean,gW_pick],[gW_pick,gW_listen,gW_pat,gW_root],[gW_spell,gW_root,gW_make,gW_listen,gW_pick]],
+  P:[[gP_mean,gP_order],[gP_order,gP_gap],[gP_order,gP_gap]]};
+function genFor(it,tier){
+  for(let t=tier;t>=0;t--){for(const g of shuffle(TIERS[it.type][t])){const q=g(it);if(q)return q}}
+  return null;
+}
+const tierOf=it=>{const b=(S.srs[it.key]||{b:0}).b;return b<=1?0:b<=3?1:2};
+function setPool(extra){
+  const ks=knownSet();
+  pool.L=uniq(knownLetters().concat(extra&&extra.letters||[]));
+  pool.W=uniq(WORDS.filter(learned).concat(extra&&extra.W||[]));
+  pool.P=uniq(PHRASES.filter(learned).concat(extra&&extra.P||[]));
+  /* words the learner can already read help as distractors too */
+  if(pool.W.length<8)pool.W=uniq(pool.W.concat(WORDS.filter(w=>readable(w,new Set([...ks,...pool.L.map(l=>l.c)])))));
+}
+
+/* ================= quiz engine ================= */
 let Q=null;
-const FORMNAME={alone:["alone","отдельно"],start:["at the start","в начале слова"],middle:["in the middle","в середине слова"],end:["at the end","в конце слова"]};
-
-function qName(pool,ctx){
-  const l=pick(pool),f=pick(forms(l));
-  const same=shuffle(ctx.filter(x=>x!==l&&x.fam===l.fam)),rest=shuffle(ctx.filter(x=>x!==l&&x.fam!==l.fam));
-  const ds=same.concat(rest).slice(0,3);
-  const opts=shuffle([l].concat(ds)).map(x=>({k:x.c,html:`<b>${x.n}</b> <span class="tr">${x.tr}</span>`}));
-  return {prompt:`<div class="qbig ar">${f[2]}</div><p>${bi("Which letter is this?","Что это за буква?")} <span class="muted">(${bi(FORMNAME[f[0]][0],FORMNAME[f[0]][1])})</span></p>`,
-    opts,ans:l.c,fb:`<span class="ar">${l.c}</span> = <b>${l.n}</b> (${l.tr}). ${bi(l.dots[0],l.dots[1])}.`};
+function buildStepQuiz(st){
+  setPool(st);
+  const out=[];
+  st.letters.forEach(l=>{const a=genFor(l,0);if(a)out.push(a);const b=pick([gL_inword,gL_sound,gL_pick])(l)||gL_pick(l);if(b)out.push(b)});
+  const ws=shuffle(st.W).slice(0,Math.max(4,14-out.length-st.P.length));
+  ws.forEach((w,i)=>{const gens=st.kind==="root"||st.kind==="pattern"?[gW_root,gW_make,gW_pat,gW_mean,gW_pick]:[gW_mean,gW_pick,gW_spell];const q=(i<2?gW_mean(w):null)||shuffle(gens).map(g=>g(w)).find(Boolean)||genFor(w,0);if(q)out.push(q)});
+  st.P.forEach(p=>{const q=gP_order(p)||gP_mean(p);if(q)out.push(q)});
+  return out.slice(0,16);
 }
-function qFind(pool,ctx){
-  const l=pick(pool);
-  const same=shuffle(ctx.filter(x=>x!==l&&x.fam===l.fam)),rest=shuffle(ctx.filter(x=>x!==l&&x.fam!==l.fam));
-  const ds=same.concat(rest).slice(0,3);
-  const opts=shuffle([l].concat(ds)).map(x=>({k:x.c,html:`<span class="ar">${x.c}</span>`}));
-  return {prompt:`<p style="font-size:17px">${bi("Find <b>"+l.n+"</b> ("+l.tr+")","Найдите букву <b>"+l.n+"</b> ("+l.tr+")")}</p><p class="snd muted">${bi(l.en,l.ru)}</p>`,
-    opts,ans:l.c,fb:`<span class="ar">${l.c}</span> = <b>${l.n}</b>: ${bi(l.dots[0],l.dots[1])}.`};
+function buildReview(){
+  setPool();
+  const all=learnedItems(),d=today();
+  const pr=all.map(it=>{const r=S.srs[it.key]||{b:0,d:0};return [(r.d<=d?0:100)+r.b*3+(r.d-d)+Math.random()*2-(r.w||0)*.3,it]}).sort((a,b)=>a[0]-b[0]).slice(0,12).map(a=>a[1]);
+  return shuffle(pr).map(it=>genFor(it,tierOf(it))).filter(Boolean);
 }
-function qWord(){
-  const rw=readableWords();if(!rw.length)return null;
-  const w=pick(rw),others=shuffle(ALLW.filter(x=>x!==w&&x.en!==w.en)).slice(0,3);
-  const opts=shuffle([w].concat(others)).map(x=>({k:String(x.id),html:bi(esc(x.en),esc(x.ru))}));
-  const rootLine=w.root.r?`<br>${bi("Root","Корень")} <span class="ar">${spaced(w.root.r)}</span> <span class="tr">${w.root.tr}</span> · ${bi(esc(w.root.en),esc(w.root.ru))}`:"";
-  return {prompt:`<div class="qword ar" lang="ar">${w.root.r?hl(w.ar,w.root):esc(w.ar)}</div><p>${bi("What does it mean?","Что это значит?")}</p>`,
-    opts,ans:String(w.id),fb:`<span class="ar">${esc(w.ar)}</span> <b>${w.tr}</b> = ${bi(esc(w.en),esc(w.ru))}${rootLine}`};
+const DRILLS={
+  review:{t:["Daily review","Ежедневный повтор"],ok:()=>learnedItems().length>=4,build:buildReview},
+  alike:{t:["Look-alike letters","Похожие буквы"],ok:()=>{setPool();return pool.L.length>=3},build:()=>{setPool();return shuffle(pool.L).concat(shuffle(pool.L)).slice(0,12).map(l=>pick([gL_pick,gL_inword,gL_name])(l)||gL_pick(l)).filter(Boolean)}},
+  sound:{t:["Sound twins","Звуковые близнецы"],ok:()=>{setPool();return pool.L.some(l=>gL_sound(l))},build:()=>{setPool();const c=pool.L.filter(l=>gL_sound(l));return shuffle(c.concat(c)).slice(0,12).map(gL_sound).filter(Boolean)}},
+  spell:{t:["Build words","Собери слово"],ok:()=>{setPool();return WORDS.filter(learned).filter(w=>gW_spell(w)).length>=3},build:()=>{setPool();return shuffle(pool.W.filter(learned)).map(gW_spell).filter(Boolean).slice(0,10)}},
+  roots:{t:["Roots and patterns","Корни и шаблоны"],ok:()=>{setPool();return WORDS.filter(learned).filter(w=>gW_root(w)||gW_pat(w)).length>=3},build:()=>{setPool();return shuffle(pool.W.filter(learned)).map(w=>shuffle([gW_root,gW_make,gW_pat]).map(g=>g(w)).find(Boolean)).filter(Boolean).slice(0,10)}},
+  phrases:{t:["Phrases","Фразы"],ok:()=>PHRASES.filter(learned).length>=2,build:()=>{setPool();return shuffle(pool.P).concat(shuffle(pool.P)).slice(0,8).map(p=>pick([gP_order,gP_gap,gP_mean])(p)||gP_order(p)||gP_mean(p)).filter(Boolean)}},
+  listen:{t:["Listening","Аудирование"],ok:()=>{setPool();return pool.W.filter(w=>hasA(w.key)).length+pool.L.filter(l=>hasA(l.key)).length>=4},build:()=>{setPool();return shuffle(pool.W.filter(w=>hasA(w.key)).map(gW_listen).concat(pool.L.filter(l=>hasA(l.key)).map(l=>gL_sound(l)||gL_pick(l)))).filter(Boolean).slice(0,12)}}
+};
+function startQuiz(qs,meta){
+  if(!qs.length){toast(bi("Nothing to drill yet","Пока нечего тренировать"));return}
+  Q=Object.assign({qs,i:0,ok:0,combo:0,best:0,xp:0,picked:[],answered:false,wrong:[]},meta);
+  history.pushState({q:1},"");render();window.scrollTo(0,0);
 }
-function qRoot(){
-  const cand=ROOTS.filter(r=>r.r&&ALLW.filter(w=>w.root===r&&readable(w)).length>=3);
-  if(!cand.length)return null;
-  const r=pick(cand),ws=shuffle(ALLW.filter(w=>w.root===r&&readable(w))).slice(0,3);
-  const ds=shuffle(ROOTS.filter(x=>x.r&&x!==r)).slice(0,3);
-  const opts=shuffle([r].concat(ds)).map(x=>({k:x.r,html:`<span class="ar" style="letter-spacing:.2em">${spaced(x.r)}</span><br><span class="tr">${x.tr}</span>`}));
-  return {prompt:`<p>${bi("These words share one root. Which?","У этих слов общий корень. Какой?")}</p><div class="chips" style="width:100%">${ws.map(w=>`<div class="chip"><span class="ar">${esc(w.ar)}</span><b>${w.tr}</b><small>${bi(esc(w.en),esc(w.ru))}</small></div>`).join("")}</div>`,
-    opts,ans:r.r,fb:`${bi("Root","Корень")} <span class="ar">${spaced(r.r)}</span> <b>${r.tr}</b> = ${bi(esc(r.en),esc(r.ru))}. ${ws.map(w=>`<span class="ar">${hl(w.ar,r)}</span>`).join(" · ")}`};
+function cur(){return Q&&Q.qs[Q.i]}
+function renderQuiz(){
+  if(Q.i>=Q.qs.length)return renderEnd();
+  const q=cur(),pct=Math.round(Q.i/Q.qs.length*100);
+  let h=`<section class="quiz"><div class="qhead"><button type="button" class="x" data-quit aria-label="Stop">×</button><div class="bar"><i style="width:${pct}%"></i></div><span class="combo" id="combo">${Q.combo>=2?"🔥 "+Q.combo:""}</span></div>
+  <p class="qlabel">${bi(q.label[0],q.label[1])}</p><div class="qbox">${q.prompt}</div>`;
+  if(q.kind==="choice")h+=`<div class="opts${q.one?" one":""}">${q.opts.map(o=>`<button type="button" class="opt" data-opt="${esc(o.k)}">${o.html}</button>`).join("")}</div>`;
+  else h+=`<div class="built ar" id="built" lang="ar"></div><div class="tiles" dir="rtl">${q.tiles.map((t,i)=>`<button type="button" class="tile${q.words?" w":""}" data-tile="${i}">${esc(t)}</button>`).join("")}</div>
+   <div class="row" style="justify-content:center"><button type="button" class="btn" data-undo>⌫ ${bi("Undo","Назад")}</button><button type="button" class="btn primary" data-check disabled>${bi("Check","Проверить")}</button></div>`;
+  h+=`<div id="fb"></div><button type="button" class="btn primary big" data-next hidden>${bi("Next","Дальше")}</button></section>`;
+  return h;
 }
-
-function startQuiz(cfg){Q=Object.assign({i:0,score:0,done:false,before:readableWords().map(w=>w.id)},cfg);nextQ()}
-function nextQ(){
-  if(Q.i>=Q.n)return finishQuiz();
-  Q.cur=Q.gen();Q.locked=false;
-  if(!Q.cur){finishQuiz();return}
-  const q=Q.cur;
-  $("#view").innerHTML=`<div class="card"><div class="qhead"><button type="button" class="btn" data-exit>←</button>
-    <div class="prog" role="progressbar" aria-valuemin="0" aria-valuemax="${Q.n}" aria-valuenow="${Q.i}"><i style="width:${Q.i/Q.n*100}%"></i></div>
-    <small>${Q.i+1}/${Q.n}</small></div>
-    <div class="qbox">${q.prompt}</div></div>
-    <div class="opts" id="opts">${q.opts.map((o,i)=>`<button type="button" class="opt" data-k="${esc(o.k)}">${o.html}</button>`).join("")}</div>
-    <div id="fb" aria-live="polite"></div><div class="row" id="nx"></div>`;
-  window.scrollTo({top:0});
+function afterQuiz(){
+  const q=cur();
+  if(q.audio)setTimeout(()=>play(q.audio,$(".qbox .spk")),250);
 }
-function answer(btn){
-  if(Q.locked)return;Q.locked=true;
-  const q=Q.cur,right=btn.dataset.k===q.ans;
-  if(right)Q.score++;
-  document.querySelectorAll(".opt").forEach(b=>{b.disabled=true;if(b.dataset.k===q.ans)b.classList.add("right");else if(b===btn)b.classList.add("wrong")});
-  $("#fb").innerHTML=`<div class="fb ${right?"right":"wrong"}"><b>${right?bi("Yes.","Да."):bi("Not quite.","Не совсем.")}</b> ${q.fb}</div>`;
-  Q.i++;
-  $("#nx").innerHTML=`<button type="button" class="btn primary" data-next>${Q.i>=Q.n?bi("See result","Результат"):bi("Next","Дальше")}</button>`;
-  const nb=$("[data-next]");if(nb)nb.focus();
+function itemReveal(it){
+  if(!it)return "";
+  if(it.type==="L")return `<div class="row"><span class="ar" style="font-size:40px">${it.c}</span><b>${it.n}</b><span class="tr">${esc(it.tr)}</span>${spk(it.key)}</div>`;
+  return `<div class="row"><span class="ar">${hl(it.ar,it.root)}</span>${spk(it.key)}${trBtn(it)}</div><div>${bi(esc(it.en),esc(it.ru))}</div>`;
+}
+function answer(ok,shownAns){
+  const q=cur();Q.answered=true;grade(q.item.key,ok);
+  if(ok){Q.ok++;Q.combo++;Q.best=Math.max(Q.best,Q.combo);const g=10+Math.min(Q.combo,10)*2;Q.xp+=g;S.xp+=g;
+    if(Q.combo===5||Q.combo===10||Q.combo===20)toast(`🔥 ${Q.combo} ${bi("in a row!","подряд!")}`)}
+  else{Q.combo=0;Q.wrong.push(q.item)}
+  save();
+  const fb=$("#fb");
+  fb.className="fb "+(ok?"right":"wrong");
+  fb.innerHTML=(ok?`<b>${pick([bi("Yes!","Да!"),bi("Right!","Верно!"),bi("Nice!","Отлично!"),bi("Exactly.","Точно.")])}</b>`:`<b>${bi("Not quite.","Не совсем.")}</b>${shownAns||""}`)+(q.after||"")+itemReveal(q.showItem||q.item)+(q.showItem?itemReveal(q.item):"");
+  const c=$("#combo");if(c){c.textContent=Q.combo>=2?"🔥 "+Q.combo:"";if(ok&&Q.combo>=2){c.classList.remove("pop");void c.offsetWidth;c.classList.add("pop")}}
+  const it=q.item;if(ok&&it.type!=="L"&&hasA(it.key)&&!q.audio)play(it.key,$("#fb .spk"));
+  const nx=$("[data-next]");nx.hidden=false;
+  if(ok&&S.auto&&q.kind==="choice"){const i=Q.i;setTimeout(()=>{if(Q&&Q.i===i&&Q.answered)next()},hasA(it.key)&&it.type!=="L"?1900:1100)}
+  else nx.focus({preventScroll:true});
+  renderStats();
+}
+function next(){if(!Q)return;Q.i++;Q.picked=[];Q.answered=false;render();window.scrollTo(0,0);if(Q.i<Q.qs.length)afterQuiz()}
+function pickOpt(btn){
+  const q=cur();if(Q.answered)return;
+  const ok=btn.dataset.opt===String(q.ans);
+  $$(".opt").forEach(b=>{b.disabled=true;if(b.dataset.opt===String(q.ans))b.classList.add("right")});
+  if(!ok)btn.classList.add("wrong");
+  answer(ok);
+}
+function tileTap(btn){
+  const q=cur();if(Q.answered)return;
+  Q.picked.push(+btn.dataset.tile);btn.disabled=true;updBuilt();
+  if(Q.picked.length===q.need)check();
+}
+function builtStr(){const q=cur();return Q.picked.map(i=>q.tiles[i]).join(q.join)}
+function updBuilt(){const q=cur(),b=$("#built");b.textContent=q.mode==="root"?Q.picked.map(i=>q.tiles[i]).join(" "):builtStr();const c=$("[data-check]");if(c)c.disabled=!Q.picked.length}
+function undo(){if(Q.answered||!Q.picked.length)return;const i=Q.picked.pop();const b=$(`[data-tile="${i}"]`);if(b)b.disabled=false;updBuilt()}
+function check(){
+  const q=cur();if(Q.answered)return;
+  const got=q.mode==="root"?nrm(Q.picked.map(i=>q.tiles[i]).join("")):builtStr();
+  const ok=got===q.target;
+  $("#built").classList.add(ok?"ok":"no");$$(".tile").forEach(b=>b.disabled=true);$("[data-check]").disabled=true;
+  const show=q.mode==="root"?`<div class="ar rootbig" style="font-size:34px">${spaced(q.item.root)}</div>`:`<div class="ar">${esc(q.mode==="spell"?q.item.ar:q.target)}</div>`;
+  answer(ok,ok?"":show);
+}
+function renderEnd(){
+  const n=Q.qs.length,pc=Math.round(Q.ok/n*100);
+  let h=`<section class="card quiz"><div class="score">${Q.ok}/${n}</div>
+  <div class="kpis"><div class="kpi"><b>+${Q.xp}</b><small>XP</small></div><div class="kpi"><b>🔥 ${Q.best}</b><small>${bi("best combo","лучшая серия")}</small></div><div class="kpi"><b>${streakNow()}</b><small>${bi("day streak","дней подряд")}</small></div></div>`;
+  if(Q.step){
+    const st=STEPS.find(s=>s.id===Q.step),ks=knownSet(),rd=WORDS.filter(w=>readable(w,ks)).length;
+    h+=`<h2 style="text-align:center">${pc>=60?bi("Step complete!","Шаг пройден!"):bi("Step saved. Repeat it soon.","Шаг засчитан. Повторите его скоро.")}</h2>`;
+    if(st.letters.length)h+=`<div class="unl ar">${st.letters.map(l=>`<span>${l.c}</span>`).join("")}</div>`;
+    h+=`<div class="unl">${st.W.slice(0,12).map(w=>`<span class="ar">${hl(w.ar,w.root)}</span>`).join("")}</div>
+    <p style="text-align:center">${bi(`Unlocked: ${st.W.length} words, ${st.P.length} phrases. You can now read <b>${rd}</b> words.`,`Открыто: слов — ${st.W.length}, фраз — ${st.P.length}. Теперь вы читаете <b>${rd}</b> слов.`)}</p>`;
+    const nx=STEPS[curIndex()];
+    h+=nx?`<button type="button" class="btn primary big" data-step="${nx.id}" data-endq>${bi("Next step","Следующий шаг")}: ${bi(esc(nx.t[0]),esc(nx.t[1]))}</button>`:"";
+  }
+  if(Q.wrong.length){const ws=uniq(Q.wrong).slice(0,8);h+=`<p class="qlabel">${bi("Worth another look","Стоит повторить")}</p><div class="unl">${ws.map(it=>`<span class="ar">${esc(it.c||it.ar)}</span>`).join("")}</div>
+   <button type="button" class="btn" data-again>${bi("Drill these again","Ещё раз эти")}</button>`}
+  h+=`<button type="button" class="btn${Q.step?"":" primary big"}" data-endq>${bi("Done","Готово")}</button></section>`;
+  return h;
 }
 function finishQuiz(){
-  const total=Math.max(Q.i,1),pct=Q.score/total;
-  let extra="";
-  if(Q.group&&pct>=0.8&&!S.learned.includes(Q.group)){S.learned.push(Q.group);save()}
-  LS=learnedSet();
-  const now=readableWords(),fresh=now.filter(w=>!Q.before.includes(w.id));
-  if(fresh.length)extra=`<div class="card"><h2>${bi("New words you can read now","Новые слова, которые вы теперь читаете")}</h2><div class="unlock" style="margin-top:10px">${fresh.map(w=>`<span><span class="ar">${w.root.r?hl(w.ar,w.root):esc(w.ar)}</span><small>${w.tr} · ${bi(esc(w.en),esc(w.ru))}</small></span>`).join("")}</div></div>`;
-  const msg=pct>=0.9?bi("Those shapes are sticking.","Эти формы уже запоминаются."):pct>=0.6?bi("Getting there. Mixed-up pairs are normal, repeat to lock them in.","Уже неплохо. Путаница в парах это нормально, повторите, чтобы закрепить."):bi("These look-alikes take a few rounds. Reread the lesson, then try again.","Похожие буквы даются за несколько кругов. Перечитайте урок и попробуйте снова.");
-  const known=Q.group&&S.learned.includes(Q.group)?`<p class="ok" style="text-align:center">✓ ${bi("Group marked as known.","Группа отмечена как выученная.")}</p>`:(Q.group?`<p class="muted" style="text-align:center">${bi("Score 80% or more to mark the group as known.","Наберите 80% и больше, чтобы отметить группу выученной.")}</p>`:"");
-  $("#view").innerHTML=`<div class="card" style="display:flex;flex-direction:column;gap:10px"><div class="score">${Q.score}/${Q.i}</div><p style="text-align:center">${msg}</p>${known}
-    <div class="row" style="justify-content:center"><button type="button" class="btn primary" data-again>${bi("Again","Ещё раз")}</button><button type="button" class="btn" data-exit>${bi("Done","Готово")}</button></div></div>${extra}`;
-  renderStats();
-  Q.done=true;
+  if(Q.finished)return;Q.finished=true;
+  bumpStreak();
+  if(Q.step){const st=STEPS.find(s=>s.id===Q.step);if(st)markDone(st)}
+  save();
+  if(Q.ok/Q.qs.length>=.6)setTimeout(confetti,80);
 }
 
-/* ---------- Practice tab ---------- */
-function groupGen(g){
-  const ctx=LET.filter(l=>LS.has(l.c)||g.letters.includes(l)),pool=g.letters;
-  return ()=>Math.random()<0.5?qName(pool,ctx):qFind(pool,ctx);
-}
+/* ================= Practice tab ================= */
 function renderPractice(){
-  const ll=learnedLetters(),rw=readableWords();
-  const rootOk=ROOTS.some(r=>r.r&&ALLW.filter(w=>w.root===r&&readable(w)).length>=3);
-  if(!ll.length)return `<div class="card"><h2>${bi("Start with group 1","Начните с группы 1")}</h2><p class="lead" style="margin-top:6px">${bi("Practice mixes everything you have marked as known. Learn the first four letters, pass the drill, and this page fills up.","В практике смешивается всё, что вы отметили выученным. Выучите первые четыре буквы, пройдите тренировку, и эта страница наполнится.")}</p>
-    <div class="row" style="margin-top:10px"><button type="button" class="btn primary" data-goto="letters">${bi("Go to Letters","К буквам")}</button></div></div>`;
-  return `<div class="start-grid">
-   <div class="card"><h3>${bi("Letter look-alikes","Похожие буквы")}</h3><p class="muted" style="margin:4px 0 10px">${ll.length} ${bi("letters in the mix","букв в наборе")}</p>
-     <button type="button" class="btn primary" data-mix="letters"${ll.length<4?" disabled":""}>${bi("Start 12","Начать, 12")}</button></div>
-   <div class="card"><h3>${bi("Read the word","Прочитай слово")}</h3><p class="muted" style="margin:4px 0 10px">${rw.length} ${bi("words you can read","слов доступно")}</p>
-     <button type="button" class="btn primary" data-mix="words"${rw.length<4?" disabled":""}>${bi("Start 10","Начать, 10")}</button></div>
-   <div class="card"><h3>${bi("Root detective","Детектив корней")}</h3><p class="muted" style="margin:4px 0 10px">${rootOk?bi("Find the root behind three words","Найдите корень по трём словам"):bi("Unlocks when a root has 3 readable words","Откроется, когда у корня будет 3 читаемых слова")}</p>
-     <button type="button" class="btn primary" data-mix="roots"${rootOk?"":" disabled"}>${bi("Start 8","Начать, 8")}</button></div>
-  </div>
-  <div class="card"><h2>${bi("Words you can read now","Слова, которые вы уже читаете")}</h2>
-   <div class="unlock" style="margin-top:10px">${rw.length?rw.map(w=>`<span><span class="ar">${w.root.r?hl(w.ar,w.root):esc(w.ar)}</span><small>${w.tr} · ${bi(esc(w.en),esc(w.ru))}</small></span>`).join(""):`<small>${bi("None yet.","Пока нет.")}</small>`}</div></div>`;
+  if(!S.done.length)return `<section class="card"><h2>${bi("Practice","Тренировка")}</h2><p class="lead">${bi("Finish the first step on the Path to unlock drills.","Пройдите первый шаг на вкладке «Путь», чтобы открыть тренировки.")}</p><button type="button" class="btn primary" data-tab="path">${bi("Go to Path","К пути")}</button></section>`;
+  const due=dueItems().length,na=audioCount();
+  const d=(id,ar,en,ru,cls)=>{const D=DRILLS[id],ok=D.ok();return `<button type="button" class="dr${cls?" "+cls:""}" data-drill="${id}" ${ok?"":"disabled"}><span class="ar">${ar}</span><b>${bi(D.t[0],D.t[1])}</b><small>${ok?bi(en,ru):bi("Unlocks as you progress","Откроется дальше")}</small></button>`};
+  return `<div class="drills">
+   ${d("review","↻",`${due} due · weakest items first`,`${due} к повтору · сначала слабые`,"main")}
+   ${d("alike","ب ت ث","Dots decide: tell look-alike letters apart","Решают точки: различайте похожие буквы")}
+   ${d("sound","س ص ث",na?"Hear it, pick the letter":"Read the sound, pick the letter. Better with recordings",na?"Слушайте и выбирайте букву":"Читайте описание звука и выбирайте. Лучше с записями")}
+   ${d("spell","ك ت ا ب","Build words from loose letters","Собирайте слова из отдельных букв")}
+   ${d("roots","ف ع ل","Find roots, plug them into patterns","Ищите корни, вставляйте в шаблоны")}
+   ${d("phrases","…؟","Order and complete real phrases","Собирайте и дополняйте фразы")}
+   ${d("listen","🔊",`Pick what you hear (${na} recordings)`,`Выбирайте услышанное (записей: ${na})`)}
+  </div>`;
 }
 
-/* ---------- Manage tab: add lessons, backup, install ---------- */
-const TABS=["letters","roots","patterns","practice","manage"];
-let MSG={},deferredInstall=null,swReady=false,persisted=null;
-const ARABIC=/[؀-ۿ]/;
-const dayStr=()=>{const d=new Date(),p=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())};
+/* ================= Letters tab ================= */
+function renderLetters(){
+  const ks=knownSet(),byShape=S.letView!=="sound";
+  let h=`<div class="seg" role="group"><button type="button" data-view="shape" aria-pressed="${byShape}">${bi("By shape","По форме")}</button><button type="button" data-view="sound" aria-pressed="${!byShape}">${bi("By sound","По звуку")}</button></div>`;
+  const tile=l=>`<button type="button" class="lt${ks.has(l.c)?"":" off"}" data-let="${l.c}" aria-expanded="${UI.openL===l.c}">${l.c}${hasA(l.key)?`<span class="au"></span>`:""}</button>`;
+  const groups=byShape?uniq(LET.map(l=>l.fam)).map(f=>({t:C.shapes[f],L:LET.filter(l=>l.fam===f)})):C.sounds.map(g=>({t:g.t,L:[...g.L].map(c=>byC[c]),en:g.en,ru:g.ru}));
+  h+=groups.map(g=>{const open=g.L.find(l=>l.c===UI.openL);const any=g.L.some(l=>hasA(l.key));
+    return `<section class="card"><div class="row" style="justify-content:space-between"><h2>${bi(esc(g.t[0]),esc(g.t[1]))}</h2>${!byShape&&any?`<button type="button" class="btn" data-playall="${g.L.map(l=>l.c).join("")}">▶ ${bi("Play all","Все")}</button>`:""}</div>
+    ${g.en?`<p class="lead">${bi(esc(g.en),esc(g.ru))}</p>`:""}<div class="ltiles">${g.L.map(tile).join("")}</div>${open?letterCard(open):""}</section>`}).join("");
+  return h+vowelCard();
+}
+
+/* ================= Roots tab ================= */
+function renderRoots(){
+  const roots=uniq(WORDS.filter(w=>w.root).map(w=>w.root));
+  let h=`<section class="card"><h2>${bi("Patterns","Шаблоны")}</h2><p class="lead">${bi("ف ع ل stand in for any root. Swap in real root letters to make a word.","ف ع ل заменяют любой корень. Подставьте настоящие корневые буквы — получится слово.")}</p>
+  <div class="pcards">${Object.keys(C.pats).map(k=>{const ex=WORDS.filter(w=>w.pat===k&&learned(w)).slice(0,2);return `<div class="pc"><span class="ar">${patT(k)}</span><small>${bi(esc(C.pats[k].en),esc(C.pats[k].ru))}</small>${ex.length?`<span class="ar ex">${ex.map(w=>hl(w.ar,w.root)).join(" · ")}</span>`:""}</div>`}).join("")}</div></section>`;
+  h+=`<h2 style="margin-top:6px">${bi("Roots","Корни")}</h2>`;
+  h+=roots.map(r=>{const ws=WORDS.filter(w=>w.root===r),k=ws.filter(learned).length;
+    return `<details class="rt-d"><summary><span class="r-ar ar">${spaced(r)}</span><span class="r-t"><b>${ROOTM[r]?bi(esc(ROOTM[r][0]),esc(ROOTM[r][1])):""}</b><small>${k}/${ws.length} ${bi("learned","выучено")}</small></span><span class="chev">›</span></summary>
+    <div class="wl">${ws.map(w=>wordRow(w,!learned(w))).join("")}</div></details>`}).join("");
+  return h;
+}
+
+/* ================= More tab: recordings, lessons, settings, backup ================= */
+let MSG={};
 const msgInner=k=>MSG[k]?`<div class="msg ${MSG[k].kind}">${MSG[k].html}</div>`:"";
 function setMsg(k,kind,html){MSG[k]={kind,html};const el=$("#msg-"+k);if(el)el.innerHTML=msgInner(k)}
 const errList=errs=>`<ul>${errs.slice(0,8).map(e=>`<li>${esc(e)}</li>`).join("")}</ul>`+(errs.length>8?`<small>…and ${errs.length-8} more</small>`:"");
+const recLink=()=>{try{return new URL("record.html",location.href).href}catch(e){return "record.html"}};
+let deferredInstall=null,swReady=false,persisted=null;
 
-/* A lesson pack is the same shape as the built-in data:
-   {id, title?, units:{"5":["English","Русский"]}, roots:[{u,r,tr,en,ru,w:[[arabic,translit,en,ru,"pattern codes"]]}], pats?:{...}} */
+/* Lesson pack: {id, title, roots?:{"ركب":["ride","ехать"]}, steps:[{t:[en,ru], en?, ru?, root?, words:[[ar,tr,en,ru,root,pat]], phrases:[[ar,tr,en,ru]]}]} */
+const ARABIC_ONLY=/^[؀-ۿ\s]+$/;
 function strWalk(v,path,errs){
-  if(typeof v==="string"){
-    if(/[<>]/.test(v))errs.push(path+': text contains "<" or ">"');
-    else if(v.length>400)errs.push(path+": text is too long");
-  }else if(Array.isArray(v))v.forEach((x,i)=>strWalk(x,path+"["+i+"]",errs));
+  if(typeof v==="string"){if(/[<>]/.test(v))errs.push(path+': text contains "<" or ">"');else if(v.length>400)errs.push(path+": text is too long")}
+  else if(Array.isArray(v))v.forEach((x,i)=>strWalk(x,path+"["+i+"]",errs));
   else if(v&&typeof v==="object")Object.keys(v).forEach(k=>strWalk(v[k],path+"."+k,errs));
+}
+function convertV1(raw){ /* packs from app version 1 grouped words by root */
+  const steps=[],roots={};const codes={pl:"pl",dr:"dr",dn:"dn",mu:"mu"};
+  (raw.roots||[]).forEach(r=>{if(!r||!Array.isArray(r.w))return;if(r.r)roots[r.r]=[String(r.en||""),String(r.ru||"")];
+    steps.push({t:[(raw.units&&raw.units[r.u]&&raw.units[r.u][0])||String(r.en||"Words"),(raw.units&&raw.units[r.u]&&raw.units[r.u][1])||String(r.ru||"Слова")],root:r.r||"",
+      words:r.w.map(w=>[w[0],w[1],w[2],w[3],r.r||"",codes[String(w[4]||"").split(" ")[0]]||""]),phrases:[]})});
+  return {id:raw.id,title:raw.title||raw.id,roots,steps};
 }
 function validatePack(raw,others){
   if(!raw||typeof raw!=="object"||Array.isArray(raw))return{errs:["This is not a lesson pack (expected one JSON object)."]};
-  const errs=[];
-  strWalk(raw,"pack",errs);
-  if(typeof raw.id!=="string"||!/^[a-z0-9][a-z0-9_-]{0,39}$/i.test(raw.id))errs.push('"id" must be a short name such as "unit5-mind" (letters, numbers, - or _).');
-  const units={},pats={};
-  if(raw.units!=null){
-    if(typeof raw.units!=="object"||Array.isArray(raw.units))errs.push('"units" must look like {"5":["Title","Название"]}.');
-    else Object.keys(raw.units).forEach(k=>{
-      const t=raw.units[k];
-      if(!Array.isArray(t)||typeof t[0]!=="string"||typeof t[1]!=="string"||!t[0]||!t[1])errs.push('Unit "'+k+'" needs ["English title","Русское название"].');
-      else units[k]=[t[0],t[1]];
-    });
-  }
-  if(raw.pats!=null){
-    if(typeof raw.pats!=="object"||Array.isArray(raw.pats))errs.push('"pats" must be an object of pattern definitions.');
-    else Object.keys(raw.pats).forEach(k=>{
-      const p=raw.pats[k];
-      const parts=p&&Array.isArray(p.parts)&&p.parts.length&&p.parts.every(x=>Array.isArray(x)&&typeof x[0]==="string"&&(x[1]===0||x[1]===1));
-      if(!/^[a-z0-9]{1,6}$/i.test(k)||!p||["t","tr","en","ru"].some(f=>typeof p[f]!=="string"||!p[f])||!parts)errs.push('Pattern "'+k+'" needs t, tr, en, ru and parts like [["مَ",0],["ف",1]].');
-      else pats[k]={t:p.t,parts:p.parts.map(x=>[x[0],x[1]]),tr:p.tr,en:p.en,ru:p.ru};
-    });
-  }
-  const known=new Set(Object.keys(PATS0)),knownU=new Set(Object.keys(UNITS0)),seen=new Set(ROOTS0.filter(r=>r.r).map(r=>r.r));
-  others.forEach(o=>{Object.keys(o.pats||{}).forEach(k=>known.add(k));Object.keys(o.units||{}).forEach(k=>knownU.add(k));o.roots.forEach(r=>{if(r.r)seen.add(r.r)})});
-  Object.keys(pats).forEach(k=>known.add(k));Object.keys(units).forEach(k=>knownU.add(k));
-  const roots=[];
-  if(!Array.isArray(raw.roots)||!raw.roots.length)errs.push('"roots" must be a list with at least one root.');
+  if(!raw.steps&&Array.isArray(raw.roots))raw=convertV1(raw);
+  const errs=[];strWalk(raw,"pack",errs);
+  if(typeof raw.id!=="string"||!/^[a-z0-9][a-z0-9_-]{0,39}$/i.test(raw.id))errs.push('"id" must be a short name such as "food-2" (letters, numbers, - or _).');
+  const roots={};
+  if(raw.roots!=null){if(typeof raw.roots!=="object"||Array.isArray(raw.roots))errs.push('"roots" must look like {"ركب":["ride","ехать"]}.');
+    else Object.keys(raw.roots).forEach(r=>{const m=raw.roots[r];if(!/^[ء-ي]{3,4}$/.test(r)||!Array.isArray(m)||typeof m[0]!=="string"||typeof m[1]!=="string")errs.push('Root "'+r+'" needs ["English","Русский"].');else roots[r]=[m[0],m[1]]})}
+  const seen=new Set();C.steps.forEach(s=>{(s.words||[]).forEach(w=>seen.add("W:"+w[0]));(s.phrases||[]).forEach(p=>seen.add("P:"+p[0]))});
+  others.forEach(o=>o.steps.forEach(s=>{s.words.forEach(w=>seen.add("W:"+w[0]));s.phrases.forEach(p=>seen.add("P:"+p[0]))}));
+  const steps=[];
+  if(!Array.isArray(raw.steps)||!raw.steps.length)errs.push('"steps" must be a list with at least one step.');
   else{
-    if(raw.roots.length>80)errs.push("A pack can hold up to 80 roots. Split it into two packs.");
-    raw.roots.forEach((r,i)=>{
-      const at="roots["+i+"]";
-      if(!r||typeof r!=="object"||Array.isArray(r)){errs.push(at+" is not an object.");return}
-      const u=String(r.u);
-      if(r.u==null||!knownU.has(u))errs.push(at+': unit "'+r.u+'" is not defined. Add it to "units".');
-      if(typeof r.r!=="string")errs.push(at+': "r" (the root letters) is missing.');
-      else if(r.r){
-        if(!/^[ء-ي]{3,4}$/.test(r.r))errs.push(at+': root "'+r.r+'" must be 3 or 4 Arabic letters without vowel marks.');
-        else if(seen.has(r.r))errs.push(at+": root "+r.r+" is already in the app.");
-        else seen.add(r.r);
-        if(typeof r.tr!=="string"||!r.tr)errs.push(at+': "tr" (for example "k-t-b") is missing.');
-      }
-      if(typeof r.en!=="string"||!r.en||typeof r.ru!=="string"||!r.ru)errs.push(at+': "en" and "ru" meanings are needed.');
-      const ws=[];
-      if(!Array.isArray(r.w)||!r.w.length)errs.push(at+': "w" needs at least one word.');
-      else r.w.forEach((w,j)=>{
-        const wa=at+".w["+j+"]";
-        if(!Array.isArray(w)||w.length<4)errs.push(wa+": a word is [arabic, transliteration, English, Russian, patterns].");
-        else if(!ARABIC.test(String(w[0]))||[1,2,3].some(k=>typeof w[k]!=="string"||!w[k]))errs.push(wa+": needs Arabic text, a transliteration and both meanings.");
-        else{
-          const codes=String(w[4]||"").split(" ").filter(Boolean),bad=codes.filter(c=>!known.has(c));
-          if(bad.length)errs.push(wa+": unknown pattern code "+bad.join(", ")+".");
-          ws.push([String(w[0]),w[1],w[2],w[3],codes.join(" ")]);
-        }
-      });
-      roots.push({u,r:typeof r.r==="string"?r.r:"",tr:typeof r.tr==="string"?r.tr:"",en:String(r.en||""),ru:String(r.ru||""),w:ws});
+    if(raw.steps.length>30)errs.push("A pack can hold up to 30 steps.");
+    raw.steps.forEach((s,i)=>{
+      const at="steps["+i+"]";
+      if(!s||typeof s!=="object"){errs.push(at+" is not an object.");return}
+      if(!Array.isArray(s.t)||typeof s.t[0]!=="string"||typeof s.t[1]!=="string"||!s.t[0]||!s.t[1])errs.push(at+': "t" must be ["English title","Русское название"].');
+      const root=typeof s.root==="string"?s.root:"";
+      if(root&&!/^[ء-ي]{3,4}$/.test(root))errs.push(at+': root "'+root+'" must be 3 or 4 Arabic letters without vowel marks.');
+      const words=[],phrases=[];
+      (Array.isArray(s.words)?s.words:[]).forEach((w,j)=>{const wa=at+".words["+j+"]";
+        if(!Array.isArray(w)||w.length<4||[0,1,2,3].some(k=>typeof w[k]!=="string"||!w[k])){errs.push(wa+": a word is [arabic, transliteration, English, Russian, root, pattern].");return}
+        if(!ARABIC_ONLY.test(w[0])||/\s/.test(w[0].trim()))errs.push(wa+": the first item must be one Arabic word.");
+        const wr=typeof w[4]==="string"?w[4]:"",wp=typeof w[5]==="string"?w[5]:"";
+        if(wr&&!/^[ء-ي]{3,4}$/.test(wr))errs.push(wa+": root must be 3 or 4 Arabic letters.");
+        if(wp&&!C.pats[wp])errs.push(wa+': unknown pattern code "'+wp+'".');
+        if(seen.has("W:"+w[0]))errs.push(wa+": "+w[0]+" is already in the app.");seen.add("W:"+w[0]);
+        words.push([w[0].trim(),w[1],w[2],w[3],wr,wp])});
+      (Array.isArray(s.phrases)?s.phrases:[]).forEach((p,j)=>{const pa=at+".phrases["+j+"]";
+        if(!Array.isArray(p)||p.length<4||[0,1,2,3].some(k=>typeof p[k]!=="string"||!p[k])){errs.push(pa+": a phrase is [arabic, transliteration, English, Russian].");return}
+        if(!ARABIC_ONLY.test(p[0]))errs.push(pa+": must be Arabic text.");
+        if(seen.has("P:"+p[0]))errs.push(pa+": "+p[0]+" is already in the app.");seen.add("P:"+p[0]);
+        phrases.push([p[0].trim(),p[1],p[2],p[3]])});
+      if(!words.length&&!phrases.length)errs.push(at+": needs at least one word or phrase.");
+      steps.push({t:[s.t&&s.t[0]||"",s.t&&s.t[1]||""],en:typeof s.en==="string"?s.en:"",ru:typeof s.ru==="string"?s.ru:"",root,words,phrases});
     });
   }
   if(errs.length)return{errs};
-  return{pack:{id:raw.id,title:typeof raw.title==="string"?raw.title:"",units,pats,roots}};
+  return{pack:{id:raw.id,title:typeof raw.title==="string"?raw.title:raw.id,roots,steps}};
 }
-const packWords=p=>p.roots.reduce((n,r)=>n+r.w.length,0);
-
 function importPackText(text){
   text=String(text||"").trim().replace(/^```[a-z]*\s*/i,"").replace(/\s*```$/,"");
-  if(!text)return setMsg("pack","bad","Paste a lesson pack first, or choose a file.");
-  let raw;try{raw=JSON.parse(text)}catch(e){return setMsg("pack","bad","This is not valid JSON ("+esc(e.message)+"). Copy the whole code block from Claude’s reply.")}
+  if(!text)return setMsg("pack","bad",bi("Paste a lesson pack first, or choose a file.","Сначала вставьте пакет или выберите файл."));
+  let raw;try{raw=JSON.parse(text)}catch(e){return setMsg("pack","bad","Not valid JSON ("+esc(e.message)+"). Copy the whole code block from Claude’s reply.")}
   const others=PACKS.filter(p=>!(raw&&raw.id===p.id));
   const res=validatePack(raw,others);
-  if(!res.pack)return setMsg("pack","bad","<b>Could not add this pack.</b>"+errList(res.errs));
+  if(!res.pack)return setMsg("pack","bad","<b>"+bi("Could not add this pack.","Не удалось добавить пакет.")+"</b>"+errList(res.errs));
   const pack=res.pack,existed=PACKS.some(p=>p.id===pack.id),next=others.concat([pack]);
   if(!savePacks(next))return setMsg("pack","bad","Could not save: browser storage is full or blocked.");
   PACKS=next;buildData();
-  MSG.pack={kind:"ok",html:`<b>${existed?bi("Updated","Обновлено"):bi("Added","Добавлено")} “${esc(pack.title||pack.id)}”</b> · ${bi("roots","корней")}: ${pack.roots.length}, ${bi("words","слов")}: ${packWords(pack)}. <button type="button" class="btn" data-goto="roots">${bi("Open Roots","К корням")}</button>`};
+  const nw=pack.steps.reduce((n,s)=>n+s.words.length,0),np=pack.steps.reduce((n,s)=>n+s.phrases.length,0);
+  MSG.pack={kind:"ok",html:`<b>${existed?bi("Updated","Обновлено"):bi("Added","Добавлено")} “${esc(pack.title)}”</b> · ${pack.steps.length} ${bi("steps","шагов")}, ${nw} ${bi("words","слов")}, ${np} ${bi("phrases","фраз")}. ${bi("They are at the end of the Path.","Они в конце пути.")}`};
   render();
 }
-
 function claudePrompt(){
-  const units=Object.keys(UNITS).sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})).map(k=>k+" "+UNITS[k][0]).join("; ");
-  const roots=ROOTS.filter(r=>r.r).map(r=>r.tr).join(", ");
-  const pats=Object.keys(PATS).map(k=>k+" = "+PATS[k].t+" ("+PATS[k].tr+")").join("; ");
+  const pats=Object.keys(C.pats).map(k=>k+" = "+C.pats[k].t+" ("+C.pats[k].en+")").join("; ");
+  const roots=Object.keys(ROOTM).join(" ");
+  const words=WORDS.map(w=>skel(w.ar)).join(" ");
   return `Make a lesson pack for my Jidr Arabic app. Reply with ONE JSON code block and nothing else.
 
 Topic: [describe the topic, or paste the words you want]
 
 Format:
-{"id":"unit5-mind","title":"Mind","units":{"5":["Mind","Ум"]},"roots":[{"u":5,"r":"فكر","tr":"f-k-r","en":"think","ru":"думать","w":[["فَكَّرَ","fakkara","he thought","он думал",""],["فِكرة","fikra","idea","идея","fm"]]}],"pats":{}}
+{"id":"food-2","title":"Food 2","roots":{"طبخ":["cook","готовить"]},"steps":[{"t":["Cooking","Готовка"],"en":"One-sentence tip in English.","ru":"Совет в одно предложение по-русски.","root":"طبخ","words":[["طَبَخَ","ṭabakha","he cooked","он приготовил","طبخ","v"]],"phrases":[["أَنا أَطبُخُ","anā aṭbukhu","I'm cooking","Я готовлю"]]}]}
 
 Rules:
-- "id" is a new short name. "units" lists the unit number(s) with [English, Russian] titles. Reuse an existing unit number or add a new one.
-- Each root: "r" is the 3 (or 4) consonants without vowel marks, "tr" is dashed transliteration like k-t-b, "en"/"ru" give the core meaning. 3 to 6 words per root.
-- Each word: [Arabic with full vowel marks, transliteration, English, Russian, pattern codes]. Pattern codes are space-separated, or "" for none.
-- Pattern codes available: ${pats}.
+- High-frequency, everyday Modern Standard Arabic. 4 to 8 words and 1 to 3 short phrases per step. Prefer steps built around one root, so I learn the family together.
+- Each word: [one Arabic word with full vowel marks, transliteration, English, Russian, root ("" if none), pattern code ("" if none)].
+- Each phrase: [Arabic with full vowel marks, transliteration, English, Russian].
+- Pattern codes: ${pats}.
+- Roots are 3 (or 4) consonants without vowel marks. List the meaning of every new root in "roots".
 - Transliteration style: ā ī ū ḥ ṣ ḍ ṭ ẓ ʿ ʾ kh sh gh dh th.
-- Do not use the characters < or >.
-- "pats" is only needed to define a new pattern, otherwise {}.
-- Do not repeat roots that are already in the app.
+- Do not use the characters < or >. Do not repeat words already in the app.
 
-Already in the app:
-Units: ${units}
-Roots: ${roots}`;
+Roots already in the app: ${roots}
+Words already in the app: ${words}`;
 }
-
-function download(name,text){
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([text],{type:"application/json"}));a.download=name;
-  document.body.appendChild(a);a.click();
-  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
+function download(name,text,type){
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:type||"application/json"}));a.download=name;
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
 }
-function backupJSON(){
-  S.lastBackup=Date.now();save();
-  return JSON.stringify({app:"jidr",format:1,exported:new Date().toISOString(),state:S,packs:PACKS},null,1);
-}
+const dayStr=()=>{const d=new Date(),p=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())};
+function backupJSON(){S.lastBackup=Date.now();save();return JSON.stringify({app:"jidr",format:2,exported:new Date().toISOString(),state:S,packs:PACKS})}
 function restoreText(text){
   text=String(text||"").trim();
-  if(!text)return setMsg("backup","bad","Paste a backup first, or choose a file.");
+  if(!text)return setMsg("backup","bad",bi("Paste a backup first, or choose a file.","Сначала вставьте копию или выберите файл."));
   let o;try{o=JSON.parse(text)}catch(e){return setMsg("backup","bad","This is not a valid backup file.")}
-  if(!o||o.app!=="jidr"||!o.state||typeof o.state!=="object"||!Array.isArray(o.state.learned))return setMsg("backup","bad","This does not look like a Jidr backup.");
+  if(!o||o.app!=="jidr"||!o.state||typeof o.state!=="object")return setMsg("backup","bad","This does not look like a Jidr backup.");
   const packs=[],errs=[];
   (Array.isArray(o.packs)?o.packs:[]).forEach((raw,i)=>{const r=validatePack(raw,packs);if(r.pack)packs.push(r.pack);else errs.push("Pack "+(i+1)+": "+r.errs[0])});
   if(errs.length)return setMsg("backup","bad","<b>Some lesson packs in this backup could not be read.</b>"+errList(errs));
   if(!confirm("Replace the progress and lessons on this device with this backup?"))return;
   if(!savePacks(packs))return setMsg("backup","bad","Could not save: browser storage is full or blocked.");
-  const st=migrate(Object.assign({ver:1,learned:[],lang:"both",best:0,lastBackup:0},o.state));
-  st.learned=st.learned.filter(id=>GROUPS.some(g=>g.id===id));
-  if(!["en","ru","both"].includes(st.lang))st.lang="both";
-  st.tab="manage";S=st;PACKS=packs;save();buildData();
-  MSG.backup={kind:"ok",html:bi("Backup restored.","Копия восстановлена.")};
+  S=migrate(o.state);S.tab="manage";PACKS=packs;buildData();S.done=S.done.filter(id=>STEPS.some(s=>s.id===id));save();
+  MSG.backup={kind:"ok",html:bi("Backup restored.","Копия восстановлена.")};render();
+}
+async function importAudioText(text){
+  let o;try{o=JSON.parse(text)}catch(e){return setMsg("audio","bad",bi("This is not a recordings file.","Это не файл с записями."))}
+  const tmp={};const n=(()=>{if(!o||o.app!=="jidr-audio"||!o.clips)return -1;let c=0;Object.keys(o.clips).forEach(k=>{const x=o.clips[k];if(/^[LWP]:/.test(k)&&x&&typeof x.m==="string"&&/^audio\//.test(x.m)&&typeof x.d==="string"){tmp[k]={m:x.m,d:x.d};c++}});return c})();
+  if(n<=0)return setMsg("audio","bad",bi("No recordings found in this file.","В файле нет записей."));
+  let prev=null;try{prev=await idbGet("audio")}catch(e){}
+  const merged={app:"jidr-audio",v:1,clips:Object.assign({},prev&&prev.clips||{},tmp)};
+  try{await idbSet("audio",merged)}catch(e){return setMsg("audio","bad",bi("Could not save recordings on this device.","Не удалось сохранить записи на устройстве."))}
+  addClips(merged,"local");
+  const match=Object.keys(tmp).filter(k=>ITEMS[k]).length;
+  MSG.audio={kind:"ok",html:bi(`Loaded ${n} recordings (${match} match current lessons). Look for the speaker icons.`,`Загружено записей: ${n} (к урокам подходят: ${match}). Ищите значок динамика.`)};
   render();
 }
-async function copyText(text,k,en,ru){
-  try{await navigator.clipboard.writeText(text);setMsg(k,"ok",bi(en,ru))}
-  catch(e){
-    if(k==="pack"){const ta=$("#pack-text");if(ta){ta.value=text;ta.focus();ta.select()}setMsg(k,"bad",bi("Could not copy automatically. The text is in the box: select all and copy.","Не удалось скопировать автоматически. Текст в поле: выделите всё и скопируйте."))}
-    else setMsg(k,"bad",bi("Could not copy. Use Download instead.","Не удалось скопировать. Используйте «Скачать»."));
-  }
-}
-
-const offlineText=()=>swReady?"✓":bi("not yet: open once online, then reopen","пока нет: откройте один раз с интернетом и перезапустите");
-const persistText=()=>persisted===true?"✓":persisted===false?bi("no, keep backups","нет, делайте копии"):"…";
 function deviceInner(){
   const standalone=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
   return `<h2>${bi("This device","Это устройство")}</h2>
   <div><div class="kv"><span>${bi("Installed as an app","Установлено как приложение")}</span><span>${standalone?"✓":bi("not yet","ещё нет")}</span></div>
-  <div class="kv"><span>${bi("Works offline","Работает без интернета")}</span><span id="sw-status">${offlineText()}</span></div>
-  <div class="kv"><span>${bi("Storage protected from cleanup","Хранилище защищено от очистки")}</span><span id="persist-status">${persistText()}</span></div>
+  <div class="kv"><span>${bi("Works offline","Работает без интернета")}</span><span id="sw-status">${swReady?"✓":bi("open once online, then reopen","откройте с интернетом и перезапустите")}</span></div>
+  <div class="kv"><span>${bi("Storage protected from cleanup","Хранилище защищено от очистки")}</span><span>${persisted===true?"✓":persisted===false?bi("no, keep backups","нет, делайте копии"):"…"}</span></div>
   <div class="kv"><span>${bi("Version","Версия")}</span><span>${APP_VERSION}</span></div></div>
-  ${standalone?"":deferredInstall?`<div class="row"><button type="button" class="btn primary" data-act="install">${bi("Install app","Установить приложение")}</button></div>`
-   :`<p class="muted">${bi("To install: browser menu ⋮ → Install app (or Add to Home screen). On iPhone: Share → Add to Home Screen.","Чтобы установить: меню браузера ⋮ → «Установить приложение» (или «Добавить на главный экран»). На iPhone: «Поделиться» → «На экран Домой».")}</p>`}
-  ${storageOK?"":`<div class="msg bad">${bi("This browser cannot save data (private mode?). Progress will be lost when you close the page.","Этот браузер не может сохранять данные (приватный режим?). Прогресс пропадёт при закрытии страницы.")}</div>`}`;
+  ${standalone?"":deferredInstall?`<button type="button" class="btn primary" data-act="install">${bi("Install app","Установить приложение")}</button>`:`<p class="muted">${bi("To install: browser menu ⋮ → Install app (or Add to Home screen).","Чтобы установить: меню браузера ⋮ → «Установить приложение» (или «Добавить на главный экран»).")}</p>`}`;
 }
 const refreshDevice=()=>{const el=$("#dev-card");if(el)el.innerHTML=deviceInner()};
-
 function renderManage(){
-  const baseR=ROOTS0.filter(r=>r.r).length,baseW=ROOTS0.reduce((n,r)=>n+r.w.length,0);
-  const rows=PACKS.map(p=>`<div class="packrow"><div><b>${esc(p.title||p.id)}</b><small>${bi("roots","корней")}: ${p.roots.length} · ${bi("words","слов")}: ${packWords(p)}</small></div>
-    <button type="button" class="btn" data-act="rm" data-id="${esc(p.id)}">${bi("Remove","Удалить")}</button></div>`).join("");
+  const na=audioCount(),total=Object.keys(ITEMS).length;
+  const by=t=>Object.keys(AUD).filter(k=>k[0]===t&&ITEMS[k]).length;
+  const loc=Object.values(AUD).filter(a=>a.src==="local").length;
   const last=S.lastBackup?new Date(S.lastBackup).toLocaleDateString():null;
-  return `<section class="card mg"><h2>${bi("Add lessons","Добавить уроки")}</h2>
-    <p class="lead">${bi("Ask Claude for a lesson pack, then paste it here or load the file. Your progress is not touched.","Попросите Claude сделать пакет уроков, затем вставьте его сюда или загрузите файл. Ваш прогресс не затрагивается.")}</p>
-    <textarea id="pack-text" class="ta" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Lesson pack" placeholder='{"id":"unit5-mind", ...}'></textarea>
-    <div class="row"><button type="button" class="btn primary" data-act="addpack">${bi("Add lesson","Добавить урок")}</button>
-      <label class="btn">${bi("Choose file","Выбрать файл")}<input type="file" id="pack-file" accept=".json,application/json,text/plain" hidden></label>
-      <button type="button" class="btn" data-act="prompt">${bi("Copy prompt for Claude","Скопировать запрос для Claude")}</button></div>
-    <div id="msg-pack" aria-live="polite">${msgInner("pack")}</div>
-    <small class="muted">${bi("The prompt lists what the app already has, so new lessons do not repeat it.","В запросе перечислено, что уже есть в приложении, чтобы новые уроки не повторялись.")}</small></section>
-  <section class="card mg"><h2>${bi("Lessons on this device","Уроки на этом устройстве")}</h2>
-    <div><div class="packrow"><div><b>${bi("Starter course","Начальный курс")}</b><small>${bi("roots","корней")}: ${baseR} · ${bi("words","слов")}: ${baseW}</small></div></div>${rows}</div>
-    <div id="msg-list" aria-live="polite">${msgInner("list")}</div></section>
-  <section class="card mg"><h2>${bi("Backup and restore","Резервная копия")}</h2>
-    <p class="lead">${bi("Progress and added lessons live only on this phone. Save a backup file now and then, and before changing phones or clearing browser data.","Прогресс и добавленные уроки хранятся только на этом телефоне. Время от времени сохраняйте копию, а также перед сменой телефона или очисткой данных браузера.")}</p>
-    <small class="muted">${bi("Last backup","Последняя копия")}: ${last||bi("never","никогда")}</small>
-    <div class="row"><button type="button" class="btn primary" data-act="dl">${bi("Download backup","Скачать копию")}</button>
-      <button type="button" class="btn" data-act="copybk">${bi("Copy backup","Скопировать копию")}</button></div>
-    <textarea id="restore-text" class="ta sm" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Backup to restore" placeholder="Paste a backup here · Вставьте копию сюда"></textarea>
-    <div class="row"><button type="button" class="btn" data-act="restore">${bi("Restore from pasted text","Восстановить из текста")}</button>
-      <label class="btn">${bi("Choose backup file","Выбрать файл копии")}<input type="file" id="restore-file" accept=".json,application/json,text/plain" hidden></label></div>
-    <div id="msg-backup" aria-live="polite">${msgInner("backup")}</div></section>
-  <section class="card mg" id="dev-card">${deviceInner()}</section>`;
+  return `<section class="card"><h2>${bi("Recordings","Записи")}</h2>
+   <div class="bar"><i style="width:${Math.round(na/total*100)}%"></i></div>
+   <small>${na}/${total} ${bi("recorded","записано")} · ${bi("letters","буквы")} ${by("L")} · ${bi("words","слова")} ${by("W")} · ${bi("phrases","фразы")} ${by("P")}</small>
+   <p class="lead">${bi("Send this link to your friend. They record on their phone and send you one file, jidr-audio.json. Either load it here, or upload it to your GitHub repo next to index.html so every device gets it.","Отправьте эту ссылку другу. Друг записывает на своём телефоне и присылает один файл jidr-audio.json. Загрузите его здесь или положите в репозиторий GitHub рядом с index.html — тогда записи будут на всех устройствах.")}</p>
+   <div class="mono">${esc(recLink())}</div>
+   <div class="row"><button type="button" class="btn primary" data-act="share">${bi("Share link","Поделиться ссылкой")}</button><button type="button" class="btn" data-act="copylink">${bi("Copy link","Копировать")}</button>
+    <label class="btn">${bi("Load recordings file","Загрузить файл записей")}<input type="file" id="audio-file" accept=".json,application/json,text/plain" hidden></label>
+    ${loc?`<button type="button" class="btn" data-act="rmaudio">${bi("Remove loaded recordings","Удалить загруженные записи")}</button>`:""}</div>
+   <div id="msg-audio" aria-live="polite">${msgInner("audio")}</div></section>
+  <section class="card"><h2>${bi("Settings","Настройки")}</h2>
+   <div class="kv"><span>${bi("Transliteration under words","Транслитерация слов")}</span><span class="seg"><button type="button" data-set="tr:off" aria-pressed="${S.tr==="off"}">${bi("Off","Нет")}</button><button type="button" data-set="tr:tap" aria-pressed="${S.tr==="tap"}">${bi("Tap Aa","По нажатию")}</button></span></div>
+   <div class="kv"><span>${bi("Jump to next question when right","Сразу дальше, если верно")}</span><span class="seg"><button type="button" data-set="auto:1" aria-pressed="${S.auto}">${bi("On","Да")}</button><button type="button" data-set="auto:0" aria-pressed="${!S.auto}">${bi("Off","Нет")}</button></span></div></section>
+  <section class="card"><h2>${bi("Add lessons","Добавить уроки")}</h2>
+   <p class="lead">${bi("Tap “Copy prompt”, paste it into a chat with Claude with a topic, then paste the reply here. New steps appear at the end of the Path. Progress is not touched.","Нажмите «Скопировать запрос», вставьте его в чат с Claude и укажите тему, затем вставьте ответ сюда. Новые шаги появятся в конце пути. Прогресс не затрагивается.")}</p>
+   <textarea id="pack-text" class="ta" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Lesson pack" placeholder='{"id":"food-2", ...}'></textarea>
+   <div class="row"><button type="button" class="btn primary" data-act="addpack">${bi("Add lesson","Добавить урок")}</button>
+    <label class="btn">${bi("Choose file","Выбрать файл")}<input type="file" id="pack-file" accept=".json,application/json,text/plain" hidden></label>
+    <button type="button" class="btn" data-act="prompt">${bi("Copy prompt for Claude","Скопировать запрос")}</button></div>
+   <div id="msg-pack" aria-live="polite">${msgInner("pack")}</div>
+   <div>${PACKS.map(p=>`<div class="packrow"><div><b>${esc(p.title)}</b><small>${p.steps.length} ${bi("steps","шагов")}</small></div><button type="button" class="btn" data-act="rm" data-id="${esc(p.id)}">${bi("Remove","Удалить")}</button></div>`).join("")}</div></section>
+  <section class="card"><h2>${bi("Backup and restore","Резервная копия")}</h2>
+   <p class="lead">${bi("Progress and added lessons live only on this phone. Save a backup now and then.","Прогресс и добавленные уроки хранятся только на этом телефоне. Время от времени сохраняйте копию.")}</p>
+   <small>${bi("Last backup","Последняя копия")}: ${last||bi("never","никогда")}</small>
+   <div class="row"><button type="button" class="btn primary" data-act="dl">${bi("Download backup","Скачать копию")}</button><button type="button" class="btn" data-act="copybk">${bi("Copy backup","Скопировать")}</button>
+    <label class="btn">${bi("Restore from file","Восстановить из файла")}<input type="file" id="restore-file" accept=".json,application/json,text/plain" hidden></label></div>
+   <textarea id="restore-text" class="ta sm" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Backup to restore" placeholder="Paste a backup here · Вставьте копию сюда"></textarea>
+   <button type="button" class="btn" data-act="restore">${bi("Restore from pasted text","Восстановить из текста")}</button>
+   <div id="msg-backup" aria-live="polite">${msgInner("backup")}</div></section>
+  <section class="card" id="dev-card">${deviceInner()}</section>`;
 }
-function act(t){
+async function copyText(text,k,en,ru){
+  try{await navigator.clipboard.writeText(text);setMsg(k,"ok",bi(en,ru))}
+  catch(e){const ta=$(k==="pack"?"#pack-text":"#restore-text");if(ta){ta.value=text;ta.focus();ta.select()}setMsg(k,"bad",bi("Could not copy automatically. The text is in the box: select all and copy.","Не удалось скопировать. Текст в поле: выделите всё и скопируйте."))}
+}
+async function act(t){
   const a=t.dataset.act;
   if(a==="addpack")return importPackText($("#pack-text").value);
-  if(a==="prompt")return copyText(claudePrompt(),"pack","Prompt copied. Paste it into a chat with Claude and describe the lesson.","Запрос скопирован. Вставьте его в чат с Claude и опишите урок.");
-  if(a==="rm"){
-    const p=PACKS.find(x=>x.id===t.dataset.id);
-    if(!p||!confirm("Remove “"+(p.title||p.id)+"”? Your progress is kept."))return;
-    const next=PACKS.filter(x=>x!==p);
-    if(!savePacks(next))return setMsg("list","bad","Could not save the change.");
-    PACKS=next;buildData();MSG.list={kind:"ok",html:bi("Removed.","Удалено.")};return render();
-  }
-  if(a==="dl"){download("jidr-backup-"+dayStr()+".json",backupJSON());MSG.backup={kind:"ok",html:bi("Backup downloaded. Check your Downloads folder.","Копия скачана. Проверьте папку «Загрузки».")};return render()}
-  if(a==="copybk")return copyText(backupJSON(),"backup","Backup copied. Paste it into a note or message to yourself.","Копия скопирована. Вставьте её в заметку или сообщение себе.");
+  if(a==="prompt")return copyText(claudePrompt(),"pack","Prompt copied. Paste it into a chat with Claude and add the topic.","Запрос скопирован. Вставьте его в чат с Claude и добавьте тему.");
+  if(a==="rm"){const p=PACKS.find(x=>x.id===t.dataset.id);if(!p||!confirm("Remove “"+p.title+"”? Your progress is kept."))return;const next=PACKS.filter(x=>x!==p);if(!savePacks(next))return;PACKS=next;buildData();return render()}
+  if(a==="dl"){download("jidr-backup-"+dayStr()+".json",backupJSON());MSG.backup={kind:"ok",html:bi("Backup downloaded. Check your Downloads folder.","Копия скачана. Проверьте «Загрузки».")};return render()}
+  if(a==="copybk")return copyText(backupJSON(),"backup","Backup copied. Paste it into a note or a message to yourself.","Копия скопирована. Вставьте её в заметку или сообщение себе.");
   if(a==="restore")return restoreText($("#restore-text").value);
+  if(a==="copylink")return copyText(recLink(),"audio","Link copied.","Ссылка скопирована.");
+  if(a==="share"){if(navigator.share){try{await navigator.share({title:"Jidr recorder",text:"Could you record these Arabic words for me?",url:recLink()})}catch(e){}return}return copyText(recLink(),"audio","Link copied.","Ссылка скопирована.")}
+  if(a==="rmaudio"){if(!confirm("Remove recordings loaded on this device? Recordings on your website stay."))return;try{await idbDel("audio")}catch(e){}MSG.audio=null;return loadAudio()}
   if(a==="install"&&deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.finally(()=>{deferredInstall=null;refreshDevice()})}
 }
 document.addEventListener("change",e=>{
-  const inp=e.target;
-  if(!inp||inp.type!=="file"||!inp.files||!inp.files[0])return;
-  const f=inp.files[0],k=inp.id==="pack-file"?"pack":"backup";
-  if(f.size>2e6)return setMsg(k,"bad","That file is too large.");
-  f.text().then(txt=>{inp.value="";k==="pack"?importPackText(txt):restoreText(txt)}).catch(()=>setMsg(k,"bad","Could not read that file."));
+  const inp=e.target;if(!inp||inp.type!=="file"||!inp.files||!inp.files[0])return;
+  const f=inp.files[0],k={"pack-file":"pack","restore-file":"backup","audio-file":"audio"}[inp.id];if(!k)return;
+  if(f.size>(k==="audio"?40e6:2e6))return setMsg(k,"bad","That file is too large.");
+  f.text().then(txt=>{inp.value="";if(k==="pack")importPackText(txt);else if(k==="backup")restoreText(txt);else importAudioText(txt)}).catch(()=>setMsg(k,"bad","Could not read that file."));
 });
 
-/* ---------- Router and events ---------- */
+/* ================= router and events ================= */
+const TABS=["path","practice","letters","roots","manage"];
 function render(){
-  Q=null;
-  const v=$("#view");
-  const map={letters:renderLetters,roots:renderRoots,patterns:renderPatterns,practice:renderPractice,manage:renderManage};
-  if(!map[S.tab])S.tab="letters";
-  v.innerHTML=map[S.tab]();
   renderStats();
+  const v=$("#view");
+  if(Q){v.innerHTML=Q.i>=Q.qs.length?(finishQuiz(),renderStats(),renderEnd()):renderQuiz();return}
+  const map={path:()=>UI.step?renderStep():renderPath(),practice:renderPractice,letters:renderLetters,roots:renderRoots,manage:renderManage};
+  v.innerHTML=(map[S.tab]||renderPath)();
 }
-function go(tab){if(tab!==S.tab)MSG={};S.tab=tab;save();try{history.replaceState(null,"","#"+tab)}catch(e){}render();window.scrollTo({top:0})}
-
+function go(tab){if(tab!==S.tab)MSG={};S.tab=tab;UI.step=null;if(Q){Q=null}save();render();window.scrollTo(0,0);if(location.hash!=="#"+tab)history.replaceState(null,"","#"+tab)}
+function openStep(id){UI.step=id;S.tab="path";Q=null;history.pushState({s:1},"");render();window.scrollTo(0,0)}
 document.addEventListener("click",e=>{
   const t=e.target.closest("button");if(!t)return;
-  if(t.dataset.act)return act(t);
-  if(t.dataset.tab)return go(t.dataset.tab);
-  if(t.dataset.goto)return go(t.dataset.goto);
-  if(t.dataset.lang){S.lang=t.dataset.lang;save();return renderStats()}
-  if(t.dataset.grp){const id=+t.dataset.grp;openGroup=openGroup===id?null:id;render();
-    if(openGroup){const el=document.querySelector(`[data-grp="${id}"]`);if(el)el.scrollIntoView({block:"start"})}return}
-  if(t.dataset.know){const id=+t.dataset.know,i=S.learned.indexOf(id);if(i>=0)S.learned.splice(i,1);else S.learned.push(id);save();return render()}
-  if(t.dataset.drill){const g=GROUPS.find(x=>x.id===+t.dataset.drill);
-    return startQuiz({n:10,group:g.id,gen:groupGen(g),redo:()=>startQuiz(Q.cfg)})}
-  if(t.dataset.mix){
-    const k=t.dataset.mix;let cfg;
-    if(k==="letters"){const ll=learnedLetters();cfg={n:12,gen:()=>Math.random()<0.5?qName(ll,ll):qFind(ll,ll)}}
-    if(k==="words")cfg={n:10,gen:qWord};
-    if(k==="roots")cfg={n:8,gen:qRoot};
-    cfg.cfg=cfg;return startQuiz(cfg)}
-  if(t.dataset.k!==undefined&&Q)return answer(t);
-  if(t.hasAttribute("data-next"))return nextQ();
-  if(t.hasAttribute("data-again")){const c=Q.cfg||{n:Q.n,group:Q.group,gen:Q.gen};return startQuiz({n:c.n,group:c.group,gen:c.gen,cfg:c.cfg})}
-  if(t.hasAttribute("data-exit"))return render();
+  const d=t.dataset;
+  if(d.play!==undefined){e.stopPropagation();return play(d.play,t)}
+  if(d.tr!==undefined){const s=document.createElement("span");s.className="trs";s.textContent=d.tr;t.replaceWith(s);return}
+  if(Q){
+    if(d.opt!==undefined)return pickOpt(t);
+    if(d.tile!==undefined)return tileTap(t);
+    if(d.undo!==undefined)return undo();
+    if(d.check!==undefined)return check();
+    if(d.next!==undefined)return next();
+    if(d.quit!==undefined){if(Q.i>0&&Q.i<Q.qs.length&&!confirm("Stop this drill? Answers so far are saved."))return;Q=null;return render()}
+    if(d.again!==undefined){const its=uniq(Q.wrong);setPool();const qs=its.map(it=>genFor(it,0)).filter(Boolean);Q=null;return startQuiz(shuffle(qs.concat(qs.map(x=>genFor(x.item,1)).filter(Boolean))).slice(0,10),{})}
+    if(d.endq!==undefined){const st=d.step;Q=null;if(st)return openStep(st);UI.step=null;return render()}
+  }
+  if(d.lang){S.lang=d.lang;save();return render()}
+  if(d.tab)return go(d.tab);
+  if(d.step)return openStep(d.step);
+  if(d.back!==undefined){UI.step=null;return render()}
+  if(d.stepquiz){const st=STEPS.find(s=>s.id===d.stepquiz);return startQuiz(buildStepQuiz(st),{step:st.id})}
+  if(d.skip){const st=STEPS.find(s=>s.id===d.skip);if(st&&confirm("Mark this step as done without the drill?")){markDone(st);UI.step=null;render();toast(bi("Step marked done","Шаг отмечен"))}return}
+  if(d.drill){const D=DRILLS[d.drill];if(!D||!D.ok())return;return startQuiz(D.build(),{drill:d.drill})}
+  if(d.view){S.letView=d.view;UI.openL=null;save();return render()}
+  if(d.let){UI.openL=UI.openL===d.let?null:d.let;render();if(UI.openL&&hasA("L:"+d.let))play("L:"+d.let);return}
+  if(d.playall){const ks=[...d.playall].map(c=>"L:"+c).filter(hasA);let i=0;const nx=()=>{if(i<ks.length){play(ks[i++]);player.onended=()=>setTimeout(nx,350)}else player.onended=null};return nx()}
+  if(d.set){const [k,v]=d.set.split(":");S[k]=k==="auto"?v==="1":v;save();return render()}
+  if(d.act)return act(t);
 });
-(function init(){
-  const h=(location.hash||"").slice(1);
-  if(TABS.includes(h))S.tab=h;
-  window.addEventListener("hashchange",()=>{const x=location.hash.slice(1);if(TABS.includes(x)&&x!==S.tab){S.tab=x;render()}});
+window.addEventListener("popstate",()=>{if(Q){Q=null;return render()}if(UI.step){UI.step=null;return render()}});
+
+/* ================= boot ================= */
+(function boot(){
+  try{const raw=localStorage.getItem("jidr-packs");const a=raw?JSON.parse(raw):[];
+    if(Array.isArray(a)){const ok=[];a.forEach(p=>{const r=validatePack(p,ok);if(r.pack)ok.push(r.pack)});PACKS=ok}}catch(e){}
+  buildData();
+  S.done=S.done.filter(id=>STEPS.some(s=>s.id===id));
+  const h=location.hash.slice(1);if(TABS.includes(h))S.tab=h;
   render();
+  loadAudio();
   if("serviceWorker" in navigator){
     navigator.serviceWorker.register("sw.js").catch(()=>{});
     navigator.serviceWorker.ready.then(()=>{swReady=true;refreshDevice()}).catch(()=>{});
   }
-  if(navigator.storage&&navigator.storage.persisted){
-    navigator.storage.persisted().then(p=>p||(navigator.storage.persist?navigator.storage.persist():false)).then(p=>{persisted=!!p;refreshDevice()}).catch(()=>{});
-  }
+  if(navigator.storage&&navigator.storage.persisted)navigator.storage.persisted().then(p=>p||(navigator.storage.persist?navigator.storage.persist():false)).then(p=>{persisted=!!p;refreshDevice()}).catch(()=>{});
   window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstall=e;refreshDevice()});
   window.addEventListener("appinstalled",()=>{deferredInstall=null;refreshDevice()});
 })();
