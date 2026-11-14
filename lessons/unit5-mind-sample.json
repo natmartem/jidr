@@ -1,0 +1,19 @@
+{
+  "id": "unit5-mind",
+  "title": "Mind and reading",
+  "units": { "5": ["Mind and reading", "Ум и чтение"] },
+  "roots": [
+    { "u": 5, "r": "قرأ", "tr": "q-r-ʾ", "en": "read", "ru": "читать", "w": [
+      ["قَرَأَ", "qaraʾa", "he read", "он читал", ""],
+      ["قِراءة", "qirāʾa", "reading", "чтение", "fm"],
+      ["قارِئ", "qāriʾ", "reader", "читатель", "dr"]
+    ]},
+    { "u": 5, "r": "فكر", "tr": "f-k-r", "en": "think", "ru": "думать", "w": [
+      ["فَكَّرَ", "fakkara", "he thought", "он думал", ""],
+      ["فِكرة", "fikra", "idea", "идея", "fm"],
+      ["مُفَكِّر", "mufakkir", "thinker", "мыслитель", "mu"],
+      ["تَفكير", "tafkīr", "thinking", "мышление", ""]
+    ]}
+  ],
+  "pats": {}
+}
