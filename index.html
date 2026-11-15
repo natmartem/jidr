@@ -171,6 +171,9 @@ main{padding-top:16px;display:flex;flex-direction:column;gap:12px}
 .sticky-cta .btn.primary{box-shadow:0 6px 20px rgba(0,0,0,.18)}
 
 .lex{grid-column:1 / -1;display:flex;flex-direction:column;gap:2px;margin-top:4px}
+.lex .syl{gap:5px}
+.lex .sy{min-width:44px;padding:0 4px 2px;flex:1 1 44px;max-width:60px}
+.lex .sy .ar{font-size:26px}
 .lx{display:grid;grid-template-columns:minmax(96px,38%) minmax(0,1fr) auto;gap:10px;align-items:center;border-top:1px solid var(--line);padding:4px 0}
 .lx .ar{font-size:32px;line-height:1.5;text-align:center}
 .lx>span:nth-child(2){font-size:14px}
@@ -331,7 +334,7 @@ label.btn{display:inline-block}
 "use strict";
 /* ================= basics ================= */
 const C=window.COURSE;
-const APP_VERSION="2.2.0",STATE_VER=2;
+const APP_VERSION="2.3.0",STATE_VER=2;
 const $=(s,r)=>(r||document).querySelector(s);
 const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -594,6 +597,7 @@ function letterCard(l,withEx){
   <div class="forms">${forms(l).map(f=>`<div class="fm"><span class="ar">${f[2]}</span><small>${bi(f[0],f[1])}</small></div>`).join("")}</div>
   ${fam.length>1?`<div class="alike"><small>${bi("Looks like","Похожа на")}</small>${fam.map(x=>`<span class="ar${x===l?" me":""}">${x.c}</span>`).join("")}</div>`:""}
   ${sg?`<div class="alike"><small>${bi("Sounds like","Звучит похоже")}</small>${[...sg.L].map(c=>`<span class="ar${c===l.c?" me":""}">${c}</span>`).join("")}<small>${bi(sg.en,sg.ru)}</small></div>`:""}
+  ${withEx?(()=>{const sy=sylFor(l,new Set(LET.map(x=>x.c)));return sy.length?`<div class="lex"><small>${bi("Syllables","Слоги")}</small><div class="syl" style="border:0">${sy.map(x=>`<div class="sy"><span class="ar">${x.ar}</span><small>${x.tr}</small></div>`).join("")}</div></div>`:""})():""}
   ${withEx?(()=>{const ex=letterExamples(l);return ex.length?`<div class="lex"><small>${bi("In words","В словах")}</small>${ex.map(e=>`<div class="lx"><span class="ar" lang="ar">${e.html}</span><span><small class="tag">${bi(e.en,e.ru)}</small> ${bi(esc(e.w.en),esc(e.w.ru))}${learned(e.w)?"":` <span class="need">· ${bi("step","шаг")} ${e.w.step.si+1}</span>`}</span>${spk(e.w.key)}</div>`).join("")}</div>`:""})():""}</div>`;
 }
 function vowelCard(){
