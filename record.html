@@ -59,7 +59,7 @@ details.sec>summary::-webkit-details-marker{display:none}
 <body>
 <div class="wrap">
 <header>
-  <h1>Jidr · recording studio</h1>
+  <h1>Jidr · recording studio<span id="sptag"></span></h1>
   <div class="bar"><i id="pbar" style="width:0"></i></div>
   <div class="row" style="justify-content:space-between"><small id="ptext"></small>
     <label class="row" style="font-size:14px"><input type="checkbox" id="hide"> Hide recorded</label></div>
@@ -73,6 +73,7 @@ details.sec>summary::-webkit-details-marker{display:none}
     <li>Not happy? Just record again. Everything is saved on this phone as you go, so you can stop and come back later.</li>
     <li>When you're done (or done for today), tap <b>Send recordings</b> at the bottom and send the file to Natalia.</li>
   </ol>
+  <p class="muted" style="font-size:13px">Your recordings stay yours. Natalia uses them only inside her learning app. They are not covered by the app's open licenses, and she won't reuse them elsewhere without asking you.</p>
   <div id="msg"></div>
 </section>
 <div id="list"></div>
@@ -89,14 +90,18 @@ details.sec>summary::-webkit-details-marker{display:none}
 "use strict";
 const C=window.COURSE,$=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const MAXS={L:4,W:6,P:12};
+const MAXS={L:4,W:6,P:12,T:12};
+/* speaker 2 (or 3) records into its own storage and file: record.html?speaker=2 */
+const SP=(()=>{const n=+new URLSearchParams(location.search).get("speaker");return [1,2,3].includes(n)?n:1})();
+const FILE=SP===1?"jidr-audio.json":`jidr-audio-${SP}.json`;
 /* ---- item list: letters first, then each step's words and phrases ---- */
 const SECTIONS=[{t:"Letter sounds",items:C.letters.map(l=>({key:"L:"+l[0],ar:l[0],say:l[8],tr:l[2],en:l[1]}))}];
 C.steps.forEach((s,i)=>{const items=(s.words||[]).map(w=>({key:"W:"+w[0],ar:w[0],tr:w[1],en:w[2]})).concat((s.phrases||[]).map(p=>({key:"P:"+p[0],ar:p[0],tr:p[1],en:p[2],ph:1})));
   if(items.length)SECTIONS.push({t:"Step "+(i+1)+" · "+s.t[0],items,rec:s.rec||""})});
+(C.texts||[]).forEach(t=>SECTIONS.push({t:"Reading · "+t.t[0],items:t.lines.map(l=>({key:"T:"+l[0],ar:l[0],tr:l[1],en:l[2],ph:1})),rec:(t.spoken?"Saudi dialect. ":"")+"A short text: read each line naturally, as if telling it to a friend."}));
 const ALL=SECTIONS.flatMap(s=>s.items);
 /* ---- storage (IndexedDB on this phone) ---- */
-function db(){return new Promise((res,rej)=>{const r=indexedDB.open("jidr-rec",1);r.onupgradeneeded=()=>r.result.createObjectStore("clips");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+function db(){return new Promise((res,rej)=>{const r=indexedDB.open(SP===1?"jidr-rec":"jidr-rec-"+SP,1);r.onupgradeneeded=()=>r.result.createObjectStore("clips");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function op(mode,fn){const d=await db();return new Promise((res,rej)=>{const t=d.transaction("clips",mode),r=fn(t.objectStore("clips"));t.oncomplete=()=>res(r&&r.result);t.onerror=()=>rej(t.error)})}
 const put=(k,v)=>op("readwrite",s=>s.put(v,k));
 const getAll=async()=>{const d=await db();return new Promise((res,rej)=>{const out={},t=d.transaction("clips"),c=t.objectStore("clips").openCursor();c.onsuccess=()=>{const cur=c.result;if(cur){out[cur.key]=cur.value;cur.continue()}else res(out)};c.onerror=()=>rej(c.error)})};
@@ -115,7 +120,7 @@ function rowHtml(it){
   return `<div class="it${it.ph?" ph":""}${CLIPS[it.key]?" done":""}" data-key="${esc(it.key)}">
    <div class="ar" lang="ar">${esc(it.ar)}</div>
    <div class="ctrls"><span class="timer"></span><button type="button" class="play" data-play aria-label="Play" ${CLIPS[it.key]?"":"disabled"}>▶</button><button type="button" class="rec" data-rec aria-label="Record"><i></i></button></div>
-   <div class="meta">${kind==="L"?`<b>Say: ${esc(it.say)}</b>`:`<span>${esc(it.tr)}</span><span>· ${esc(it.en)}</span>`}</div></div>`;
+   <div class="meta">${kind==="L"?`<b>Say: ${esc(it.say)}</b>`:`${it.tr?`<span>${esc(it.tr)}</span><span>·</span>`:""}<span>${esc(it.en)}</span>`}</div></div>`;
 }
 function renderList(){
   const firstOpen=SECTIONS.findIndex(s=>s.items.some(i=>!CLIPS[i.key]));
@@ -176,17 +181,17 @@ function playKey(key){
 function bundle(){
   const clips={};ALL.forEach(i=>{if(CLIPS[i.key])clips[i.key]=CLIPS[i.key]});
   Object.keys(CLIPS).forEach(k=>{if(!clips[k])clips[k]=CLIPS[k]});
-  return JSON.stringify({app:"jidr-audio",v:1,made:new Date().toISOString(),clips});
+  return JSON.stringify({app:"jidr-audio",v:1,speaker:SP,made:new Date().toISOString(),clips});
 }
 async function send(){
   const n=Object.keys(CLIPS).length;if(!n){msg("bad","Record something first.");return}
-  const text=bundle(),file=new File([text],"jidr-audio.json",{type:"application/json"});
+  const text=bundle(),file=new File([text],FILE,{type:"application/json"});
   if(navigator.canShare&&navigator.canShare({files:[file]})){
     try{await navigator.share({files:[file],title:"Jidr recordings"});msg("ok","Sent. Thank you!");return}catch(e){if(e&&e.name==="AbortError")return}
   }
-  const a=document.createElement("a");a.href=URL.createObjectURL(file);a.download="jidr-audio.json";document.body.appendChild(a);a.click();
+  const a=document.createElement("a");a.href=URL.createObjectURL(file);a.download=FILE;document.body.appendChild(a);a.click();
   setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
-  msg("ok","Saved as jidr-audio.json in your Downloads. Send that file to Natalia.");
+  msg("ok","Saved as "+FILE+" in your Downloads. Send that file to Natalia.");
 }
 async function load(file){
   let o;try{o=JSON.parse(await file.text())}catch(e){return msg("bad","That is not a recordings file.")}
@@ -205,6 +210,7 @@ document.addEventListener("click",e=>{
 $("#hide").addEventListener("change",e=>$("#list").classList.toggle("hidedone",e.target.checked));
 $("#load").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];e.target.value="";if(f)load(f)});
 document.addEventListener("visibilitychange",()=>{if(document.hidden){stopRec();if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}}});
+if(SP>1)document.getElementById("sptag").textContent=" · speaker "+SP;
 (async()=>{try{CLIPS=await getAll()}catch(e){msg("bad","This browser cannot save recordings (private mode?). Please use a normal window.")}renderList()})();
 </script>
 </body>

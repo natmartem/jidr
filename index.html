@@ -244,6 +244,40 @@ details.disc>summary::-webkit-details-marker{display:none}
 .story-t{font-size:30px;line-height:1.9;text-align:right}
 .story details>summary{cursor:pointer;color:var(--accent);font-weight:500}
 
+.kb{display:flex;flex-direction:column;gap:5px;margin-top:2px}
+.kbr{display:flex;gap:4px;justify-content:center}
+.kbk{flex:1 1 0;min-width:0;max-width:44px;height:46px;border:1px solid var(--line);background:var(--surface);border-radius:8px;font:24px/1 var(--f-ar);padding:0}
+.kbk.wide{max-width:none;flex:4 1 0;font:500 14px var(--f-body)}
+.kbk:active{background:var(--tint)}
+.typed{min-height:66px}
+.hint{display:block;text-align:center;letter-spacing:.2em;color:var(--mute);font-size:14px}
+.skills>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.skills>summary::-webkit-details-marker{display:none}
+.skills h3{margin-top:8px}
+.skr{display:flex;flex-direction:column;gap:3px;padding:4px 0}
+.skr-t{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 8px;font-size:14px}
+.skr-t>span{flex:1 1 12em;min-width:0}
+.skr-t small{white-space:nowrap}
+.skb{position:relative;height:8px;border-radius:6px;background:var(--tint)}
+.skb i{display:block;height:100%;border-radius:6px;background:var(--accent)}
+.skb b{position:absolute;top:-3px;width:2px;height:14px;background:var(--ink);opacity:.5}
+.txt{display:flex;flex-direction:column;gap:8px;padding:8px 0;border-top:1px dashed var(--line)}
+.txt:first-of-type{border-top:0}
+.tl{display:inline}
+.tlist{display:flex;flex-direction:column;gap:6px}
+.tli{display:flex;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 12px}
+.tli span{width:26px;height:26px;border-radius:50%;background:var(--tint);display:grid;place-items:center;font:700 11px var(--f-display);flex:none}
+.tli.later{opacity:.6}
+.spk-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line)}
+.spk-row small{display:block}
+.vgrid-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.vgrid{border-collapse:collapse;font-size:14px}
+.vgrid th,.vgrid td{padding:4px 6px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+.vgrid td .ar{font-size:22px}
+.vgrid .dim{opacity:.45}
+.vgrid th.ar{font-size:20px;letter-spacing:.15em}
+a{color:var(--accent)}
+
 /* letters + roots tabs */
 .ltiles{display:flex;flex-wrap:wrap;gap:8px;direction:rtl}
 .lt{width:56px;height:62px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font:32px/1 var(--f-ar);display:grid;place-items:center;position:relative}
@@ -368,7 +402,7 @@ label.btn{display:inline-block}
 "use strict";
 /* ================= basics ================= */
 const C=window.COURSE;
-const APP_VERSION="3.0.0",STATE_VER=2;
+const APP_VERSION="3.1.0",STATE_VER=2;
 const $=(s,r)=>(r||document).querySelector(s);
 const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -405,7 +439,7 @@ function forms(l){
    localStorage "jidr-state": progress + settings. "jidr-packs": lessons added in the app.
    Recordings loaded from a file live in IndexedDB. Code updates never touch any of these.
    If the saved shape changes, bump STATE_VER and upgrade inside migrate(). */
-const DEF={ver:STATE_VER,done:[],srs:{},lang:"both",tab:"path",xp:0,streak:0,lastDay:0,tr:"off",auto:true,sess:null,seenF:[],letView:"shape",lastBackup:0};
+const DEF={ver:STATE_VER,done:[],srs:{},lang:"both",tab:"path",xp:0,streak:0,lastDay:0,tr:"off",auto:true,sess:null,seenF:[],vz:"full",sk:{},ct:{},readT:[],letView:"shape",lastBackup:0};
 let S=Object.assign({},DEF,{done:[],srs:{}});
 let PACKS=[],storageOK=true;
 function migrate(s){
@@ -418,6 +452,10 @@ function migrate(s){
   if(!["en","ru","both"].includes(s.lang))s.lang="both";
   if(!["off","tap"].includes(s.tr))s.tr="off";
   if(!Array.isArray(s.seenF))s.seenF=[];
+  if(!["full","fade","off"].includes(s.vz))s.vz="full";
+  if(!s.sk||typeof s.sk!=="object")s.sk={};
+  if(!s.ct||typeof s.ct!=="object")s.ct={};
+  if(!Array.isArray(s.readT))s.readT=[];
   return s;
 }
 try{const raw=localStorage.getItem("jidr-state");if(raw)S=migrate(JSON.parse(raw))}catch(e){}
@@ -428,6 +466,9 @@ const savePacks=a=>{try{localStorage.setItem("jidr-packs",JSON.stringify(a));ret
 /* ================= gentle ramp: marks, syllables, word weight =================
    Words are shown lightest first. Each extra mark is explained in the step where it first appears.
    Letter steps start with syllables (بَ بِ بُ با بي بو) before whole words. */
+/* vowel marks: full, fading for well-known items, or off (like adult texts) */
+const bare=ar=>[...ar].filter(c=>!/[\u064B-\u0652\u0670]/.test(c)).join("");
+function vz(it){const ar=it.ar;if(S.vz==="off")return bare(ar);if(S.vz==="fade"){const r=S.srs[it.key];if(r&&r.b>=4)return bare(ar)}return ar}
 const weight=ar=>{let w=skel(ar).replace(/\s/g,"").length;for(const c of ar){if(c==="\u0651")w+=2;else if(/[\u064B-\u064D\u0670]/.test(c))w+=2}if(/[آإؤئى]/.test(ar))w+=1;if(/(^|\s)ال/.test(ar))w+=1;return w};
 const MARKS=[
  {k:"al",test:a=>/(^|\s)(وَ)?ال/.test(a),t:["الـ means “the”","الـ — артикль"],
@@ -488,7 +529,7 @@ function sylCard(st){
 }
 
 /* ================= content model ================= */
-let STEPS=[],WORDS=[],PHRASES=[],ITEMS={},ROOTM={},PAIRS={};
+let STEPS=[],WORDS=[],PHRASES=[],ITEMS={},ROOTM={},PAIRS={},TEXTS=[];
 function buildData(){
   ROOTM=Object.assign({},C.roots);
   STEPS=C.steps.map(s=>Object.assign({},s));
@@ -507,6 +548,9 @@ function buildData(){
     st.W.forEach(w=>{WORDS.push(w);ITEMS[w.key]=w});
     st.P.forEach(p=>{PHRASES.push(p);ITEMS[p.key]=p});
   });
+  TEXTS=(C.texts||[]).map(t=>{const st=STEPS.find(x=>x.id===t.after)||STEPS[0];const T={id:t.id,t:t.t,step:st,spoken:!!t.spoken};
+    T.items=t.lines.map(l=>({type:"T",key:"T:"+l[0],ar:l[0],tr:l[1]||"",en:l[2],ru:l[3],step:st,text:T,need:reqLetters(l[0]),parts:l[0].split(/\s+/).filter(Boolean)}));
+    T.items.forEach(it=>{ITEMS[it.key]=it});return T});
   PAIRS={};STEPS.forEach(st=>(st.pairs||[]).forEach(([a,b])=>{PAIRS[a]=b;PAIRS[b]=a}));
   const seenM=new Set();
   STEPS.forEach(st=>{st.marks=[];const ars=[...st.W,...st.P].map(x=>x.ar);
@@ -533,18 +577,23 @@ const spaced=r=>[...r].join(" ");
 /* ================= audio ================= */
 const AUD={};const player=$("#player");let playingBtn=null;
 const SPK=`<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a4.5 4.5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
-const hasA=k=>!!AUD[k];
+const hasA=k=>!!(AUD[k]&&AUD[k].length);
+const SPEAKERS=[1,2,3];
 const spk=(k,big)=>hasA(k)?`<button type="button" class="spk${big?" big":""}" data-play="${esc(k)}" aria-label="Play">${SPK}</button>`:"";
-function addClips(o,src){
+function addClips(o,src,spOverride){
   if(!o||o.app!=="jidr-audio"||!o.clips||typeof o.clips!=="object")return -1;
-  let n=0;
+  const sp=spOverride||(SPEAKERS.includes(+o.speaker)?+o.speaker:1);let n=0;
   Object.keys(o.clips).forEach(k=>{const c=o.clips[k];
-    if(/^[LWP]:/.test(k)&&c&&typeof c.m==="string"&&/^audio\//.test(c.m)&&typeof c.d==="string"&&c.d.length<3e6&&/^[A-Za-z0-9+/=]+$/.test(c.d.slice(0,200))){
-      if(AUD[k]&&AUD[k].url)URL.revokeObjectURL(AUD[k].url);AUD[k]={m:c.m,d:c.d,src};n++}});
+    if(/^[LWPT]:/.test(k)&&c&&typeof c.m==="string"&&/^audio\//.test(c.m)&&typeof c.d==="string"&&c.d.length<3e6&&/^[A-Za-z0-9+/=]+$/.test(c.d.slice(0,200))){
+      const arr=(AUD[k]||[]).filter(x=>{if(x.sp===sp&&x.src===src){if(x.url)URL.revokeObjectURL(x.url);return false}return true});
+      arr.push({m:c.m,d:c.d,src,sp});AUD[k]=arr;n++}});
   return n;
 }
+const pickClip=arr=>arr.length>1?arr[Math.floor(Math.random()*arr.length)]:arr[0];
 function play(k,btn){
-  const a=AUD[k];if(!a)return;
+  const arr=AUD[k];if(!arr||!arr.length)return;
+  /* more than one speaker: pick a voice at random, so the ear learns the sound, not one person */
+  const a=pickClip(arr);
   try{
     if(!a.url){const bin=atob(a.d),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);a.url=URL.createObjectURL(new Blob([u],{type:a.m}))}
     if(playingBtn)playingBtn.classList.remove("playing");
@@ -552,16 +601,18 @@ function play(k,btn){
     player.src=a.url;const p=player.play();if(p&&p.catch)p.catch(()=>{});
   }catch(e){}
 }
-player.addEventListener("ended",()=>{if(playingBtn)playingBtn.classList.remove("playing");playingBtn=null});
 function idb(){return new Promise((res,rej)=>{if(!window.indexedDB)return rej(new Error("no idb"));const r=indexedDB.open("jidr",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function idbOp(mode,fn){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction("kv",mode),st=t.objectStore("kv"),r=fn(st);t.oncomplete=()=>res(r&&r.result);t.onerror=()=>rej(t.error)})}
 const idbGet=k=>idbOp("readonly",s=>s.get(k));
 const idbSet=(k,v)=>idbOp("readwrite",s=>s.put(v,k));
 const idbDel=k=>idbOp("readwrite",s=>s.delete(k));
 async function loadAudio(){
-  Object.keys(AUD).forEach(k=>{if(AUD[k].url)URL.revokeObjectURL(AUD[k].url);delete AUD[k]});
-  try{const r=await fetch("jidr-audio.json",{cache:"no-cache"});if(r.ok)addClips(await r.json(),"host")}catch(e){}
-  try{const loc=await idbGet("audio");if(loc)addClips(loc,"local")}catch(e){}
+  Object.keys(AUD).forEach(k=>{AUD[k].forEach(x=>{if(x.url)URL.revokeObjectURL(x.url)});delete AUD[k]});
+  for(const sp of SPEAKERS){
+    const f=sp===1?"jidr-audio.json":`jidr-audio-${sp}.json`;
+    try{const r=await fetch(f,{cache:"no-cache"});if(r.ok)addClips(await r.json(),"host",sp)}catch(e){}
+    try{const loc=await idbGet(sp===1?"audio":"audio"+sp);if(loc)addClips(loc,"local",sp)}catch(e){}
+  }
   if(!Q)render();else renderStats();
 }
 const audioCount=()=>Object.keys(AUD).filter(k=>ITEMS[k]).length;
@@ -691,12 +742,34 @@ function closeSheet(fromPop){
   sheetOpen=false;
 }
 
+/* ================= easy reading ================= */
+function textCard(t){
+  const read=S.readT.includes(t.id),off=S.vz!=="full";
+  return `<div class="txt"><div class="row" style="justify-content:space-between"><b>${bi(esc(t.t[0]),esc(t.t[1]))}${t.spoken?` <span class="tag">${bi("Saudi","Саудовский")}</span>`:""}</b>${read?`<span class="tag">✓</span>`:""}</div>
+   <div class="ar story-t" lang="ar">${t.items.map(it=>`<span class="tl">${esc(off?bare(it.ar):it.ar)}</span>`).join(" ")}</div>
+   ${t.items.some(it=>hasA(it.key))?`<div class="row">${t.items.map(it=>spk(it.key)).join("")}</div>`:""}
+   <details><summary>${bi("Translation, line by line","Перевод по строкам")}</summary><div class="wl">${t.items.map(phraseRow).join("")}</div></details>
+   <button type="button" class="btn primary" data-textquiz="${t.id}">${bi("Questions about this text","Вопросы по тексту")}</button></div>`;
+}
+function buildTextQuiz(t){
+  setPool();const out=[];
+  t.items.forEach(it=>{const q=gP_mean(it);if(q)out.push(q)});
+  shuffle(t.items).slice(0,2).forEach(it=>{const q=pick([gP_order,gP_gap])(it)||gP_order(it);if(q)out.push(q)});
+  shuffle(t.items).slice(0,2).forEach(it=>{const q=gT_type(it);if(q)out.push(q)});
+  return out;
+}
+const nextText=()=>TEXTS.find(t=>isDone(t.step)&&!S.readT.includes(t.id));
+
 /* ================= fun facts ================= */
 const FACTS=(C.facts||[]).map((f,i)=>({id:i,step:f[0],k:f[1],en:f[2],ru:f[3]}));
 const FK={parallel:["🔗",["Parallels","Параллели"]],culture:["🌍",["Culture","Культура"]],structure:["🧩",["How Arabic works","Как устроен арабский"]],mnemonic:["💡",["Memory trick","Мнемоника"]],saudi:["🇸🇦",["Saudi Arabic","Саудовский арабский"]]};
 const factCard=f=>{const k=FK[f.k]||FK.structure;return `<div class="fact"><span class="fk">${k[0]} ${bi(k[1][0],k[1][1])}</span><p class="bl">${bi(esc(f.en),esc(f.ru))}</p></div>`};
 const factsOf=st=>FACTS.filter(f=>f.step===st.id);
 const unlockedFacts=()=>FACTS.filter(f=>!f.step||S.done.includes(f.step));
+function openText(id){
+  const t=TEXTS.find(x=>x.id===id);if(!t)return;
+  openSheet(`<div class="row" style="justify-content:space-between"><span class="kind">${bi("Easy reading","Лёгкое чтение")} · ${bi("after step","после шага")} ${t.step.si+1}</span><button type="button" class="x" data-closesheet aria-label="Close">×</button></div>${textCard(t)}`);
+}
 function openFact(){
   const all=unlockedFacts();if(!all.length)return;
   const fresh=all.filter(f=>!S.seenF.includes(f.id)),f=pick(fresh.length?fresh:all);
@@ -716,7 +789,7 @@ function sessionCard(cur){
    ${blk("ear",1,"5′",bi("Ear and letters","Слух и буквы"),started?bi("Sound pairs, heavy letters, look-alikes","Звуковые пары, тяжёлые буквы, похожие буквы"):bi("Opens after your first step","Откроется после первого шага"),'data-sess="ear"',!started)}
    ${blk("review",2,"8′",bi("Review","Повторение"),started?bi("A mix from what you've learned","Смесь из пройденного"):bi("Opens after your first step","Откроется после первого шага"),'data-sess="review"',!started)}
    ${blk("step",3,"10′",cur?`${bi("Next","Дальше")}: ${bi(esc(cur.t[0]),esc(cur.t[1]))}`:bi("All steps done","Все шаги пройдены"),cur?`${kindLabel(cur)} · ${counts(cur)}`:bi("Add lessons in More","Добавьте уроки во вкладке «Ещё»"),cur?`data-step="${cur.id}"`:"",!cur)}
-   ${blk("discover",4,"3′",bi("Read and discover","Читать и узнавать"),bi("A fun fact: parallels, culture, memory tricks","Интересный факт: параллели, культура, мнемоника"),"data-discover",false)}
+   ${blk("discover",4,"5′",bi("Read and discover","Читать и узнавать"),nextText()?`${bi("Easy reading","Лёгкое чтение")}: ${bi(esc(nextText().t[0]),esc(nextText().t[1]))}`:bi("A fun fact: parallels, culture, memory tricks","Интересный факт: параллели, культура, мнемоника"),"data-discover",false)}
   </section>`;
 }
 
@@ -762,6 +835,8 @@ function renderStep(){
    <details><summary>${bi("Sentence by sentence, with translation","По предложениям, с переводом")}</summary><div class="wl">${st.P.map(phraseRow).join("")}</div></details></section>`;
   if(restW.length)h+=`<section class="card"><h2>${bi("Words","Слова")} <small>· ${restW.length}</small></h2><div class="wl">${restW.map(w=>wordRow(w)).join("")}</div></section>`;
   if(st.P.length&&st.kind!=="story")h+=`<section class="card"><h2>${bi("Phrases","Фразы")} <small>· ${st.P.length}</small></h2><div class="wl">${st.P.map(phraseRow).join("")}</div></section>`;
+  const tx=TEXTS.filter(t=>t.step===st);
+  if(tx.length)h+=`<section class="card"><h2>${bi("Easy reading","Лёгкое чтение")}</h2>${tx.map(textCard).join("")}</section>`;
   const fs=factsOf(st);if(fs.length)h+=`<section class="card"><h2>${bi("Did you know","А вы знали")}</h2>${fs.map(factCard).join("")}</section>`;
   h+=`<div class="sticky-cta"><button type="button" class="btn primary big" data-stepquiz="${st.id}">${done?bi("Drill again","Повторить"):bi("I'm ready: drill it","Готово: тренировка")}</button></div>`;
   if(!done)h+=`<button type="button" class="btn link" data-skip="${st.id}" style="align-self:center">${bi("I already know this, skip","Я это знаю, пропустить")}</button>`;
@@ -802,7 +877,7 @@ function gL_sound(l){
   const extra=lookAlikes(l,4).filter(x=>!grp.includes(x)).slice(0,Math.max(0,3-(grp.length-1)));
   const sg=C.sounds[l.sg],a=hasA(l.key);
   const prompt=a?spk(l.key,true):`${cueHtml(l)}<p class="bl" style="max-width:34ch">${bi(esc(l.en),esc(l.ru))}</p>`;
-  return {kind:"choice",item:l,label:a?LBL.hear:LBL.descr,prompt,audio:a?l.key:null,opts:shuffle(grp.concat(extra)).map(x=>({k:x.c,html:`<span class="ar">${x.c}</span>`})),ans:l.c,after:`<small>${bi(esc(sg.en),esc(sg.ru))}</small>`};
+  return {kind:"choice",item:l,ct:spaced(sg.L),label:a?LBL.hear:LBL.descr,prompt,audio:a?l.key:null,opts:shuffle(grp.concat(extra)).map(x=>({k:x.c,html:`<span class="ar">${x.c}</span>`})),ans:l.c,after:`<small>${bi(esc(sg.en),esc(sg.ru))}</small>`};
 }
 function gL_inword(l){
   if(l.c==="ء")return null;
@@ -846,7 +921,7 @@ function similarWords(w,n){
 }
 function gW_mean(w){
   const ds=shuffle(pool.W.filter(x=>x!==w&&x.en!==w.en)).sort((a,b)=>(b.step===w.step)-(a.step===w.step)).slice(0,3);if(ds.length<2)return null;
-  return {kind:"choice",item:w,label:LBL.mean,prompt:bigAr(esc(w.ar),"q-word"),opts:shuffle([w,...ds]).map(x=>({k:x.key,html:bi(esc(x.en),esc(x.ru))})),ans:w.key,one:true};
+  return {kind:"choice",item:w,label:LBL.mean,prompt:bigAr(esc(vz(w)),"q-word"),opts:shuffle([w,...ds]).map(x=>({k:x.key,html:bi(esc(x.en),esc(x.ru))})),ans:w.key,one:true};
 }
 function gW_pick(w){
   const ds=similarWords(w,3);if(ds.length<2)return null;
@@ -882,8 +957,9 @@ function gW_pat(w){
   return {kind:"choice",item:w,label:LBL.pat,prompt:bigAr(hl(w.ar,w.root),"q-word"),opts:shuffle([w.pat,...others]).map(k=>({k,html:`<span class="ar sm">${patT(k)}</span><small>${bi(esc(C.pats[k].en),esc(C.pats[k].ru))}</small>`})),ans:w.pat};
 }
 function gP_mean(p){
-  const ds=shuffle(pool.P.filter(x=>x!==p&&x.en!==p.en)).slice(0,3);if(ds.length<1)return null;
-  return {kind:"choice",item:p,label:LBL.mean,prompt:bigAr(esc(p.ar),"q-phrase"),opts:shuffle([p,...ds]).map(x=>({k:x.key,html:bi(esc(x.en),esc(x.ru))})),ans:p.key,one:true};
+  const src=p.type==="T"?p.text.items.concat(pool.P):pool.P;
+  const ds=shuffle(src.filter(x=>x!==p&&x.en!==p.en)).slice(0,3);if(ds.length<1)return null;
+  return {kind:"choice",item:p,label:LBL.mean,prompt:bigAr(esc(vz(p)),"q-phrase"),opts:shuffle([p,...ds]).map(x=>({k:x.key,html:bi(esc(x.en),esc(x.ru))})),ans:p.key,one:true};
 }
 function gP_order(p){
   if(p.parts.length<2)return null;
@@ -918,10 +994,21 @@ function gW_pair(w){
   const aud=hasA(w.key)&&hasA(o.key);
   return {kind:"choice",item:w,label:aud?["Which word did you hear?","Какое слово прозвучало?"]:["Which one means this?","Какое из них значит это?"],
     prompt:aud?spk(w.key,true):meanHtml(w)+(picOf(w)?`<div class="q-pic">${picOf(w)}</div>`:""),audio:aud?w.key:null,
-    opts:shuffle([w,o]).map(x=>({k:x.key,html:`<span class="ar">${esc(x.ar)}</span>`})),ans:w.key,
+    opts:shuffle([w,o]).map(x=>({k:x.key,html:`<span class="ar">${esc(x.ar)}</span>`})),ans:w.key,ct:contrastOf(w.ar,o.ar),
     after:`<small>${bi(`${esc(o.ar)} = ${esc(o.en)}`,`${esc(o.ar)} = ${esc(o.ru)}`)}</small>`};
 }
 /* heavy letters: tap them in order */
+/* listen and type, with an Arabic phone-style keyboard */
+const KB=[["ض","ص","ث","ق","ف","غ","ع","ه","خ","ح","ج"],["ش","س","ي","ب","ل","ا","ت","ن","م","ك","ط"],["ء","ؤ","ر","ى","ة","و","ز","ظ","د","ذ"],["أ","إ","آ","ئ"]];
+const typeNorm=s=>nrm(String(s)).replace(/[؟،.!?,]/g,"").replace(/\s+/g," ").trim();
+function gT_type(it){
+  const target=skel(it.ar).replace(/[؟،.!?,]/g,"").trim();if(!target||target.length>36)return null;
+  const a=hasA(it.key);
+  if(!a&&it.type!=="W")return null;
+  return {kind:"type",item:it,label:a?["Listen and type","Слушайте и печатайте"]:["Type the word","Напечатайте слово"],
+    prompt:a?spk(it.key,true):meanHtml(it)+(picOf(it)?`<div class="q-pic">${picOf(it)}</div>`:""),audio:a?it.key:null,target,
+    hint:target.replace(/\S/g,"•")};
+}
 const HEAVY="خصضغطقظ";
 function gW_heavy(w){
   const sk=skel(w.ar);if(/\s/.test(sk)||sk.length<2)return null;
@@ -935,7 +1022,7 @@ function gW_pic(w){
   const p=picOf(w);if(!p)return null;
   if(Math.random()<.5){
     const ds=shuffle(uniq(Object.values(C.pics).filter(e=>e!==p))).slice(0,3);
-    return {kind:"choice",item:w,label:["Which picture?","Какая картинка?"],prompt:bigAr(esc(w.ar),"q-word"),opts:shuffle([p,...ds]).map(e=>({k:e,html:`<span class="pic">${e}</span>`})),ans:p};
+    return {kind:"choice",item:w,label:["Which picture?","Какая картинка?"],prompt:bigAr(esc(vz(w)),"q-word"),opts:shuffle([p,...ds]).map(e=>({k:e,html:`<span class="pic">${e}</span>`})),ans:p};
   }
   const ds=shuffle(pool.W.filter(x=>x!==w&&picOf(x)&&picOf(x)!==p)).slice(0,3);if(ds.length<2)return null;
   return {kind:"choice",item:w,label:LBL.findW,prompt:`<div class="q-pic">${p}</div>`,opts:shuffle([w,...ds]).map(x=>({k:x.key,html:`<span class="ar">${esc(x.ar)}</span>`})),ans:w.key};
@@ -972,7 +1059,7 @@ function gW_odd(w){
 }
 
 const TIERS={L:[[gL_name,gL_pick,gS_read,gL_form],[gL_pick,gL_sound,gL_inword,gS_find,gL_form],[gL_inword,gL_sound,gL_form,gS_find]],
-  W:[[gW_mean,gW_pick,gW_pic],[gW_pick,gW_listen,gW_pat,gW_root,gW_spot,gW_pair,gW_clitic,gW_heavy,gW_pic],[gW_spell,gW_root,gW_make,gW_listen,gW_spot,gW_pair,gW_odd,gW_clitic]],
+  W:[[gW_mean,gW_pick,gW_pic],[gW_pick,gW_listen,gW_pat,gW_root,gW_spot,gW_pair,gW_clitic,gW_heavy,gW_pic],[gW_spell,gW_root,gW_make,gW_listen,gW_spot,gW_pair,gW_odd,gW_clitic,gT_type]],
   P:[[gP_mean,gP_order],[gP_order,gP_gap],[gP_order,gP_gap]]};
 function genFor(it,tier){
   for(let t=tier;t>=0;t--){for(const g of shuffle(TIERS[it.type][t])){const q=g(it);if(q)return q}}
@@ -1034,6 +1121,7 @@ const DRILLS={
   review:{t:["Review","Повторение"],ok:()=>learnedItems().length>=4,build:buildReview},
   ear:{t:["Ear and letters","Слух и буквы"],ok:()=>{setPool();return pool.L.length>=2},build:buildEar},
   clitic:{t:["Little words that stick","Прилипающие слова"],ok:()=>WORDS.filter(w=>learned(w)&&CL_NOUNS.has(w.ar)).length>=2,build:()=>{setPool();const ns=pool.W.filter(w=>learned(w)&&CL_NOUNS.has(w.ar));return shuffle(ns.concat(ns,ns)).slice(0,10).map(gW_clitic).filter(Boolean)}},
+  type:{t:["Listen and type","Слушайте и печатайте"],ok:()=>WORDS.filter(learned).length>=3,build:()=>{setPool();const a=shuffle([...WORDS,...PHRASES,...TEXTS.flatMap(t=>t.items)].filter(x=>learned(x)&&hasA(x.key)));const b=shuffle(WORDS.filter(learned));return uniq(a.concat(b)).map(gT_type).filter(Boolean).slice(0,10)}},
   saudi:{t:["Saudi spoken","Саудовская речь"],ok:()=>[...WORDS,...PHRASES].filter(x=>learned(x)&&x.step.kind==="spoken").length>=3,build:()=>{setPool();const it=shuffle([...WORDS,...PHRASES].filter(x=>learned(x)&&(x.step.kind==="spoken"||x.step.spoken)));return it.slice(0,12).map(x=>x.type==="W"?(pick([gW_mean,gW_pick,gW_pic])(x)||gW_mean(x)):(pick([gP_order,gP_mean])(x)||gP_mean(x))).filter(Boolean)}},
   syll:{t:["Syllables","Слоги"],ok:()=>{setPool();return pool.L.filter(l=>gS_read(l)).length>=2},build:()=>{setPool();const c=pool.L.filter(l=>gS_read(l));return shuffle(c.concat(c,c)).slice(0,12).map(l=>pick([gS_read,gS_find])(l)).filter(Boolean)}},
   inside:{t:["Letters inside words","Буквы внутри слов"],ok:()=>{setPool();return pool.L.filter(l=>gL_form(l)).length>=2},build:()=>{setPool();const ls=pool.L.filter(l=>gL_form(l));const out=[];for(let i=0;i<14;i++){const g=pick([gL_form,gL_form,gL_inword,"spot"]);const q=g==="spot"?gW_spot(pick(pool.W.filter(learned).length?pool.W.filter(learned):pool.W)):g(pick(ls));if(q)out.push(q)}return out.slice(0,12)}},
@@ -1055,7 +1143,11 @@ function renderQuiz(){
   const q=cur(),pct=Math.round(Q.i/Q.qs.length*100);
   let h=`<section class="quiz"><div class="qhead"><button type="button" class="x" data-quit aria-label="Stop">×</button><div class="bar"><i style="width:${pct}%"></i></div><small>${Q.i+1}/${Q.qs.length}</small></div>
   <p class="qlabel">${bi(q.label[0],q.label[1])}</p><div class="qbox">${q.prompt}</div>`;
-  if(q.kind==="choice")h+=`<div class="opts${q.one?" one":""}">${q.opts.map(o=>`<button type="button" class="opt" data-opt="${esc(o.k)}">${o.html}</button>`).join("")}</div>`;
+  if(q.kind==="type")h+=`<div class="built ar typed" id="typed" lang="ar" dir="rtl"></div><small class="hint ar" dir="rtl">${q.hint}</small>
+   <div class="kb" dir="rtl">${KB.map(r=>`<div class="kbr">${r.map(c=>`<button type="button" class="kbk" data-kb="${c}">${c}</button>`).join("")}</div>`).join("")}
+   <div class="kbr"><button type="button" class="kbk wide" data-kbsp>${bi("space","пробел")}</button><button type="button" class="kbk" data-kbbk aria-label="Delete">⌫</button></div></div>
+   <button type="button" class="btn primary" data-tcheck>${bi("Check","Проверить")}</button>`;
+  else if(q.kind==="choice")h+=`<div class="opts${q.one?" one":""}">${q.opts.map(o=>`<button type="button" class="opt" data-opt="${esc(o.k)}">${o.html}</button>`).join("")}</div>`;
   else h+=`<div class="built ar" id="built" lang="ar"></div><div class="tiles" dir="rtl">${q.tiles.map((t,i)=>`<button type="button" class="tile${q.words?" w":""}" data-tile="${i}">${esc(t)}</button>`).join("")}</div>
    <div class="row" style="justify-content:center"><button type="button" class="btn" data-undo>⌫ ${bi("Undo","Назад")}</button><button type="button" class="btn primary" data-check disabled>${bi("Check","Проверить")}</button></div>`;
   h+=`<div id="fb"></div><button type="button" class="btn primary big" data-next hidden>${bi("Next","Дальше")}</button></section>`;
@@ -1070,8 +1162,34 @@ function itemReveal(it){
   if(it.type==="L")return `<div class="row"><span class="ar" style="font-size:40px">${it.c}</span><b class="ar lname">${it.name}</b><span>${bi(esc(it.cue[0]),esc(it.cue[1]))}</span>${spk(it.key)}</div>${it.mn?`<small>💡 ${bi(esc(it.mn[0]),esc(it.mn[1]))}</small>`:""}`;
   return `<div class="row"><span class="ar">${hl(it.ar,it.root)}</span>${spk(it.key)}${splitBtn(it.ar)}${trBtn(it)}</div><div>${bi(esc(it.en),esc(it.ru))}</div>`;
 }
+/* skills: last 40 answers per skill and per sound contrast */
+const SKILLS=[
+ ["shapes",["Letter shapes","Формы букв"],.85,["Find the letter","Which sound?","Which letter is pink?","Which letter is this?","Find its middle form","Find its start form","Find its end form"]],
+ ["sounds",["Hearing sound contrasts","Различение звуков"],.9,["Which letter fits this sound?","Which one do you hear?","Which word did you hear?","Which one means this?","Tap the heavy letters, in order"]],
+ ["vowels",["Vowels and syllables","Гласные и слоги"],.9,["Which vowel?","Find this syllable"]],
+ ["words",["Word meaning","Значение слов"],.85,["Find the word","Which picture?","Which spelling is right?","What did you hear?"]],
+ ["roots",["Roots and patterns","Корни и шаблоны"],.85,["Tap the root letters in order","Root + pattern = ?","Which pattern?","Which word has a different root?"]],
+ ["clitics",["Attached words","Прилипающие слова"],.85,["What is inside this word?"]],
+ ["typing",["Spelling and typing","Правописание и набор"],.8,["Build the word","Listen and type","Type the word"]],
+ ["sentences",["Phrases and reading","Фразы и чтение"],.85,["Put the words in order","Fill the gap"]],
+ ["listening",["Listening (with audio)","Аудирование (со звуком)"],.85,[]],
+ ["saudi",["Saudi spoken","Саудовская речь"],.85,[]]
+];
+const SKBYLABEL={};SKILLS.forEach(s=>s[3].forEach(l=>SKBYLABEL[l]=s[0]));
+function skillsOf(q){
+  const out=new Set();const l=q.label[0];
+  if(SKBYLABEL[l])out.add(SKBYLABEL[l]);
+  if(l==="What does it mean?")out.add(q.item.type==="W"?"words":"sentences");
+  if(q.audio)out.add("listening");
+  if(q.item.step&&(q.item.step.kind==="spoken"||q.item.step.spoken||(q.item.text&&q.item.text.spoken)))out.add("saudi");
+  return [...out];
+}
+const push40=(o,k,v)=>{const a=o[k]||(o[k]=[]);a.push(v?1:0);if(a.length>40)a.shift()};
+/* which two sounds a pair contrasts: vowel length, or the two letters that differ */
+function contrastOf(a,b){const x=nrm(a),y=nrm(b);if(x.length!==y.length)return "length";for(let i=0;i<x.length;i++)if(x[i]!==y[i])return [x[i],y[i]].sort().join(" / ");return "other"}
 function answer(ok,shownAns){
   const q=cur();Q.answered=true;grade(q.item.key,ok);
+  skillsOf(q).forEach(k=>push40(S.sk,k,ok));if(q.ct)push40(S.ct,q.ct,ok);
   if(ok)Q.ok++;else Q.wrong.push(q.item);
   save();
   const fb=$("#fb");
@@ -1083,7 +1201,7 @@ function answer(ok,shownAns){
   else nx.focus({preventScroll:true});
   renderStats();
 }
-function next(){if(!Q)return;Q.i++;Q.picked=[];Q.answered=false;render();window.scrollTo(0,0);if(Q.i<Q.qs.length)afterQuiz()}
+function next(){if(!Q)return;Q.i++;Q.picked=[];Q.answered=false;Q.typed="";render();window.scrollTo(0,0);if(Q.i<Q.qs.length)afterQuiz()}
 function pickOpt(btn){
   const q=cur();if(Q.answered)return;
   const ok=btn.dataset.opt===String(q.ans);
@@ -1095,6 +1213,13 @@ function tileTap(btn){
   const q=cur();if(Q.answered)return;
   Q.picked.push(+btn.dataset.tile);btn.disabled=true;updBuilt();
   if(Q.picked.length===q.need)check();
+}
+function typedSet(v){if(!Q)return;Q.typed=v;const el=$("#typed");if(el)el.textContent=v}
+function typeCheck(){
+  const q=cur();if(Q.answered)return;const got=Q.typed||"";
+  const ok=typeNorm(got)===typeNorm(q.target);
+  $("#typed").classList.add(ok?"ok":"no");$$(".kbk").forEach(b=>b.disabled=true);$("[data-tcheck]").disabled=true;
+  answer(ok,ok?"":`<div class="ar" dir="rtl">${esc(q.target)}</div><small>${bi("You typed","Вы напечатали")}: <span class="ai">${esc(got)||"—"}</span></small>`);
 }
 function builtStr(){const q=cur();return Q.picked.map(i=>q.tiles[i]).join(q.join)}
 function updBuilt(){const q=cur(),b=$("#built");b.textContent=q.mode==="root"||q.mode==="heavy"?Q.picked.map(i=>q.tiles[i]).join(" "):builtStr();const c=$("[data-check]");if(c)c.disabled=!Q.picked.length}
@@ -1129,8 +1254,31 @@ function finishQuiz(){
   if(Q.finished)return;Q.finished=true;
   if(Q.step){const st=STEPS.find(s=>s.id===Q.step);if(st)markDone(st);markSess("step")}
   if(Q.sess)markSess(Q.sess);
+  if(Q.text){if(!S.readT.includes(Q.text))S.readT.push(Q.text);markSess("discover")}
   save();
   if(Q.step&&Q.ok/Q.qs.length>=.6)setTimeout(confetti,80);
+}
+
+/* ================= skills and benchmarks ================= */
+const pct=a=>a&&a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length*100):null;
+function skillRow(name,arr,target){
+  const p=pct(arr),n=arr?arr.length:0;
+  return `<div class="skr"><div class="skr-t"><span>${name}</span><small>${n>=5?`${p}% · ${n} ${bi("answers","ответов")}`:bi("not enough answers yet","пока мало ответов")}</small></div>
+   <div class="skb"><i style="width:${n>=5?p:0}%"></i><b style="left:${Math.round(target*100)}%" title="benchmark"></b></div></div>`;
+}
+function skillsCard(){
+  const wl=WORDS.filter(learned),roots=uniq(wl.filter(w=>w.root).map(w=>w.root)).length,pats=uniq(wl.filter(w=>w.pat).map(w=>w.pat)).length;
+  const cts=Object.keys(S.ct).sort();
+  return `<details class="card skills"><summary><h2>${bi("Skills and benchmarks","Навыки и ориентиры")}</h2><small>${bi("Accuracy on your last 40 answers in each skill","Точность по последним 40 ответам в каждом навыке")}</small></summary>
+   <p class="lead">${bi("The thin line marks the benchmark from the research: about 90% for hearing contrasts and vowels, 85% for most other skills. It's a direction, not a test.","Тонкая линия — ориентир из исследований: около 90% для различения звуков и гласных, 85% для большинства остальных навыков. Это направление, а не экзамен.")}</p>
+   ${SKILLS.map(s=>skillRow(bi(s[1][0],s[1][1]),S.sk[s[0]],s[2])).join("")}
+   ${cts.length?`<h3>${bi("Sound contrasts","Звуковые контрасты")}</h3>${cts.map(c=>skillRow(c==="length"?bi("short vs long vowel","краткая и долгая гласная"):`<span class="ai">${esc(c)}</span>`,S.ct[c],.9)).join("")}`:""}
+   <h3>${bi("Milestones","Вехи")}</h3>
+   <div class="kv"><span>${bi("Letters","Буквы")}</span><span>${knownSet().size} / ${LET.length}</span></div>
+   <div class="kv"><span>${bi("Words (core goal: 500)","Слова (цель ядра: 500)")}</span><span>${wl.length} / 500</span></div>
+   <div class="kv"><span>${bi("Roots (core goal: 120)","Корни (цель ядра: 120)")}</span><span>${roots} / 120</span></div>
+   <div class="kv"><span>${bi("Patterns met","Знакомые шаблоны")}</span><span>${pats} / ${Object.keys(C.pats).length}</span></div>
+   <div class="kv"><span>${bi("Texts read","Прочитано текстов")}</span><span>${S.readT.length} / ${TEXTS.length}</span></div></details>`;
 }
 
 /* ================= Practice tab ================= */
@@ -1138,7 +1286,7 @@ function renderPractice(){
   if(!S.done.length)return `<section class="card"><h2>${bi("Practice","Тренировка")}</h2><p class="lead">${bi("Finish the first step on the Path to unlock drills.","Пройдите первый шаг на вкладке «Путь», чтобы открыть тренировки.")}</p><button type="button" class="btn primary" data-tab="path">${bi("Go to Path","К пути")}</button></section>`;
   const na=audioCount();
   const d=(id,ar,en,ru,cls)=>{const D=DRILLS[id],ok=D.ok();return `<button type="button" class="dr${cls?" "+cls:""}" data-drill="${id}" ${ok?"":"disabled"}><span class="ar">${ar}</span><b>${bi(D.t[0],D.t[1])}</b><small>${ok?bi(en,ru):bi("Opens as you go along the path","Откроется по ходу пути")}</small></button>`};
-  return `<div class="drills">
+  return skillsCard()+`<div class="drills">
    ${d("review","↻","A mix from everything you've learned, weakest first","Смесь из пройденного, сначала самое слабое","main")}
    ${d("ear","صَيف · سَيف",na?"Sound pairs, heavy letters, look-alikes, with audio":"Sound pairs, heavy letters, look-alikes. Even better with recordings",na?"Звуковые пары, тяжёлые буквы, похожие буквы, со звуком":"Звуковые пары, тяжёлые буквы, похожие буквы. С записями ещё лучше")}
    ${d("syll","بَ بِ بُ","Letters with vowels, before whole words","Буквы с гласными — до целых слов")}
@@ -1148,10 +1296,14 @@ function renderPractice(){
    ${d("spell","ك ت ا ب","Build words from loose letters","Собирайте слова из отдельных букв")}
    ${d("roots","ف ع ل","Find roots, plug them into patterns","Ищите корни, вставляйте в шаблоны")}
    ${d("clitic","وَبَيتُنا","Peel off and, with, my, our…","Отделяйте и, с, мой, наш…")}
+   ${d("type","⌨",na?"Hear a word, type it on an Arabic keyboard":"See a meaning, type the word on an Arabic keyboard",na?"Слушайте слово и печатайте на арабской клавиатуре":"Видите значение — печатайте слово на арабской клавиатуре")}
    ${d("phrases","…؟","Order and complete real phrases","Собирайте и дополняйте фразы")}
    ${d("saudi","وِش تَبغى؟","Everyday Saudi words and phrases","Повседневные саудовские слова и фразы")}
    ${d("listen","🔊",`Pick what you hear (${na} recordings)`,`Выбирайте услышанное (записей: ${na})`)}
-  </div>`;
+  </div>
+  <section class="card"><h2>${bi("Easy reading","Лёгкое чтение")} <small>· ${S.readT.length}/${TEXTS.length}</small></h2>
+   <p class="lead">${bi("Short texts made only of words from the path. Each one opens after its step, but you can read any of them anytime.","Короткие тексты только из слов пути. Каждый открывается после своего шага, но читать можно любой и когда угодно.")}</p>
+   <div class="tlist">${TEXTS.map(t=>`<button type="button" class="tli${isDone(t.step)?"":" later"}" data-opentext="${t.id}"><span>${S.readT.includes(t.id)?"✓":t.step.si+1}</span><b>${bi(esc(t.t[0]),esc(t.t[1]))}</b></button>`).join("")}</div></section>`;
 }
 
 /* ================= Letters tab ================= */
@@ -1171,6 +1323,12 @@ function renderRoots(){
   const roots=uniq(WORDS.filter(w=>w.root).map(w=>w.root));
   let h=`<section class="card"><h2>${bi("Patterns","Шаблоны")}</h2><p class="lead">${bi("ف ع ل stand in for any root. Swap in real root letters to make a word.","ف ع ل заменяют любой корень. Подставьте настоящие корневые буквы — получится слово.")}</p>
   <div class="pcards">${Object.keys(C.pats).map(k=>{const ex=WORDS.filter(w=>w.pat===k&&learned(w)).slice(0,2);const all=WORDS.filter(w=>w.pat===k).length;return `<button type="button" class="pc" data-pat="${k}"><span class="ar">${patT(k)}</span><small>${bi(esc(C.pats[k].en),esc(C.pats[k].ru))}</small>${ex.length?`<span class="ar ex">${ex.map(w=>hl(w.ar,w.root)).join(" · ")}</span>`:""}<small class="tag">${all} ${bi("examples","примеров")} ›</small></button>`}).join("")}</div></section>`;
+  const VF=[["v","I"],["f2","II"],["f3","III"],["f4","IV"],["f5","V"],["f6","VI"],["f7","VII"],["f8","VIII"],["f10","X"]];
+  const vroots=uniq(WORDS.filter(w=>w.root&&w.pat&&/^f\d/.test(w.pat)).map(w=>w.root));
+  if(vroots.length)h+=`<section class="card"><h2>${bi("Verb forms","Формы глагола")}</h2><p class="lead">${bi("One root across the verb forms. Tap a column heading to see the pattern; empty cells are forms the course hasn't taught yet.","Один корень в разных формах глагола. Нажмите на заголовок столбца, чтобы увидеть шаблон; пустые клетки — формы, которых в курсе пока нет.")}</p>
+   <div class="vgrid-wrap"><table class="vgrid"><thead><tr><th></th>${VF.map(([k,n])=>`<th><button type="button" class="pchip" data-pat="${k}">${n}</button></th>`).join("")}</tr></thead><tbody>
+   ${vroots.map(r=>`<tr><th class="ar rt">${spaced(r)}</th>${VF.map(([k])=>{const w=WORDS.find(x=>x.root===r&&x.pat===k);return `<td>${w?`<span class="ar${learned(w)?"":" dim"}" title="${esc(w.en)}">${esc(w.ar)}</span>`:""}</td>`}).join("")}</tr>`).join("")}
+   </tbody></table></div></section>`;
   h+=`<h2 style="margin-top:6px">${bi("Roots","Корни")}</h2>`;
   h+=roots.map(r=>{const ws=WORDS.filter(w=>w.root===r),k=ws.filter(learned).length;
     return `<details class="rt-d"><summary><span class="r-ar ar">${spaced(r)}</span><span class="r-t"><b>${ROOTM[r]?bi(esc(ROOTM[r][0]),esc(ROOTM[r][1])):""}</b><small>${k}/${ws.length} ${bi("learned","выучено")}</small></span><span class="chev">›</span></summary>
@@ -1183,7 +1341,7 @@ let MSG={};
 const msgInner=k=>MSG[k]?`<div class="msg ${MSG[k].kind}">${MSG[k].html}</div>`:"";
 function setMsg(k,kind,html){MSG[k]={kind,html};const el=$("#msg-"+k);if(el)el.innerHTML=msgInner(k)}
 const errList=errs=>`<ul>${errs.slice(0,8).map(e=>`<li>${esc(e)}</li>`).join("")}</ul>`+(errs.length>8?`<small>…and ${errs.length-8} more</small>`:"");
-const recLink=()=>{try{return new URL("record.html",location.href).href}catch(e){return "record.html"}};
+const recLink=sp=>{const f="record.html"+(sp>1?"?speaker="+sp:"");try{return new URL(f,location.href).href}catch(e){return f}};
 let deferredInstall=null,swReady=false,persisted=null;
 
 /* Lesson pack: {id, title, roots?:{"ركب":["ride","ехать"]}, steps:[{t:[en,ru], en?, ru?, root?, words:[[ar,tr,en,ru,root,pat]], phrases:[[ar,tr,en,ru]]}]} */
@@ -1299,14 +1457,15 @@ function restoreText(text){
 }
 async function importAudioText(text){
   let o;try{o=JSON.parse(text)}catch(e){return setMsg("audio","bad",bi("This is not a recordings file.","Это не файл с записями."))}
-  const tmp={};const n=(()=>{if(!o||o.app!=="jidr-audio"||!o.clips)return -1;let c=0;Object.keys(o.clips).forEach(k=>{const x=o.clips[k];if(/^[LWP]:/.test(k)&&x&&typeof x.m==="string"&&/^audio\//.test(x.m)&&typeof x.d==="string"){tmp[k]={m:x.m,d:x.d};c++}});return c})();
+  const tmp={};const n=(()=>{if(!o||o.app!=="jidr-audio"||!o.clips)return -1;let c=0;Object.keys(o.clips).forEach(k=>{const x=o.clips[k];if(/^[LWPT]:/.test(k)&&x&&typeof x.m==="string"&&/^audio\//.test(x.m)&&typeof x.d==="string"){tmp[k]={m:x.m,d:x.d};c++}});return c})();
   if(n<=0)return setMsg("audio","bad",bi("No recordings found in this file.","В файле нет записей."));
-  let prev=null;try{prev=await idbGet("audio")}catch(e){}
-  const merged={app:"jidr-audio",v:1,clips:Object.assign({},prev&&prev.clips||{},tmp)};
-  try{await idbSet("audio",merged)}catch(e){return setMsg("audio","bad",bi("Could not save recordings on this device.","Не удалось сохранить записи на устройстве."))}
-  addClips(merged,"local");
+  const sp=SPEAKERS.includes(+o.speaker)?+o.speaker:1,key=sp===1?"audio":"audio"+sp;
+  let prev=null;try{prev=await idbGet(key)}catch(e){}
+  const merged={app:"jidr-audio",v:1,speaker:sp,clips:Object.assign({},prev&&prev.clips||{},tmp)};
+  try{await idbSet(key,merged)}catch(e){return setMsg("audio","bad",bi("Could not save recordings on this device.","Не удалось сохранить записи на устройстве."))}
+  addClips(merged,"local",sp);
   const match=Object.keys(tmp).filter(k=>ITEMS[k]).length;
-  MSG.audio={kind:"ok",html:bi(`Loaded ${n} recordings (${match} match current lessons). Look for the speaker icons.`,`Загружено записей: ${n} (к урокам подходят: ${match}). Ищите значок динамика.`)};
+  MSG.audio={kind:"ok",html:bi(`Loaded ${n} recordings from speaker ${sp} (${match} match current lessons).`,`Загружено записей: ${n}, голос ${sp} (к урокам подходят: ${match}).`)};
   render();
 }
 function deviceInner(){
@@ -1322,19 +1481,23 @@ const refreshDevice=()=>{const el=$("#dev-card");if(el)el.innerHTML=deviceInner(
 function renderManage(){
   const na=audioCount(),total=Object.keys(ITEMS).length;
   const by=t=>Object.keys(AUD).filter(k=>k[0]===t&&ITEMS[k]).length;
-  const loc=Object.values(AUD).filter(a=>a.src==="local").length;
+  const loc=Object.values(AUD).flat().filter(a=>a.src==="local").length;
+  const perSp=sp=>Object.keys(AUD).filter(k=>ITEMS[k]&&AUD[k].some(x=>x.sp===sp)).length;
   const last=S.lastBackup?new Date(S.lastBackup).toLocaleDateString():null;
   return `<section class="card"><h2>${bi("Recordings","Записи")}</h2>
    <div class="bar"><i style="width:${Math.round(na/total*100)}%"></i></div>
-   <small>${na}/${total} ${bi("recorded","записано")} · ${bi("letters","буквы")} ${by("L")} · ${bi("words","слова")} ${by("W")} · ${bi("phrases","фразы")} ${by("P")}</small>
-   <p class="lead">${bi("Send this link to your friend. They record on their phone and send you one file, jidr-audio.json. Either load it here, or upload it to your GitHub repo next to index.html so every device gets it.","Отправьте эту ссылку другу. Друг записывает на своём телефоне и присылает один файл jidr-audio.json. Загрузите его здесь или положите в репозиторий GitHub рядом с index.html — тогда записи будут на всех устройствах.")}</p>
-   <div class="mono">${esc(recLink())}</div>
-   <div class="row"><button type="button" class="btn primary" data-act="share">${bi("Share link","Поделиться ссылкой")}</button><button type="button" class="btn" data-act="copylink">${bi("Copy link","Копировать")}</button>
+   <small>${na}/${total} ${bi("recorded","записано")} · ${bi("letters","буквы")} ${by("L")} · ${bi("words","слова")} ${by("W")} · ${bi("phrases","фразы")} ${by("P")} · ${bi("reading","чтение")} ${by("T")}</small>
+   <p class="lead">${bi("Each speaker records on their own phone and sends you one file. Load it here, or upload it to your GitHub repo next to index.html so every device gets it. With two voices the app mixes them at random, which trains your ear much better than one.","Каждый диктор записывает на своём телефоне и присылает один файл. Загрузите его здесь или положите в репозиторий GitHub рядом с index.html — тогда записи будут на всех устройствах. С двумя голосами приложение чередует их случайно, и слух тренируется гораздо лучше.")}</p>
+   ${[1,2].map(sp=>`<div class="spk-row"><div><b>${bi("Speaker","Голос")} ${sp}</b><small>${perSp(sp)} ${bi("items recorded","записей")} · ${bi("file","файл")} <span class="mono">${sp===1?"jidr-audio.json":"jidr-audio-2.json"}</span></small></div>
+    <div class="row"><button type="button" class="btn${sp===1?" primary":""}" data-act="share" data-sp="${sp}">${bi("Share link","Ссылка")}</button><button type="button" class="btn" data-act="copylink" data-sp="${sp}">${bi("Copy","Копировать")}</button></div></div>`).join("")}
+   <div class="row">
     <label class="btn">${bi("Load recordings file","Загрузить файл записей")}<input type="file" id="audio-file" accept=".json,application/json,text/plain" hidden></label>
     ${loc?`<button type="button" class="btn" data-act="rmaudio">${bi("Remove loaded recordings","Удалить загруженные записи")}</button>`:""}</div>
    <div id="msg-audio" aria-live="polite">${msgInner("audio")}</div></section>
   <section class="card"><h2>${bi("Settings","Настройки")}</h2>
    <div class="kv"><span>${bi("Transliteration under words","Транслитерация слов")}</span><span class="seg"><button type="button" data-set="tr:off" aria-pressed="${S.tr==="off"}">${bi("Off","Нет")}</button><button type="button" data-set="tr:tap" aria-pressed="${S.tr==="tap"}">${bi("Tap Aa","По нажатию")}</button></span></div>
+   <div class="kv"><span>${bi("Vowel marks in drills and texts","Огласовки в упражнениях и текстах")}</span><span class="seg"><button type="button" data-set="vz:full" aria-pressed="${S.vz==="full"}">${bi("Full","Все")}</button><button type="button" data-set="vz:fade" aria-pressed="${S.vz==="fade"}">${bi("Fade","Убывают")}</button><button type="button" data-set="vz:off" aria-pressed="${S.vz==="off"}">${bi("Off","Нет")}</button></span></div>
+   <p class="lead" style="font-size:13px">${bi("“Fade” drops the marks on words you know well, the way adult texts are written. Word lists always keep them.","«Убывают»: на хорошо знакомых словах огласовки исчезают, как во взрослых текстах. В списках слов они остаются всегда.")}</p>
    <div class="kv"><span>${bi("Jump to next question when right","Сразу дальше, если верно")}</span><span class="seg"><button type="button" data-set="auto:1" aria-pressed="${S.auto}">${bi("On","Да")}</button><button type="button" data-set="auto:0" aria-pressed="${!S.auto}">${bi("Off","Нет")}</button></span></div></section>
   <section class="card"><h2>${bi("Add lessons","Добавить уроки")}</h2>
    <p class="lead">${bi("Tap “Copy prompt”, paste it into a chat with Claude with a topic, then paste the reply here. New steps appear at the end of the Path. Progress is not touched.","Нажмите «Скопировать запрос», вставьте его в чат с Claude и укажите тему, затем вставьте ответ сюда. Новые шаги появятся в конце пути. Прогресс не затрагивается.")}</p>
@@ -1352,7 +1515,14 @@ function renderManage(){
    <textarea id="restore-text" class="ta sm" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Backup to restore" placeholder="Paste a backup here · Вставьте копию сюда"></textarea>
    <button type="button" class="btn" data-act="restore">${bi("Restore from pasted text","Восстановить из текста")}</button>
    <div id="msg-backup" aria-live="polite">${msgInner("backup")}</div></section>
-  <section class="card" id="dev-card">${deviceInner()}</section>`;
+  <section class="card" id="dev-card">${deviceInner()}</section>
+  <section class="card"><h2>${bi("About and licenses","О приложении и лицензии")}</h2>
+   <p class="lead">${bi("Jidr is free and open. Copyright © 2026 Natalia.","Jidr — свободное и открытое приложение. Copyright © 2026 Natalia.")}</p>
+   <div class="kv"><span>${bi("App code","Код приложения")}</span><span><a href="LICENSE">GNU AGPL-3.0-or-later</a></span></div>
+   <div class="kv"><span>${bi("Lessons and texts","Уроки и тексты")}</span><span><a href="LICENSE-CONTENT.txt">CC BY-NC-SA 4.0</a></span></div>
+   <div class="kv"><span>${bi("Fonts","Шрифты")}</span><span><a href="fonts/LICENSE-Amiri.txt">Amiri</a>, <a href="fonts/LICENSE-Onest.txt">Onest</a>, <a href="fonts/LICENSE-Unbounded.txt">Unbounded</a>: SIL OFL 1.1</span></div>
+   <div class="kv"><span>${bi("Recordings","Записи")}</span><span>${bi("not licensed: they belong to the speakers","без лицензии: принадлежат дикторам")}</span></div>
+   <p class="muted" style="font-size:13px">${bi("You may use, change and share the code, also on a server, if your version stays under the AGPL and its source is offered to its users. You may share and adapt the lessons for non-commercial use, with credit, under the same license. Details are in README.md in the repository.","Код можно использовать, менять и распространять, в том числе на сервере, если ваша версия остаётся под AGPL и её исходный код доступен пользователям. Уроки можно распространять и переделывать в некоммерческих целях, с указанием авторства и под той же лицензией. Подробности — в README.md в репозитории.")}</p></section>`;
 }
 async function copyText(text,k,en,ru){
   try{await navigator.clipboard.writeText(text);setMsg(k,"ok",bi(en,ru))}
@@ -1366,9 +1536,10 @@ async function act(t){
   if(a==="dl"){download("jidr-backup-"+dayStr()+".json",backupJSON());MSG.backup={kind:"ok",html:bi("Backup downloaded. Check your Downloads folder.","Копия скачана. Проверьте «Загрузки».")};return render()}
   if(a==="copybk")return copyText(backupJSON(),"backup","Backup copied. Paste it into a note or a message to yourself.","Копия скопирована. Вставьте её в заметку или сообщение себе.");
   if(a==="restore")return restoreText($("#restore-text").value);
-  if(a==="copylink")return copyText(recLink(),"audio","Link copied.","Ссылка скопирована.");
-  if(a==="share"){if(navigator.share){try{await navigator.share({title:"Jidr recorder",text:"Could you record these Arabic words for me?",url:recLink()})}catch(e){}return}return copyText(recLink(),"audio","Link copied.","Ссылка скопирована.")}
-  if(a==="rmaudio"){if(!confirm("Remove recordings loaded on this device? Recordings on your website stay."))return;try{await idbDel("audio")}catch(e){}MSG.audio=null;return loadAudio()}
+  const sp=+(t.dataset.sp||1);
+  if(a==="copylink")return copyText(recLink(sp),"audio","Link copied.","Ссылка скопирована.");
+  if(a==="share"){if(navigator.share){try{await navigator.share({title:"Jidr recorder",text:"Could you record these Arabic words for me?",url:recLink(sp)})}catch(e){}return}return copyText(recLink(sp),"audio","Link copied.","Ссылка скопирована.")}
+  if(a==="rmaudio"){if(!confirm("Remove recordings loaded on this device? Recordings on your website stay."))return;for(const k of ["audio","audio2","audio3"]){try{await idbDel(k)}catch(e){}}MSG.audio=null;return loadAudio()}
   if(a==="install"&&deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.finally(()=>{deferredInstall=null;refreshDevice()})}
 }
 document.addEventListener("change",e=>{
@@ -1395,12 +1566,18 @@ document.addEventListener("click",e=>{
   const d=t.dataset;
   if(d.play!==undefined){e.stopPropagation();return play(d.play,t)}
   if(d.closesheet!==undefined)return closeSheet();
-  if(d.discover!==undefined)return openFact();
+  if(d.discover!==undefined){const nt=t.closest(".sess")&&nextText();if(nt)return openText(nt.id);return openFact()}
+  if(d.textquiz){const tx=TEXTS.find(x=>x.id===d.textquiz);if(!tx)return;if(sheetOpen)closeSheet();return startQuiz(buildTextQuiz(tx),{text:tx.id})}
+  if(d.opentext)return openText(d.opentext);
   if(d.sess){const D=DRILLS[d.sess];if(!D||!D.ok())return;return startQuiz(D.build(),{drill:d.sess,sess:d.sess})}
   if(d.pat&&!d.opt)return openPat(d.pat);
   if(d.split!==undefined){const sp=t.nextElementSibling;if(sp){sp.hidden=!sp.hidden;t.setAttribute("aria-pressed",String(!sp.hidden))}return}
   if(d.tr!==undefined){const s=document.createElement("span");s.className="trs";s.textContent=d.tr;t.replaceWith(s);return}
   if(Q){
+    if(d.kb!==undefined){if(!Q.answered)typedSet((Q.typed||"")+d.kb);return}
+    if(d.kbsp!==undefined){if(!Q.answered)typedSet((Q.typed||"")+" ");return}
+    if(d.kbbk!==undefined){if(!Q.answered)typedSet([...(Q.typed||"")].slice(0,-1).join(""));return}
+    if(d.tcheck!==undefined)return typeCheck();
     if(d.opt!==undefined)return pickOpt(t);
     if(d.tile!==undefined)return tileTap(t);
     if(d.undo!==undefined)return undo();
@@ -1422,6 +1599,13 @@ document.addEventListener("click",e=>{
   if(d.playall){const ks=[...d.playall].map(c=>"L:"+c).filter(hasA);let i=0;const nx=()=>{if(i<ks.length){play(ks[i++]);player.onended=()=>setTimeout(nx,350)}else player.onended=null};return nx()}
   if(d.set){const [k,v]=d.set.split(":");S[k]=k==="auto"?v==="1":v;save();return render()}
   if(d.act)return act(t);
+});
+document.addEventListener("keydown",e=>{
+  if(!Q||Q.i>=Q.qs.length||cur().kind!=="type"||Q.answered)return;
+  if(e.key==="Enter"){e.preventDefault();return typeCheck()}
+  if(e.key==="Backspace"){e.preventDefault();return typedSet([...(Q.typed||"")].slice(0,-1).join(""))}
+  if(e.key===" "){e.preventDefault();return typedSet((Q.typed||"")+" ")}
+  if(e.key&&e.key.length===1&&/[\u0621-\u064A]/.test(e.key)){e.preventDefault();typedSet((Q.typed||"")+e.key)}
 });
 window.addEventListener("popstate",()=>{if(ignorePop){ignorePop=false;return}if(sheetOpen)return closeSheet(true);if(Q){Q=null;return render()}if(UI.step){UI.step=null;return render()}});
 

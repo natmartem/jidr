@@ -857,6 +857,129 @@ facts: [
  ["","parallel","Sahara is just صَحراء, “desert”, so the Sahara Desert is the “Desert Desert”.","Сахара — это просто صَحراء, «пустыня», так что «пустыня Сахара» — «пустыня Пустыня»."],
  ["","parallel","Giraffe comes from زَرافة, monsoon from مَوسِم (season), safari from سَفَر (journey) via Swahili.","«Жираф» — от زَرافة, «муссон» — от مَوسِم (сезон), «сафари» — от سَفَر (путешествие) через суахили."],
  ["","parallel","Spanish has thousands of words of Arabic origin, many starting with al-: alcalde from القاضي (the judge), almacén from المَخزَن (storehouse), aldea from الضَّيعة (village).","В испанском тысячи слов арабского происхождения, многие начинаются с al-: alcalde от القاضي (судья), almacén от المَخزَن (склад), aldea от الضَّيعة (деревня)."],
+ ["s12","parallel","Standard Arabic has three cases, like a lighter Russian system: -u for the subject (как именительный), -a for the object (винительный), -i after prepositions and in “of” phrases (родительный). Saudi speech, like all dialects, has dropped them.","В литературном арабском три падежа — облегчённая русская система: -у для подлежащего (как именительный), -а для дополнения (винительный), -и после предлогов и в сочетаниях «чего/кого» (родительный). Саудовская речь, как и все диалекты, их потеряла."],
  ["","structure","Arabic has no capital letters. Instead, each letter changes its shape depending on its position in the word.","В арабском нет заглавных букв. Вместо этого каждая буква меняет форму в зависимости от места в слове."]
+],
+
+/* Easy reading: short texts unlocked after a step. Lines: [arabic, transliteration ("" = none), English, Russian]. Audio key "T:" + arabic. */
+texts: [
+{ id:"t01", after:"s04", t:["Where is everyone?","Где все?"], lines:[
+ ["أَينَ أُمّي؟","","Where is my mom?","Где мама?"],
+ ["أُمُّكِ في البَيت.","","Your mom is at home.","Твоя мама дома."],
+ ["وَأَبي؟","","And my dad?","А папа?"],
+ ["أَبوكِ في المَكتَب.","","Your dad is at the office.","Твой папа в офисе."],
+ ["وَأَنتِ؟ أَنا هُنا!","","And you? I'm here!","А ты? Я здесь!"]]},
+{ id:"t02", after:"s05", t:["Coffee or milk?","Кофе или молоко?"], lines:[
+ ["أَنتِ تُحِبّينَ القَهوة؟","","Do you like coffee?","Ты любишь кофе?"],
+ ["لا، أُحِبُّ الحَليب.","","No, I like milk.","Нет, я люблю молоко."],
+ ["أَخي يُحِبُّ القَهوة.","","My brother likes coffee.","Мой брат любит кофе."],
+ ["وَأُختي تُحِبُّ القَهوةَ وَالحَليب.","","And my sister likes coffee and milk.","А моя сестра любит кофе и молоко."]]},
+{ id:"t03", after:"s07", t:["Breakfast","Завтрак"], lines:[
+ ["هٰذا خُبز وَهٰذِهِ جُبنة.","","This is bread and this is cheese.","Это хлеб, а это сыр."],
+ ["الخُبزُ جَديد.","","The bread is fresh.","Хлеб свежий."],
+ ["أُريدُ ماءً بارِداً.","","I want cold water.","Я хочу холодной воды."],
+ ["وَأَنتَ، ماذا تُريد؟","","And you, what do you want?","А ты что хочешь?"],
+ ["أُريدُ قَهوةً حارّة.","","I want hot coffee.","Я хочу горячий кофе."]]},
+{ id:"t04", after:"v01", t:["My camel","Мой верблюд"], lines:[
+ ["هٰذا جَمَل.","","This is a camel.","Это верблюд."],
+ ["الجَمَلُ كَبير.","","The camel is big.","Верблюд большой."],
+ ["قَدَمُ الجَمَلِ كَبيرة.","","The camel's foot is big.","У верблюда большая нога."],
+ ["هٰذا الجَمَلُ لي.","","This camel is mine.","Этот верблюд мой."],
+ ["أُحِبُّ جَمَلي.","","I love my camel.","Я люблю своего верблюда."]]},
+{ id:"t05", after:"s09", t:["My friend","Мой друг"], lines:[
+ ["هٰذا صَديقي.","","This is my friend.","Это мой друг."],
+ ["اِسمُهُ كَريم.","","His name is Karim.","Его зовут Карим."],
+ ["كَريم يُحِبُّ الشّاي.","","Karim likes tea.","Карим любит чай."],
+ ["في الصَّباحِ نَشرَبُ الشّاي.","","In the morning we drink tea.","Утром мы пьём чай."],
+ ["وَفي المَساءِ نَأكُلُ الخُبزَ وَالجُبنة.","","And in the evening we eat bread and cheese.","А вечером мы едим хлеб с сыром."]]},
+{ id:"t06", after:"c01", t:["Our house","Наш дом"], lines:[
+ ["بَيتُنا كَبير.","","Our house is big.","Наш дом большой."],
+ ["في بَيتِنا باب كَبير.","","Our house has a big door.","В нашем доме большая дверь."],
+ ["هٰذِهِ أُمّي، وَهٰذا أَخي.","","This is my mom, and this is my brother.","Это моя мама, а это мой брат."],
+ ["كِتابُ أَخي جَديد.","","My brother's book is new.","Книга моего брата новая."],
+ ["أَينَ كِتابُكِ؟","","Where is your book?","Где твоя книга?"]]},
+{ id:"t07", after:"s10", t:["At school","В школе"], lines:[
+ ["هٰذِهِ مَدرَسَتي.","","This is my school.","Это моя школа."],
+ ["المَدرَسةُ كَبيرة.","","The school is big.","Школа большая."],
+ ["أَدرُسُ في المَدرَسة.","","I study at the school.","Я учусь в школе."],
+ ["المُدَرِّسُ جَديد.","","The teacher is new.","Учитель новый."],
+ ["الدَّرسُ اليَومَ جَميل.","","Today's lesson is nice.","Урок сегодня хороший."]]},
+{ id:"t08", after:"s11", t:["Tea or coffee?","Чай или кофе?"], lines:[
+ ["ماذا تَشرَبينَ؟","","What will you drink?","Что ты будешь пить?"],
+ ["أَشرَبُ الشّاي.","","I'll drink tea.","Я буду чай."],
+ ["وَماذا تَأكُلين؟","","And what will you eat?","А что ты будешь есть?"],
+ ["آكُلُ الخُبزَ وَالبَيض.","","I'll eat bread and eggs.","Я буду хлеб и яйца."],
+ ["شُكراً!","","Thank you!","Спасибо!"]]},
+{ id:"t09", after:"s12", t:["At the restaurant","В ресторане"], lines:[
+ ["أَنا في المَطعَم.","","I'm at the restaurant.","Я в ресторане."],
+ ["الطَّعامُ هُنا طَيِّب.","","The food here is good.","Еда здесь хорошая."],
+ ["عِندي رُزّ وَلَحم.","","I have rice and meat.","У меня рис и мясо."],
+ ["صَديقي مَعي.","","My friend is with me.","Мой друг со мной."],
+ ["هُوَ طالِب.","","He is a student.","Он студент."]]},
+{ id:"t10", after:"e01", t:["Summer","Лето"], lines:[
+ ["الصَّيفُ هُنا حارّ.","","Summer here is hot.","Лето здесь жаркое."],
+ ["الشَّمسُ كَبيرة.","","The sun is big.","Солнце большое."],
+ ["في الصَّيفِ نَشرَبُ الماءَ كَثيراً.","","In summer we drink a lot of water.","Летом мы пьём много воды."],
+ ["كَلبي يُحِبُّ الماء.","","My dog loves water.","Моя собака любит воду."]]},
+{ id:"t11", after:"d01", spoken:1, t:["Saudi: hi!","Саудовский: привет!"], lines:[
+ ["هَلا! كيفَك؟","","Hi! How are you?","Привет! Как ты?"],
+ ["الحَمدُ لله، تَمام. وَأَنتَ؟","","Fine, thank God. And you?","Нормально, слава Богу. А ты?"],
+ ["زين، الحَمدُ لله.","","Good, thank God.","Хорошо, слава Богу."],
+ ["حَيّاك الله في بيتي!","","Welcome to my home!","Добро пожаловать ко мне домой!"]]},
+{ id:"t12", after:"s14", t:["Work","Работа"], lines:[
+ ["أَبي يَعمَلُ في الجامِعة.","","My dad works at the university.","Мой папа работает в университете."],
+ ["هُوَ مُعَلِّم.","","He is a teacher.","Он учитель."],
+ ["أُمّي تَعمَلُ في مَكتَب.","","My mom works in an office.","Моя мама работает в офисе."],
+ ["وَأَنا طالِبة.","","And I'm a student.","А я студентка."],
+ ["أَدرُسُ العَرَبيّة.","","I study Arabic.","Я учу арабский."]]},
+{ id:"t13", after:"d02", spoken:1, t:["Saudi: where to?","Саудовский: куда?"], lines:[
+ ["وين تَروحين؟","","Where are you going? (to a woman)","Куда ты идёшь? (женщине)"],
+ ["أَروح الجامِعة.","","I'm going to the university.","Я иду в университет."],
+ ["الحين؟","","Now?","Сейчас?"],
+ ["إيه، الحين. وَأَنتَ؟","","Yes, now. And you?","Да, сейчас. А ты?"],
+ ["أَنا أَروح البيت.","","I'm going home.","Я иду домой."]]},
+{ id:"t14", after:"s15", t:["My week","Моя неделя"], lines:[
+ ["اليَومَ أَدرُسُ العَرَبيّة.","","Today I study Arabic.","Сегодня я учу арабский."],
+ ["الآنَ أَشرَبُ القَهوة.","","Right now I'm drinking coffee.","Сейчас я пью кофе."],
+ ["غَداً أَعمَلُ في المَكتَب.","","Tomorrow I work at the office.","Завтра я работаю в офисе."],
+ ["في اللَّيلِ أَنا في البَيت.","","At night I'm at home.","Ночью я дома."]]},
+{ id:"t15", after:"s17", t:["The bakery","Пекарня"], lines:[
+ ["المَخبَزُ قَريب مِن بَيتي.","","The bakery is close to my house.","Пекарня рядом с моим домом."],
+ ["في الصَّباحِ أُريدُ خُبزاً جَديداً.","","In the morning I want fresh bread.","Утром я хочу свежего хлеба."],
+ ["الخُبزُ هُناكَ طَيِّب.","","The bread there is good.","Хлеб там хороший."],
+ ["وَالمَطبَخُ في بَيتي صَغير.","","And the kitchen in my house is small.","А кухня у меня дома маленькая."]]},
+{ id:"t16", after:"s18", t:["My family","Моя семья"], lines:[
+ ["عائِلَتي كَبيرة.","","My family is big.","Моя семья большая."],
+ ["عِندي أَخ وَأُخت.","","I have a brother and a sister.","У меня есть брат и сестра."],
+ ["أُختي عِندَها طِفل صَغير.","","My sister has a little child.","У моей сестры маленький ребёнок."],
+ ["جَدّي وَجَدَّتي في بَيتِنا.","","My grandfather and grandmother are at our house.","Дедушка и бабушка у нас дома."],
+ ["أُحِبُّ عائِلَتي.","","I love my family.","Я люблю свою семью."]]},
+{ id:"t17", after:"s19", t:["Going out","В город"], lines:[
+ ["المَحَطّةُ بَعيدة؟","","Is the station far?","Станция далеко?"],
+ ["لا، المَحَطّةُ قَريبة.","","No, the station is close.","Нет, станция рядом."],
+ ["السَّيّارةُ هُنا.","","The car is here.","Машина здесь."],
+ ["الباصُ عَلى اليَسار.","","The bus is on the left.","Автобус слева."]]},
+{ id:"t18", after:"s20", t:["At the market","На рынке"], lines:[
+ ["أَنا في السّوق.","","I'm at the market.","Я на рынке."],
+ ["بِكَم التُّفّاح؟","","How much are the apples?","Сколько стоят яблоки?"],
+ ["التُّفّاحُ رَخيص.","","The apples are cheap.","Яблоки дешёвые."],
+ ["وَالجُبنةُ غالية جِدّاً.","","And the cheese is very expensive.","А сыр очень дорогой."],
+ ["عِندي نُقود قَليلة.","","I have a little money.","У меня мало денег."]]},
+{ id:"t19", after:"s21", t:["Bigger and better","Больше и лучше"], lines:[
+ ["بَيتُ أَخي أَكبَرُ مِن بَيتي.","","My brother's house is bigger than mine.","Дом брата больше моего."],
+ ["لٰكِنَّ بَيتي أَجمَل.","","But my house is more beautiful.","Но мой дом красивее."],
+ ["القَهوةُ أَحسَنُ مِن الشّاي؟","","Is coffee better than tea?","Кофе лучше чая?"],
+ ["لا، الشّايُ أَحسَن!","","No, tea is better!","Нет, чай лучше!"]]},
+{ id:"t20", after:"s23", t:["How are you today?","Как ты сегодня?"], lines:[
+ ["كَيفَ حالُكِ اليَوم؟","","How are you today? (to a woman)","Как ты сегодня? (женщине)"],
+ ["أَنا مُتعَبة قَليلاً.","","I'm a little tired.","Я немного устала."],
+ ["وَأَنا جائِع!","","And I'm hungry!","А я голодный!"],
+ ["نَذهَبُ إِلى المَطعَم؟","","Shall we go to the restaurant?","Пойдём в ресторан?"],
+ ["نَعَم! أَنا سَعيدة الآن.","","Yes! Now I'm happy.","Да! Теперь я довольна."]]},
+{ id:"t21", after:"d04", spoken:1, t:["Saudi: tomorrow, then","Саудовский: тогда завтра"], lines:[
+ ["يَلّا، نَروح السّوق؟","","Come on, shall we go to the market?","Давай, пойдём на рынок?"],
+ ["الحين؟ أَنا تَعبانة شْوَيّ.","","Now? I'm a bit tired.","Сейчас? Я немного устала."],
+ ["مَعليش، بُكرة.","","No problem, tomorrow.","Ничего, завтра."],
+ ["خَلاص، بُكرة إن شاء الله.","","OK then, tomorrow, God willing.","Договорились, завтра, если Бог даст."]]}
 ]
 };
