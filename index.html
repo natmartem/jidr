@@ -1341,6 +1341,9 @@ let MSG={};
 const msgInner=k=>MSG[k]?`<div class="msg ${MSG[k].kind}">${MSG[k].html}</div>`:"";
 function setMsg(k,kind,html){MSG[k]={kind,html};const el=$("#msg-"+k);if(el)el.innerHTML=msgInner(k)}
 const errList=errs=>`<ul>${errs.slice(0,8).map(e=>`<li>${esc(e)}</li>`).join("")}</ul>`+(errs.length>8?`<small>…and ${errs.length-8} more</small>`:"");
+/* the GitHub repo behind this site: natmartem.github.io/jidr/ → github.com/natmartem/jidr */
+const REPO=(()=>{try{const m=location.hostname.match(/^([^.]+)\.github\.io$/),seg=location.pathname.split("/").filter(Boolean)[0];
+  if(m)return `https://github.com/${m[1]}/${seg&&!seg.includes(".")?seg:m[1]+".github.io"}`}catch(e){}return "https://github.com/natmartem/jidr"})();
 const recLink=sp=>{const f="record.html"+(sp>1?"?speaker="+sp:"");try{return new URL(f,location.href).href}catch(e){return f}};
 let deferredInstall=null,swReady=false,persisted=null;
 
@@ -1518,6 +1521,7 @@ function renderManage(){
   <section class="card" id="dev-card">${deviceInner()}</section>
   <section class="card"><h2>${bi("About and licenses","О приложении и лицензии")}</h2>
    <p class="lead">${bi("Jidr is free and open. Copyright © 2026 natmartem. Built with AI assistance (Claude); designed, curated and tested by natmartem.","Jidr — свободное и открытое приложение. Copyright © 2026 natmartem. Создано с помощью ИИ (Claude); задумано, отобрано и протестировано natmartem.")}</p>
+   <div class="kv"><span>${bi("Source code","Исходный код")}</span><span><a href="${esc(REPO)}" target="_blank" rel="noopener">${esc(REPO.replace("https://",""))}</a></span></div>
    <div class="kv"><span>${bi("App code","Код приложения")}</span><span><a href="LICENSE">GNU AGPL-3.0-or-later</a></span></div>
    <div class="kv"><span>${bi("Lessons and texts","Уроки и тексты")}</span><span><a href="LICENSE-CONTENT.txt">CC BY-NC-SA 4.0</a></span></div>
    <div class="kv"><span>${bi("Fonts","Шрифты")}</span><span><a href="fonts/LICENSE-Amiri.txt">Amiri</a>, <a href="fonts/LICENSE-Onest.txt">Onest</a>, <a href="fonts/LICENSE-Unbounded.txt">Unbounded</a>: SIL OFL 1.1</span></div>
