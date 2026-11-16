@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- Jidr · Copyright © 2026 Natalia · SPDX-License-Identifier: AGPL-3.0-or-later · see LICENSE and README.md -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -47,6 +48,7 @@ details.sec>summary::-webkit-details-marker{display:none}
 .play:disabled{opacity:.3}
 .timer{font:600 13px var(--f-display);color:var(--rec);min-width:28px}
 .hidedone .it.done{display:none}
+.recnote{margin:0;padding:8px 16px;background:var(--tint);font-size:14px;font-weight:500}
 .msg{border-radius:10px;padding:10px 12px;font-size:14px}
 .msg.ok{background:var(--good-tint)}
 .msg.bad{background:var(--bad-tint)}
@@ -91,7 +93,7 @@ const MAXS={L:4,W:6,P:12};
 /* ---- item list: letters first, then each step's words and phrases ---- */
 const SECTIONS=[{t:"Letter sounds",items:C.letters.map(l=>({key:"L:"+l[0],ar:l[0],say:l[8],tr:l[2],en:l[1]}))}];
 C.steps.forEach((s,i)=>{const items=(s.words||[]).map(w=>({key:"W:"+w[0],ar:w[0],tr:w[1],en:w[2]})).concat((s.phrases||[]).map(p=>({key:"P:"+p[0],ar:p[0],tr:p[1],en:p[2],ph:1})));
-  if(items.length)SECTIONS.push({t:"Step "+(i+1)+" · "+s.t[0],items})});
+  if(items.length)SECTIONS.push({t:"Step "+(i+1)+" · "+s.t[0],items,rec:s.rec||""})});
 const ALL=SECTIONS.flatMap(s=>s.items);
 /* ---- storage (IndexedDB on this phone) ---- */
 function db(){return new Promise((res,rej)=>{const r=indexedDB.open("jidr-rec",1);r.onupgradeneeded=()=>r.result.createObjectStore("clips");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
@@ -117,7 +119,7 @@ function rowHtml(it){
 }
 function renderList(){
   const firstOpen=SECTIONS.findIndex(s=>s.items.some(i=>!CLIPS[i.key]));
-  $("#list").innerHTML=SECTIONS.map((s,i)=>`<details class="sec"${i===firstOpen?" open":""}><summary><h2>${esc(s.t)}</h2><span class="cnt"></span></summary>${s.items.map(rowHtml).join("")}</details>`).join("");
+  $("#list").innerHTML=SECTIONS.map((s,i)=>`<details class="sec"${i===firstOpen?" open":""}><summary><h2>${esc(s.t)}</h2><span class="cnt"></span></summary>${s.rec?`<p class="recnote">${esc(s.rec)}</p>`:""}${s.items.map(rowHtml).join("")}</details>`).join("");
   progress();
 }
 /* ---- recording ---- */

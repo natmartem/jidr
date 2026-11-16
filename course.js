@@ -1,3 +1,4 @@
+/* Jidr course content · Copyright © 2026 Natalia · SPDX-License-Identifier: CC-BY-NC-SA-4.0 · see LICENSE-CONTENT.txt */
 /* Jidr course data. Shared by index.html (the app) and record.html (the recorder).
    Word:   [arabic with vowel marks, transliteration, English, Russian, root ("" if none), pattern code ("" if none)]
    Phrase: [arabic, transliteration, English, Russian]
@@ -25,9 +26,9 @@ letters: [
 ["س","sīn","s","s as in sun","«с»","n",1,"sin","سَ — sa"],
 ["ش","shīn","sh","sh as in ship","«ш»","a3",1,"sin","شَ — sha"],
 ["ص","ṣād","ṣ","a heavy s: tongue pulled back and low","«с» с оттянутым назад языком, глубже и «темнее»","n",1,"sad","صَ — ṣa"],
-["ض","ḍād","ḍ","a heavy d, same trick as ṣ","тяжёлое «д», тот же приём, что у ṣ","a1",1,"sad","ضَ — ḍa"],
+["ض","ḍād","ḍ","a heavy d, same trick as ص","тяжёлое «д», тот же приём, что у ص","a1",1,"sad","ضَ — ḍa"],
 ["ط","ṭāʾ","ṭ","a heavy t","тяжёлое «т»","n",1,"ta","طَ — ṭa"],
-["ظ","ẓāʾ","ẓ","a heavy dh","тяжёлое «з» с языком между зубами","a1",1,"ta","ظَ — ẓa"],
+["ظ","ẓāʾ","ẓ","a heavy th, as in this","тяжёлое th (как в this)","a1",1,"ta","ظَ — ẓa"],
 ["ع","ʿayn","ʿ","a squeezed-throat “ah”, no English match","«а» со сжатым горлом; в русском нет","n",1,"ayn","عَ — ʿa"],
 ["غ","ghayn","gh","a gargled r, like the French r","картавое «г», как французское r","a1",1,"ayn","غَ — gha"],
 ["ف","fāʾ","f","f as in fan","«ф»","a1",1,"fa","فَ — fa"],
@@ -51,14 +52,14 @@ shapes: {
 
 /* Letters that sound alike — drilled together */
 sounds: [
- {L:"سصث", t:["s · ṣ · th","s · ṣ · th"], en:"ṣ is s with the tongue pulled back (the vowel around it darkens). ث is th as in think.", ru:"ṣ — это s с оттянутым назад языком (гласная рядом темнеет). ث — английское th в think."},
- {L:"زظذ", t:["z · ẓ · dh","z · ẓ · dh"], en:"ذ is the th in this. ظ is the same sound, heavy.", ru:"ذ — английское th в this. ظ — тот же звук, только «тяжёлый»."},
- {L:"تط", t:["t · ṭ","t · ṭ"], en:"ط is a heavy t: the back of the tongue rises, the a after it sounds like “u”.", ru:"ط — тяжёлое т: корень языка поднят, «а» после него звучит глубже."},
- {L:"دض", t:["d · ḍ","d · ḍ"], en:"ض is a heavy d. It is so typical that Arabic is called “the language of ḍād”.", ru:"ض — тяжёлое д. Он настолько характерен, что арабский называют «языком ḍād»."},
- {L:"هحخ", t:["h · ḥ · kh","h · ḥ · kh"], en:"ه is a light breath, ح a strong breath from the throat, خ a scrape like Russian х.", ru:"ه — лёгкий выдох, ح — сильный выдох из горла, خ — хрип, как русское х."},
- {L:"ءعا", t:["ʾ · ʿ · a","ʾ · ʿ · a"], en:"ء is a clean stop, ع squeezes the throat, ا is just a long a.", ru:"ء — чистая смычка, ع — сжатое горло, ا — просто долгое а."},
- {L:"كق", t:["k · q","k · q"], en:"ق is a k made further back, almost in the throat.", ru:"ق — это к, сделанное глубже, почти в горле."},
- {L:"خغ", t:["kh · gh","kh · gh"], en:"Same place in the throat: خ is voiceless (х), غ is voiced (a French r).", ru:"Одно место в горле: خ глухой (х), غ звонкий (французское r)."}
+ {L:"سصث", t:["Plain s, dark s, lisped s","Простое с, тёмное с, шепелявое с"], en:"ص is س with the tongue pulled back: listen to the vowel after it, it goes dark. ث is th as in think.", ru:"ص — это س с оттянутым назад языком: слушайте гласную после неё, она темнеет. ث — th, как в think."},
+ {L:"زظذ", t:["z, dark th, th as in this","з, тёмное th, th как в this"], en:"ذ is th as in this. ظ is the same sound made heavy.", ru:"ذ — th, как в this. ظ — тот же звук, только тяжёлый."},
+ {L:"تط", t:["t and dark t","т и тёмное т"], en:"ط is a heavy ت: the back of the tongue rises and the vowel after it sounds deep and dark.", ru:"ط — тяжёлое ت: корень языка поднимается, и гласная после неё звучит глубоко и темно."},
+ {L:"دض", t:["d and dark d","д и тёмное д"], en:"ض is a heavy د. It is so typical that Arabic is called “the language of ض”.", ru:"ض — тяжёлое د. Он настолько характерен, что арабский называют «языком ض»."},
+ {L:"هحخ", t:["Light breath, strong breath, scrape","Лёгкий выдох, сильный выдох, хрип"], en:"ه is a light breath, ح a strong breath from the throat, خ a scrape like Russian х.", ru:"ه — лёгкий выдох, ح — сильный выдох из горла, خ — хрип, как русское х."},
+ {L:"ءعا", t:["Catch, squeeze, open a","Смычка, сжатие, открытое а"], en:"ء is a clean stop, ع squeezes the throat, ا is just a long a.", ru:"ء — чистая смычка, ع — сжатое горло, ا — просто долгое а."},
+ {L:"كق", t:["k and deep k","к и глубокое к"], en:"ق is a k made further back, almost in the throat. In Saudi speech it often turns into g.", ru:"ق — это к, сделанное глубже, почти в горле. В саудовской речи часто звучит как г."},
+ {L:"خغ", t:["Voiceless and voiced scrape","Глухой и звонкий хрип"], en:"Same place in the throat: خ is voiceless like Russian х, غ is voiced like a French r.", ru:"Одно место в горле: خ глухой, как русское х, غ звонкий, как французское r."}
 ],
 
 /* Patterns: root letters ف ع ل stand in for any root */
@@ -75,7 +76,15 @@ pats: {
  fi:  {t:"فِعال",   en:"a thing (noun)",           ru:"предмет (существительное)"},
  fa:  {t:"فَعال",   en:"a thing (noun)",           ru:"предмет (существительное)"},
  fu:  {t:"فُعُل",   en:"plural",                    ru:"множественное число"},
- afl: {t:"أَفعال",  en:"plural",                    ru:"множественное число"}
+ afl: {t:"أَفعال",  en:"plural",                    ru:"множественное число"},
+ f2:  {t:"فَعَّلَ",  en:"make someone do it (form II)", ru:"заставить / научить делать (II)"},
+ f3:  {t:"فاعَلَ",  en:"do it with someone (form III)", ru:"делать с кем-то (III)"},
+ f4:  {t:"أَفعَلَ",  en:"cause it to happen (form IV)", ru:"вызвать действие (IV)"},
+ f5:  {t:"تَفَعَّلَ", en:"do it to yourself (form V)", ru:"делать для себя, -ся (V)"},
+ f6:  {t:"تَفاعَلَ", en:"do it to each other (form VI)", ru:"делать друг с другом (VI)"},
+ f7:  {t:"اِنفَعَلَ", en:"it happens to it (form VII)", ru:"с ним это случается (VII)"},
+ f8:  {t:"اِفتَعَلَ", en:"do it for yourself, together (form VIII)", ru:"делать для себя, вместе (VIII)"},
+ f10: {t:"اِستَفعَلَ",en:"seek it, use it (form X)", ru:"искать, использовать (X)"}
 },
 
 roots: {
@@ -94,7 +103,11 @@ roots: {
  "سير":["go, travel","идти, ехать"], "قطر":["line up, train","выстраивать, поезд"], "بعد":["far","далеко"], "حطط":["put down","класть"],
  "رخص":["cheap","дешёвый"], "حسن":["good","хороший"], "رسل":["send","посылать"], "سعد":["happy","счастье"], "تعب":["tire","уставать"],
  "جوع":["hunger","голод"], "مرض":["illness","болезнь"], "خير":["good","добро"], "سلم":["peace","мир"], "كلم":["speak","говорить"],
- "سأل":["ask","спрашивать"], "شهر":["month","месяц"], "عفو":["pardon","прощать"], "فضل":["favour","милость"], "سهل":["easy","лёгкий"], "أهل":["family, welcome","семья, родные"]
+ "سأل":["ask","спрашивать"], "قدم":["step forward, foot","шаг вперёд, нога"], "ذهب":["go; gold","идти; золото"],
+ "دلل":["show the way","указывать путь"], "ضلل":["go astray","сбиваться с пути"], "كلب":["dog","собака"], "هرم":["pyramid, old age","пирамида, старость"],
+ "حرم":["forbidden, sacred","запретный, священный"], "خول":["maternal uncle","дядя по матери"], "حول":["change, state","изменение, состояние"], "ألم":["pain","боль"],
+ "تمم":["complete","завершать"], "بغي":["desire","желать"], "روح":["go","идти"], "شوف":["see","видеть"], "بكر":["early","рано"], "جيء":["come","приходить"],
+ "تمر":["dates","финики"], "حقق":["truth, right","истина, право"], "خلص":["finish","заканчивать"], "قبل":["face, accept","встречать, принимать"], "كسر":["break","ломать"], "شهر":["month","месяц"], "عفو":["pardon","прощать"], "فضل":["favour","милость"], "سهل":["easy","лёгкий"], "أهل":["family, welcome","семья, родные"]
 },
 
 steps: [
@@ -230,6 +243,34 @@ steps: [
    ["هٰذا جَميل","hādhā jamīl","This is beautiful","Это красиво"],
    ["ماذا تُريد؟","mādhā turīd?","What do you want?","Что ты хочешь?"]]},
 
+{ id:"v01", kind:"sound", pairs:[["جَمَل","جَمال"],["قَدَم","قادِم"],["كَتَبَ","كاتَبَ"]],
+  t:["Short and long vowels","Краткие и долгие гласные"],
+  en:"A long vowel is a full letter (ا ي و) and is held about twice as long. Russian and Spanish ignore vowel length, so train your ear: one extra alif turns a camel into beauty.",
+  ru:"Долгая гласная пишется целой буквой (ا ي و) и тянется примерно вдвое дольше. В русском и испанском долгота не важна, поэтому тренируйте слух: один лишний алиф превращает верблюда в красоту.",
+  rec:"These come in pairs that differ only in a short or long vowel. Please make the long vowels clearly long.",
+  words:[
+   ["جَمَل","jamal","camel","верблюд","جمل",""],
+   ["جَمال","jamāl","beauty","красота","جمل","fa"],
+   ["قَدَم","qadam","foot","ступня, нога","قدم",""],
+   ["قادِم","qādim","coming, next","приходящий, следующий","قدم","dr"],
+   ["كاتَبَ","kātaba","he corresponded with","он переписывался с","كتب","f3"]],
+  phrases:[
+   ["الجَمَلُ جَميل","al-jamalu jamīl","The camel is beautiful","Верблюд красивый"],
+   ["كَتَبَ لي","kataba lī","He wrote to me","Он мне написал"]]},
+
+{ id:"r01", kind:"story",
+  t:["Story: at home","Рассказ: дома"],
+  en:"Your first text. Read it in Arabic first, out loud if you can, then open the translation.",
+  ru:"Ваш первый текст. Сначала прочитайте по-арабски, лучше вслух, потом откройте перевод.",
+  words:[],
+  phrases:[
+   ["هٰذا بَيتي.","hādhā baytī.","This is my house.","Это мой дом."],
+   ["البَيتُ كَبير وَجَميل.","al-baytu kabīr wa-jamīl.","The house is big and beautiful.","Дом большой и красивый."],
+   ["أُمّي في البَيت.","ummī fī l-bayt.","My mom is at home.","Мама дома."],
+   ["أَبي في المَكتَب.","abī fī l-maktab.","My dad is at the office.","Папа в офисе."],
+   ["أُريدُ قَهوة وَخُبزاً.","urīdu qahwa wa-khubzan.","I want coffee and bread.","Я хочу кофе и хлеб."],
+   ["القَهوةُ حارّة.","al-qahwatu ḥārra.","The coffee is hot.","Кофе горячий."]]},
+
 { id:"s08", kind:"root", root:"حبب",
   t:["Love: ح ب ب","Любовь: ح ب ب"],
   en:"A root can double its last letter. The mark ّ (shadda) writes a doubled letter once. فَعيل makes a quality, مَفعول the one it happens to.",
@@ -265,6 +306,21 @@ steps: [
    ["ما اسمُكَ؟","mā smuka?","What is your name?","Как тебя зовут?"],
    ["اِسمي ناتاليا","ismī Natalia","My name is Natalia","Меня зовут Наталья"],
    ["شُكراً جَزيلاً","shukran jazīlan","Thank you very much","Большое спасибо"]]},
+
+{ id:"c01", kind:"grammar",
+  t:["Little words that stick","Маленькие слова, которые прилипают"],
+  en:"Arabic glues small words onto bigger ones. At the start: وَ and, بِـ with, لِـ for, الـ the. At the end: ـي my, ـكَ your (to a man), ـكِ your (to a woman), ـهُ his, ـها her, ـنا our, ـهُم their. Peel them off and the core word appears.",
+  ru:"Арабский приклеивает маленькие слова к большим. В начале: وَ и, بِـ с, لِـ для, الـ артикль. В конце: ـي мой, ـكَ твой (мужчине), ـكِ твой (женщине), ـهُ его, ـها её, ـنا наш, ـهُم их. Отклейте их, и появится основное слово.",
+  words:[
+   ["بَيتُنا","baytunā","our house","наш дом","بيت",""],
+   ["بَيتُكَ","baytuka","your house (to a man)","твой дом (мужчине)","بيت",""],
+   ["بَيتُها","baytuhā","her house","её дом","بيت",""],
+   ["كِتابُهُ","kitābuhu","his book","его книга","كتب",""],
+   ["وَكِتابي","wa-kitābī","and my book","и моя книга","كتب",""],
+   ["لِأُمّي","li-ummī","for my mom","для моей мамы","",""]],
+  phrases:[
+   ["هٰذا كِتابُها","hādhā kitābuhā","This is her book","Это её книга"],
+   ["أَينَ بَيتُكِ؟","ayna baytuki?","Where is your house? (to a woman)","Где твой дом? (женщине)"]]},
 
 { id:"s10", kind:"root", root:"درس",
   t:["Study: د ر س","Учёба: د ر س"],
@@ -317,6 +373,41 @@ steps: [
    ["عِندي سُؤال","ʿindī suʾāl","I have a question","У меня вопрос"],
    ["أَتَكَلَّمُ العَرَبيّةَ قَليلاً","atakallamu l-ʿarabiyyata qalīlan","I speak Arabic a little","Я немного говорю по-арабски"]]},
 
+{ id:"e01", kind:"sound", pairs:[["سَيف","صَيف"],["تين","طين"],["دَلَّ","ضَلَّ"],["كَلب","قَلب"]],
+  t:["Heavy letters and dark vowels","Тяжёлые буквы и тёмные гласные"],
+  en:"ص ض ط ظ are the emphatic, “heavy” letters: the back of the tongue pulls toward the throat. You know the feeling from Russian: «сы» is darker than «си». Arabic pushes it further. The easiest cue is the vowel: after a heavy letter it sounds deep and dark. Compare each pair and listen to the vowel, not the consonant.",
+  ru:"ص ض ط ظ — эмфатические, «тяжёлые» буквы: корень языка оттягивается к горлу. Вы знаете это ощущение по-русски: «сы» темнее, чем «си». Арабский идёт дальше. Проще всего слушать гласную: после тяжёлой буквы она звучит глубоко и темно. Сравните каждую пару и слушайте гласную, а не согласную.",
+  rec:"Minimal pairs: please say both words of each pair with your natural heavy and light sounds, without exaggerating.",
+  words:[
+   ["سَيف","sayf","sword","меч","",""],
+   ["صَيف","ṣayf","summer","лето","",""],
+   ["تين","tīn","figs","инжир","",""],
+   ["طين","ṭīn","mud, clay","глина","",""],
+   ["دَلَّ","dalla","he showed the way","он указал путь","دلل",""],
+   ["ضَلَّ","ḍalla","he got lost","он заблудился","ضلل",""],
+   ["كَلب","kalb","dog","собака","كلب",""]],
+  phrases:[
+   ["الصَّيفُ حارّ","aṣ-ṣayfu ḥārr","Summer is hot","Лето жаркое"]]},
+
+{ id:"d01", kind:"spoken",
+  t:["Saudi: hello and how are you","Саудовский: привет и как дела"],
+  en:"Standard Arabic is for reading, news and signs. At home, in shops and with friends Saudis speak dialect. These are the everyday forms used in Riyadh (Najdi) and Jeddah (Hijazi); where they differ, it's marked. In Saudi speech ق often sounds like g.",
+  ru:"Литературный арабский — для чтения, новостей и вывесок. Дома, в магазинах и с друзьями саудовцы говорят на диалекте. Здесь повседневные формы Эр-Рияда (Неджд) и Джидды (Хиджаз); где они различаются, это отмечено. В саудовской речи ق часто звучит как г.",
+  rec:"Saudi pronunciation, please: say these as people do in Riyadh or Jeddah.",
+  words:[
+   ["هَلا","halā","hi","привет","",""],
+   ["زين","zēn","good, fine","хорошо","",""],
+   ["تَمام","tamām","fine, OK","нормально, ок","تمم",""],
+   ["إيه","ēh","yes","да","",""],
+   ["مَرّة","marra","very","очень","",""],
+   ["شْوَيّ","shway","a little","немного","",""]],
+  phrases:[
+   ["حَيّاك الله","ḥayyāk allāh","Welcome (to a man)","Добро пожаловать (мужчине)"],
+   ["كيفَك؟","kēfak?","How are you? (to a man)","Как ты? (мужчине)"],
+   ["وِش لونَك؟","wish lōnak?","How are you? (Najdi)","Как дела? (Неджд)"],
+   ["الحَمدُ لله، زين","al-ḥamdu lillāh, zēn","Fine, thank God","Хорошо, слава Богу"],
+   ["زين مَرّة","zēn marra","Very good","Очень хорошо"]]},
+
 { id:"s13", kind:"root", root:"علم",
   t:["Know: ع ل م","Знать: ع ل م"],
   en:"تَفعيل is the act of making something happen: تَعليم, teaching. Compare مُعَلِّم (teacher) with مُدَرِّس: same pattern, another root.",
@@ -331,6 +422,21 @@ steps: [
    ["لا أَعرِفُ","lā aʿrifu","I don't know","Я не знаю"],
    ["مَن مُعَلِّمُكِ؟","man muʿallimuki?","Who is your teacher? (to a woman)","Кто твой учитель? (женщине)"]]},
 
+{ id:"e02", kind:"sound", pairs:[["هَرَم","حَرَم"],["خال","حال"],["أَلَم","عَلَم"]],
+  t:["Sounds from the throat","Звуки из горла"],
+  en:"Arabic uses the whole throat. From the bottom up: ء a clean catch, ه a light breath, ح a tight breath, ع the same tight spot with voice, then خ and غ higher up, where Russian х lives. Spanish jota (ajo) is close to خ.",
+  ru:"Арабский использует всё горло. Снизу вверх: ء — чистая смычка, ه — лёгкий выдох, ح — напряжённый выдох, ع — то же место, но с голосом, а выше — خ и غ, там, где живёт русское х. Испанская jota (ajo) близка к خ.",
+  rec:"Minimal pairs: please say both words of each pair clearly.",
+  words:[
+   ["هَرَم","haram","pyramid","пирамида","هرم",""],
+   ["حَرَم","ḥaram","sanctuary","святыня, заповедное место","حرم",""],
+   ["خال","khāl","uncle (mother's brother)","дядя (брат матери)","خول",""],
+   ["حال","ḥāl","state, condition","состояние","حول",""],
+   ["أَلَم","alam","pain","боль","ألم",""],
+   ["عَلَم","ʿalam","flag","флаг","علم",""]],
+  phrases:[
+   ["هٰذا عَلَمُ السُّعودية","hādhā ʿalamu s-suʿūdiyya","This is the Saudi flag","Это флаг Саудовской Аравии"]]},
+
 { id:"s14", kind:"root", root:"عمل",
   t:["Work: ع م ل","Работа: ع م ل"],
   en:"The doer, the place and the action from one root.",
@@ -344,6 +450,29 @@ steps: [
   phrases:[
    ["أَينَ تَعمَلُ؟","ayna taʿmalu?","Where do you work?","Где ты работаешь?"],
    ["أَعمَلُ في الجامِعة","aʿmalu fī l-jāmiʿa","I work at the university","Я работаю в университете"]]},
+
+{ id:"d02", kind:"spoken",
+  t:["Saudi: want, go, come","Саудовский: хочу, иду, прихожу"],
+  en:"Everyday Saudi verbs. Standard أُريد (I want) becomes أَبغى; in Riyadh you'll also hear أَبي. “What?” is وِش in Najdi and إيش in Hijazi. Many dialect words are written without vowel marks, as Saudis text them.",
+  ru:"Повседневные саудовские глаголы. Литературное أُريد (хочу) превращается в أَبغى; в Эр-Рияде ещё говорят أَبي. «Что?» — وِش в Недже и إيش в Хиджазе. Многие диалектные слова пишут без огласовок, как в переписке.",
+  rec:"Saudi pronunciation, please.",
+  words:[
+   ["أَبغى","abgha","I want","я хочу","بغي",""],
+   ["أَبي","abī","I want (Najdi)","я хочу (Неджд)","",""],
+   ["وين","wēn","where?","где?","",""],
+   ["وِش","wish","what? (Najdi)","что? (Неджд)","",""],
+   ["إيش","ēsh","what? (Hijazi)","что? (Хиджаз)","",""],
+   ["ليش","lēsh","why?","почему?","",""],
+   ["الحين","al-ḥīn","now","сейчас","",""],
+   ["بُكرة","bukra","tomorrow","завтра","بكر",""],
+   ["أَروح","arūḥ","I go","я иду","روح",""],
+   ["أَجي","ajī","I come","я прихожу","جيء",""],
+   ["أَشوف","ashūf","I see","я вижу","شوف",""]],
+  phrases:[
+   ["وين تَروح؟","wēn tarūḥ?","Where are you going?","Куда ты идёшь?"],
+   ["وِش تَبغى؟","wish tabgha?","What do you want? (Najdi)","Что ты хочешь? (Неджд)"],
+   ["أَبغى أَروح البيت","abgha arūḥ al-bēt","I want to go home","Я хочу домой"],
+   ["الحين؟ لا، بُكرة","al-ḥīn? lā, bukra","Now? No, tomorrow","Сейчас? Нет, завтра"]]},
 
 { id:"s15", kind:"theme",
   t:["Time","Время"],
@@ -390,6 +519,22 @@ steps: [
   phrases:[
    ["المَخبَزُ قَريب","al-makhbazu qarīb","The bakery is close","Пекарня рядом"],
    ["أَنا في المَطبَخ","anā fī l-maṭbakh","I'm in the kitchen","Я на кухне"]]},
+
+{ id:"r02", kind:"story",
+  t:["Story: my day","Рассказ: мой день"],
+  en:"A day in six sentences. Notice الـ melting into sun letters: الظُّهر, الصَّباح.",
+  ru:"День в шести предложениях. Обратите внимание, как الـ сливается с «солнечными» буквами: الظُّهر.",
+  words:[
+   ["ثُمَّ","thumma","then","потом","",""],
+   ["أَذهَبُ","adhhabu","I go","я иду","ذهب",""],
+   ["إِلى","ilā","to","в, к","",""]],
+  phrases:[
+   ["صَباحاً أَشرَبُ القَهوة.","ṣabāḥan ashrabu l-qahwa.","In the morning I drink coffee.","Утром я пью кофе."],
+   ["ثُمَّ أَذهَبُ إِلى الجامِعة.","thumma adhhabu ilā l-jāmiʿa.","Then I go to the university.","Потом я иду в университет."],
+   ["أَنا طالِبة وَأَدرُسُ العَرَبيّة.","anā ṭāliba wa-adrusu l-ʿarabiyya.","I'm a student and I study Arabic.","Я студентка и учу арабский."],
+   ["المُعَلِّمُ طَيِّب.","al-muʿallimu ṭayyib.","The teacher is nice.","Учитель хороший."],
+   ["في الظُّهرِ آكُلُ في المَطعَم.","fī ẓ-ẓuhri ākulu fī l-maṭʿam.","At noon I eat at the restaurant.","В полдень я ем в ресторане."],
+   ["مَساءً أَنا في البَيتِ مَعَ صَديقي.","masāʾan anā fī l-bayti maʿa ṣadīqī.","In the evening I'm at home with my friend.","Вечером я дома с другом."]]},
 
 { id:"s18", kind:"theme",
   t:["Family","Семья"],
@@ -442,6 +587,40 @@ steps: [
    ["هٰذا غالي جِدّاً","hādhā ghālī jiddan","This is very expensive","Это очень дорого"],
    ["أُريدُ هٰذا","urīdu hādhā","I want this","Я хочу это"]]},
 
+{ id:"d03", kind:"spoken",
+  t:["Saudi: at the café and the shop","Саудовский: в кафе и в магазине"],
+  en:"فيه means “there is”, ما فيه “there isn't”. حَقّ means “belonging to”: هٰذا حَقّي, this is mine (said “haggi”, with ق as g).",
+  ru:"فيه значит «есть, имеется», ما فيه — «нет». حَقّ значит «принадлежащий»: هٰذا حَقّي — это моё (звучит «хагги», ق как г).",
+  rec:"Saudi pronunciation, please.",
+  words:[
+   ["تَمر","tamr","dates","финики","تمر",""],
+   ["سُكَّر","sukkar","sugar","сахар","",""],
+   ["فيه","fīh","there is","есть, имеется","",""],
+   ["حَقّي","ḥaggī","mine","мой, моё","حقق",""],
+   ["عَشان","ʿashān","because, so that","потому что, чтобы","",""],
+   ["بِدون","bidūn","without","без","",""]],
+  phrases:[
+   ["فيه قَهوة؟","fīh gahwa?","Is there coffee?","Есть кофе?"],
+   ["بِدون سُكَّر، لَو سَمَحت","bidūn sukkar, law samaḥt","Without sugar, please","Без сахара, пожалуйста"],
+   ["هٰذا حَقّي","hādhā ḥaggī","This is mine","Это моё"],
+   ["كَم الحِساب؟","kam al-ḥsāb?","How much is the bill?","Сколько с меня?"]]},
+
+{ id:"r03", kind:"story", spoken:1,
+  t:["Story: a café in Riyadh","Рассказ: кафе в Эр-Рияде"],
+  en:"A short Saudi dialogue. Read it, then try saying the customer's lines yourself.",
+  ru:"Короткий саудовский диалог. Прочитайте, потом попробуйте сами сказать реплики гостьи.",
+  rec:"A short dialogue in Saudi dialect: please read it naturally, as in a café.",
+  words:[
+   ["تَبغين","tabghīn","you want (to a woman)","ты хочешь (женщине)","بغي",""]],
+  phrases:[
+   ["هَلا! حَيّاك الله.","halā! ḥayyāk allāh.","Hi! Welcome.","Привет! Добро пожаловать."],
+   ["هَلا بِك. وِش عِندَكُم؟","halā bik. wish ʿindakum?","Hi. What do you have?","Привет. Что у вас есть?"],
+   ["عِندَنا قَهوة عَرَبي وَشاي.","ʿindanā gahwa ʿarabi w-shāy.","We have Arabic coffee and tea.","У нас есть арабский кофе и чай."],
+   ["أَبغى قَهوة، لَو سَمَحت.","abgha gahwa, law samaḥt.","I'd like coffee, please.","Я бы хотела кофе, пожалуйста."],
+   ["تَبغين تَمر؟","tabghīn tamr?","Would you like dates?","Хочешь фиников?"],
+   ["إيه، شُكراً.","ēh, shukran.","Yes, thanks.","Да, спасибо."],
+   ["يِعطيك العافية!","yiʿṭīk al-ʿāfya!","Thank you for your trouble!","Спасибо за труды!"]]},
+
 { id:"s21", kind:"pattern", pat:"af",
   t:["More and most: أَفعَل","Больше и самый: أَفعَل"],
   en:"Put a root you know into أَفعَل: big → bigger. The same word also means “the biggest”.",
@@ -470,6 +649,36 @@ steps: [
    ["أَكتُبُ رِسالة","aktubu risāla","I'm writing a message","Я пишу сообщение"],
    ["ماذا تَكتُبُ؟","mādhā taktubu?","What are you writing?","Что ты пишешь?"]]},
 
+{ id:"f01", kind:"pattern", pat:"f2",
+  t:["Verb engine: forms II and V","Глагольный движок: формы II и V"],
+  en:"Arabic verbs come in about ten derived forms. Form II doubles the middle root letter: “make someone do it”. Form V adds تَ in front of form II: the action turns back on yourself, like Russian -ся: عَلَّمَ taught → تَعَلَّمَ learned (научил → научился).",
+  ru:"У арабских глаголов около десяти производных форм. Форма II удваивает среднюю букву корня: «заставить делать». Форма V добавляет تَ перед формой II, и действие возвращается к себе, как русское -ся: عَلَّمَ научил → تَعَلَّمَ научился.",
+  words:[
+   ["دَرَّسَ","darrasa","he taught","он преподавал","درس","f2"],
+   ["عَلَّمَ","ʿallama","he taught (someone)","он научил","علم","f2"],
+   ["فَهَّمَ","fahhama","he explained","он объяснил","فهم","f2"],
+   ["تَعَلَّمَ","taʿallama","he learned","он научился, выучил","علم","f5"],
+   ["تَكَلَّمَ","takallama","he spoke","он говорил","كلم","f5"]],
+  phrases:[
+   ["تَعَلَّمتُ العَرَبيّةَ في الجامِعة","taʿallamtu l-ʿarabiyyata fī l-jāmiʿa","I learned Arabic at university","Я учила арабский в университете"],
+   ["مَن عَلَّمَكَ؟","man ʿallamaka?","Who taught you?","Кто тебя научил?"]]},
+
+{ id:"f02", kind:"pattern", pat:"f10",
+  t:["Verb engine: forms III to X","Глагольный движок: формы III–X"],
+  en:"Each form adds its own shade of meaning to any root: III with someone, IV cause, VI each other, VII it happens to it, VIII for yourself or together, X seek or use. Learn the shape once and every new root becomes a set of verbs.",
+  ru:"Каждая форма добавляет любому корню свой оттенок: III — с кем-то, IV — причинять, VI — друг с другом, VII — с ним случается, VIII — для себя или вместе, X — искать, использовать. Выучите форму один раз, и каждый новый корень даёт набор глаголов.",
+  words:[
+   ["قابَلَ","qābala","he met (someone)","он встретил","قبل","f3"],
+   ["أَرسَلَ","arsala","he sent","он отправил","رسل","f4"],
+   ["تَكاتَبَ","takātaba","they wrote to each other","они переписывались","كتب","f6"],
+   ["اِنكَسَرَ","inkasara","it broke","он сломался","كسر","f7"],
+   ["اِجتَمَعَ","ijtamaʿa","he met with, gathered","он встретился, собрался","جمع","f8"],
+   ["اِستَعمَلَ","istaʿmala","he used","он использовал","عمل","f10"],
+   ["اِستَقبَلَ","istaqbala","he welcomed, received","он принял, встретил","قبل","f10"]],
+  phrases:[
+   ["أَرسَلتُ رِسالة","arsaltu risāla","I sent a message","Я отправила сообщение"],
+   ["أَستَعمِلُ هٰذا كُلَّ يَوم","astaʿmilu hādhā kulla yawm","I use this every day","Я пользуюсь этим каждый день"]]},
+
 { id:"s23", kind:"theme",
   t:["How I feel","Как я себя чувствую"],
   en:"Feelings. For a woman add ة: سَعيد → سَعيدة.",
@@ -484,6 +693,24 @@ steps: [
   phrases:[
    ["أَنا بِخَير، شُكراً","anā bikhayr, shukran","I'm fine, thanks","Я в порядке, спасибо"],
    ["هَل أَنتِ مُتعَبة؟","hal anti mutʿaba?","Are you tired? (to a woman)","Ты устала?"]]},
+
+{ id:"d04", kind:"spoken",
+  t:["Saudi: everyday expressions","Саудовский: выражения на каждый день"],
+  en:"The little phrases that make speech sound Saudi. يِعطيك العافية is said to anyone who's working; the answer is الله يِعافيك.",
+  ru:"Маленькие фразы, от которых речь звучит по-саудовски. يِعطيك العافية говорят любому, кто работает; ответ — الله يِعافيك.",
+  rec:"Saudi pronunciation, please.",
+  words:[
+   ["يَلّا","yallā","come on, let's go","давай, пошли","",""],
+   ["خَلاص","khalāṣ","done, enough","всё, хватит","خلص",""],
+   ["مَعليش","maʿlēsh","never mind, sorry","ничего, извини","",""],
+   ["والله","wallāh","really, I swear","честно, правда","",""],
+   ["مَشكور","mashkūr","thanks","спасибо","شكر","dn"],
+   ["صِدق","ṣidg","really?","правда?","صدق",""]],
+  phrases:[
+   ["يِعطيك العافية","yiʿṭīk al-ʿāfya","Thanks for your work","Спасибо за труды"],
+   ["الله يِعافيك","allāh yiʿāfīk","(reply) You too, thanks","(ответ) И тебе спасибо"],
+   ["مَعليش، ما شِفتك","maʿlēsh, mā shiftak","Sorry, I didn't see you","Извини, я тебя не заметил(а)"],
+   ["يَلّا نَروح","yallā nrūḥ","Let's go","Пошли"]]},
 
 { id:"s24", kind:"theme",
   t:["Numbers 1–10","Числа 1–10"],
@@ -516,5 +743,120 @@ steps: [
    ["مَعَ السَّلامة","maʿa s-salāma","Goodbye","До свидания"],
    ["أَهلاً وَسَهلاً","ahlan wa-sahlan","Welcome","Добро пожаловать"],
    ["إِن شاءَ الله","in shāʾa llāh","God willing; hopefully","Если Бог даст; надеюсь"]]}
+],
+
+/* Letter names in Arabic, a short sound cue [EN, RU] (no Latin transliteration), and a memory trick [EN, RU] */
+letterInfo: {
+ "ا":["أَلِف",["long aa","долгое аа"],["A plain stick, and the first letter: alif, alpha and А are the same ancient letter.","Простая палочка и первая буква: алиф, альфа и А — одна и та же древняя буква."]],
+ "ء":["هَمزة",["catch, as in uh-oh","смычка, как в «не-а»"],["Hamza began as a tiny head of ع, so it looks like half an ع.","Хамза произошла от головки буквы ع, поэтому похожа на половинку ع."]],
+ "ب":["باء",["b","б"],["One dot below: a boat with its anchor down.","Одна точка снизу: лодка с опущенным якорем."]],
+ "ت":["تاء",["t","т"],["Two dots on top: two eyes looking up.","Две точки сверху: два глаза смотрят вверх."]],
+ "ث":["ثاء",["th, as in think","th, как в think"],["Three dots, and th as in three.","Три точки — и th, как в three («три»)."]],
+ "ن":["نون",["n","н"],["One dot inside a deep bowl, like a seed.","Одна точка в глубокой чаше, как зёрнышко."]],
+ "ي":["ياء",["y, or long ii","й или долгое ии"],["Two dots below, like two footprints.","Две точки снизу, как два следа."]],
+ "ج":["جيم",["j, as in jam","дж"],["The dot sits inside the hook: food in the mouth.","Точка внутри крючка: еда во рту."]],
+ "ح":["حاء",["breath on glass","дыхание на стекло"],["An empty hook: nothing inside but breath.","Пустой крючок: внутри только дыхание."]],
+ "خ":["خاء",["like Russian х","русское х"],["Dot on top: the х you already know.","Точка сверху: знакомое вам х."]],
+ "د":["دال",["d","д"],["A small corner that never holds the next letter's hand.","Маленький уголок, который не держит следующую букву за руку."]],
+ "ذ":["ذال",["th, as in this","th, как в this"],["The dot is the tip of the tongue peeking between the teeth.","Точка — кончик языка между зубами."]],
+ "ر":["راء",["rolled r","р"],["Slides below the line, lower than د.","Скатывается ниже строки, ниже чем د."]],
+ "ز":["زاي",["z","з"],["ر with a dot: the r starts to buzz.","ر с точкой: «р» начинает жужжать."]],
+ "س":["سين",["s","с"],["Three little teeth: sss.","Три маленьких зубца: ссс."]],
+ "ش":["شين",["sh","ш"],["Three teeth plus three dots: shhh.","Три зубца и три точки: шшш."]],
+ "ص":["صاد",["dark s","тёмное с"],["The loop makes it heavy: ص is a dark س.","Петля делает звук тяжёлым: ص — тёмное س."]],
+ "ض":["ضاد",["dark d","тёмное д"],["ص with a dot. Arabic is called “the language of ض”.","ص с точкой. Арабский называют «языком ض»."]],
+ "ط":["طاء",["dark t","тёмное т"],["A tall stick on a loop: ط is a dark ت.","Высокая палка на петле: ط — тёмное ت."]],
+ "ظ":["ظاء",["dark th, as in this","тёмное th, как в this"],["ط with a dot: the dark twin of ذ.","ط с точкой: тёмный близнец ذ."]],
+ "ع":["عين",["squeezed throat","сжатое горло"],["Its name means “eye”, and it looks like an open mouth.","Её название значит «глаз», а сама она похожа на открытый рот."]],
+ "غ":["غين",["French r","французское r"],["ع with a dot: gargle it.","ع с точкой: прополощите горло."]],
+ "ف":["فاء",["f","ф"],["F comes before Q, and one dot before two: ف, then ق.","F раньше Q, одна точка раньше двух: ف, потом ق."]],
+ "ق":["قاف",["deep k","глубокое к"],["Two dots and a deeper tail than ف: the sound goes deeper too.","Две точки и хвост глубже, чем у ف: и звук глубже."]],
+ "ك":["كاف",["k","к"],["A tall arm with a small mark tucked inside.","Высокая рука с маленьким значком внутри."]],
+ "ل":["لام",["l","л"],["Tall, like the L in lamp.","Высокая, как L в lamp."]],
+ "م":["ميم",["m","м"],["A small round loop, like closed lips.","Маленькая петля, как сомкнутые губы."]],
+ "ه":["هاء",["light h, a breath","лёгкий выдох"],["The shape-shifter: four very different forms. Learn ـهـ in the middle.","Оборотень: четыре очень разные формы. Запомните ـهـ в середине."]],
+ "ة":["تاء مَربوطة",["the -a ending","окончание -а"],["A round ه wearing the two dots of ت: a t that sleeps until something is attached.","Круглое ه с точками ت: это «т», которое спит, пока к слову ничего не присоединили."]],
+ "و":["واو",["w, or long uu","w или долгое уу"],["Shaped like a comma, and on its own it means “and”.","Похожа на запятую, а сама по себе значит «и»."]]
+},
+
+/* Pictures for concrete words: used for drills without English */
+pics: {
+ "بَيت":"🏠","باب":"🚪","بِنت":"👧","قَهوة":"☕","قَلب":"❤️","فَم":"👄","حَليب":"🥛","لَحم":"🥩","ماء":"💧","تُفّاح":"🍎",
+ "لَيمون":"🍋","جُبنة":"🧀","رَجُل":"👨","وَلَد":"👦","خُبز":"🍞","رُزّ":"🍚","كِتاب":"📖","كُتُب":"📚","شاي":"🍵","شَمس":"☀️",
+ "بَيض":"🥚","مَدرَسة":"🏫","ساعة":"⌚","مَطعَم":"🍽️","طِفل":"👶","سَيّارة":"🚗","باص":"🚌","قِطار":"🚆","مَسجِد":"🕌","مَطبَخ":"🍳",
+ "مَلعَب":"🏟️","نُقود":"💵","سَيف":"🗡️","صَيف":"🏖️","كَلب":"🐕","جَمَل":"🐪","هَرَم":"🔺","عَلَم":"🚩","رِسالة":"✉️","مَخبَز":"🥖",
+ "شارِع":"🛣️","لَيلة":"🌙","مَريض":"🤒","سَعيد":"😊","مُتعَب":"😩","تَمر":"🌴","قَدَم":"🦶","مَكتَب":"🗄️","جامِعة":"🎓","سوق":"🛍️"
+},
+
+/* Fun facts: [step id or "" for anytime, kind, EN, RU]. kinds: parallel, culture, structure, mnemonic, saudi. Append only: position is the fact's id. */
+facts: [
+ ["s01","parallel","Alif, ba, ta… alpha, beta… А, Б: Arabic, Greek, Latin and Cyrillic all descend from the Phoenician alphabet. ب and Б are distant cousins.","Алиф, ба, та… альфа, бета… А, Б: арабский, греческий, латинский и кириллица произошли от финикийского алфавита. ب и Б — дальние родственники."],
+ ["s01","structure","Arabic is an abjad: it writes consonants, and short vowels are optional marks. Texts for adults usually leave them out, which is why your course will fade them slowly.","Арабское письмо — абджад: пишутся согласные, а краткие гласные — необязательные значки. В текстах для взрослых их обычно опускают, поэтому в курсе они будут постепенно исчезать."],
+ ["s02","structure","“I a student”: Arabic, like Russian, has no “to be” in the present. أَنا طالِبة works exactly like «Я студентка».","«Я студентка»: в арабском, как и в русском, нет глагола «быть» в настоящем времени. أَنا طالِبة устроено точно так же."],
+ ["s02","parallel","Spanish took the Arabic article الـ along with many words: aceite from الزَّيت (oil), arroz from الرُّزّ (rice), almohada from المِخَدّة (pillow). The a-, al- at the start is the Arabic “the”.","Испанский взял арабский артикль الـ вместе со многими словами: aceite от الزَّيت (масло), arroz от الرُّزّ (рис), almohada от المِخَدّة (подушка). Начальное a-, al- — это арабский артикль."],
+ ["s03","parallel","Spanish builds words the way Arabic does: escribir → escritor (كاتِب), escrito (مَكتوب), escritorio, a desk, the place for writing (مَكتَب). Russian too: писать → писатель, письмо.","Испанский строит слова так же, как арабский: escribir → escritor (كاتِب), escrito (مَكتوب), escritorio — стол, место для письма (مَكتَب). И русский: писать → писатель, письмо."],
+ ["s03","culture","مَكتوب also means “fate”: it is written. That's the maktub in Paulo Coelho's The Alchemist.","مَكتوب значит ещё и «судьба»: так написано. Это то самое «мактуб» из «Алхимика» Пауло Коэльо."],
+ ["s04","saudi","In Saudi speech ق usually sounds like g: قَهوة is “gahwa”. The word coffee itself came from قَهوة through Turkish kahve.","В саудовской речи ق обычно звучит как г: قَهوة — «гахва». А само слово «кофе» пришло от قَهوة через турецкое kahve."],
+ ["s04","parallel","ة sounds -a and marks feminine words, like Spanish -a (niña) and Russian -а (девочка). Three languages, one feminine ending.","ة читается как -а и показывает женский род, как испанское -a (niña) и русское -а (девочка). Три языка, одно женское окончание."],
+ ["s05","structure","ح sits where h sits, only tighter: whisper «ха» while gently squeezing your throat, as if fogging up a mirror. خ is simply Russian х.","ح находится там же, где h, только напряжённее: шепните «ха», слегка сжав горло, как будто дышите на зеркало. خ — просто русское х."],
+ ["s05","culture","أُحِبّ and حَبيبي share the root ح ب ب. Habibi is probably the most common word in Arabic pop songs.","أُحِبّ и حَبيبي — один корень ح ب ب. «Хабиби» — пожалуй, самое частое слово в арабской поп-музыке."],
+ ["s06","parallel","Lemon (ليمون), coffee (قَهوة), syrup (شَراب), alcohol (الكُحل): English and Russian borrowed many food words through Arabic: лимон, кофе, сироп, алкоголь.","Лимон (ليمون), кофе (قَهوة), сироп (شَراب), алкоголь (الكُحل): английский и русский получили многие слова еды через арабский."],
+ ["s06","culture","Saudi coffee is light, spiced with cardamom, and poured into tiny cups with dates on the side. When you've had enough, gently shake the empty cup.","Саудовский кофе светлый, с кардамоном, его наливают в крошечные чашки и подают с финиками. Когда хватит, слегка покачайте пустой чашкой."],
+ ["s07","mnemonic","Six letters never join the next one: ا د ذ ر ز و. Whenever you see a gap inside a word, one of these six is right before it.","Шесть букв никогда не соединяются со следующей: ا د ذ ر ز و. Если внутри слова разрыв, перед ним стоит одна из этих шести."],
+ ["s07","structure","هٰذا (this) hides a long ā in the small upright alif. It's one of a few very old spellings that never got a full alif.","В هٰذا (это) долгое ā спрятано в маленьком вертикальном алифе. Это одно из немногих очень старых написаний без полного алифа."],
+ ["v01","parallel","Russian and Spanish don't count vowel length, so your ear may skip it. In Arabic it changes meaning: جَمَل camel, جَمال beauty. English has a cousin of this in ship and sheep.","В русском и испанском долгота гласных не важна, поэтому ухо может её пропускать. В арабском она меняет смысл: جَمَل верблюд, جَمال красота. В английском похоже: ship и sheep."],
+ ["v01","mnemonic","Say Arabic vowels the Spanish way: clean and full, never reduced. Russian akanye (малоко) will try to sneak in; Arabic doesn't reduce vowels.","Произносите арабские гласные по-испански: чисто и полно, без редукции. Русское аканье («малако») будет пытаться пролезть, но в арабском гласные не редуцируются."],
+ ["r01","structure","Adjectives follow the noun, as in Spanish: بَيت كَبير is casa grande, a house big.","Прилагательное стоит после существительного, как в испанском: بَيت كَبير — casa grande, «дом большой»."],
+ ["s08","culture","Arabic has a whole ladder of words for love, from هَوى (attraction) to عِشق (passion) to هُيام (wandering, lovesick).","В арабском целая лестница слов о любви: от هَوى (влечение) до عِشق (страсть) и هُيام (блуждание от любви)."],
+ ["s09","parallel","Zero comes from صِفر (empty) via Latin zephirum. Russian цифра comes from the same Arabic word.","Слово «ноль» по-английски (zero) пришло от صِفر (пустой) через латынь. И русское «цифра» — от того же арабского слова."],
+ ["s09","structure","Sun letters are the ones made with the tip of the tongue: ت ث د ذ ر ز س ش ص ض ط ظ ل ن. Before them the l of الـ melts and the letter doubles: الشّاي sounds like “ash-shay”.","«Солнечные» буквы — те, что произносятся кончиком языка: ت ث د ذ ر ز س ش ص ض ط ظ ل ن. Перед ними «л» в الـ исчезает, а буква удваивается: الشّاي звучит «аш-шай»."],
+ ["s09","saudi","شُكراً works everywhere, but in Saudi Arabia you'll also hear مَشكور (thanks) and يِعطيك العافية (thanks for your effort).","شُكراً понимают везде, но в Саудовской Аравии ещё говорят مَشكور (спасибо) и يِعطيك العافية (спасибо за труды)."],
+ ["c01","structure","وَبِكِتابِها is one written word: and + with + book + her. Arabic writes small words joined to big ones, so peeling them off is a core reading skill.","وَبِكِتابِها — одно написанное слово: и + с + книга + её. Маленькие слова пишутся слитно с большими, поэтому умение их отделять — основной навык чтения."],
+ ["c01","parallel","Spanish glues pronouns on too: dámelo is give-me-it. Arabic does the same with possessives: كِتابُها is book-her.","Испанский тоже приклеивает местоимения: dámelo — «дай-мне-это». Арабский так же поступает с притяжательными: كِتابُها — «книга-её»."],
+ ["s10","parallel","Russian has the same teacher pattern: учить → учитель, like دَرَسَ → مُدَرِّس. Madrasa (مَدرَسة) simply means school, any school.","В русском тот же шаблон учителя: учить → учитель, как دَرَسَ → مُدَرِّس. Медресе (مَدرَسة) значит просто «школа», любая школа."],
+ ["s11","mnemonic","Present-tense prefixes: أ I, ن we, ي he, ت you. Arab grammarians remember all four as one word: نَأتي, “we come”.","Приставки настоящего времени: أ я, ن мы, ي он, ت ты. Арабские грамматисты запоминают все четыре одним словом: نَأتي — «мы приходим»."],
+ ["s11","parallel","Syrup and sherbet both come from Arabic شَراب, a drink. Russian сироп and шербет too.","«Сироп» и «шербет» — оба от арабского شَراب, «питьё». И русские тоже."],
+ ["s12","culture","The answer to السَّلامُ عَلَيكُم is وَعَلَيكُمُ السَّلام. The custom is to answer with an equal or fuller greeting, never a shorter one.","На السَّلامُ عَلَيكُم отвечают وَعَلَيكُمُ السَّلام. Принято отвечать равным или более полным приветствием, но не короче."],
+ ["s12","structure","The ending ـيّ turns a noun into an adjective: عَرَب (Arabs) → عَرَبيّ (Arabic), like Russian -ский.","Окончание ـيّ делает из существительного прилагательное: عَرَب (арабы) → عَرَبيّ (арабский), как русское -ский."],
+ ["e01","parallel","You half-know heavy letters already. Say «сы», then «си»: in «сы» your tongue pulls back and the vowel darkens. ص, ض, ط, ظ push that further. Listen to the vowel: صَيف sounds darker than سَيف.","Тяжёлые буквы вам наполовину знакомы. Скажите «сы», потом «си»: в «сы» язык оттягивается назад и гласная темнеет. ص, ض, ط, ظ идут ещё дальше. Слушайте гласную: صَيف звучит темнее, чем سَيف."],
+ ["e01","mnemonic","The seven always-heavy letters: خ ص ض غ ط ق ظ. Students of Quran recitation remember them as one phrase: خُصَّ ضَغطٍ قِظ.","Семь всегда тяжёлых букв: خ ص ض غ ط ق ظ. Изучающие чтение Корана запоминают их одной фразой: خُصَّ ضَغطٍ قِظ."],
+ ["e01","structure","Heaviness spreads: in طالِب the whole first syllable sounds dark. Native ears use the vowel color as much as the consonant itself.","Тяжесть распространяется: в طالِب весь первый слог звучит темно. Носители опираются на окраску гласной не меньше, чем на саму согласную."],
+ ["d01","saudi","حَيّاك الله, literally “may God give you life”, is the classic Saudi welcome. Answer: الله يحَيّيك.","حَيّاك الله, букв. «да дарует тебе Бог жизнь», — классическое саудовское приветствие гостя. Ответ: الله يحَيّيك."],
+ ["d01","saudi","Saudi Arabic has two big city varieties: Najdi in Riyadh and the center, Hijazi in Jeddah, Mecca and Medina in the west. Most everyday words are shared.","В Саудовской Аравии два больших городских диалекта: неджди в Эр-Рияде и центре, хиджази в Джидде, Мекке и Медине на западе. Большинство повседневных слов общие."],
+ ["d01","culture","Saudi greetings are long: how are you, how is the family, how is your health, often before any business starts.","Саудовские приветствия длинные: как ты, как семья, как здоровье — часто ещё до начала любого дела."],
+ ["s13","parallel","Algebra comes from الجَبر (completing, restoring), from the title of al-Khwarizmi's 9th-century book. Algorithm comes from his name.","«Алгебра» — от الجَبر (восполнение) из названия книги аль-Хорезми IX века. А «алгоритм» — от его имени."],
+ ["s13","structure","عالِم is a scientist, عالَم is the world. One small mark under or over the ل changes a person into a planet.","عالِم — учёный, عالَم — мир. Один значок под или над ل превращает человека в планету."],
+ ["e02","parallel","Spanish jota (ajo, José) is close to خ. If you can say ajo, you can say خ.","Испанская jota (ajo, José) близка к خ. Если вы говорите ajo, вы скажете и خ."],
+ ["e02","mnemonic","ع is the one sound Russian and Spanish lack completely. Try: say «а» while lightly gagging, as if a doctor pressed your tongue with a spoon. That squeeze is ع.","ع — единственный звук, которого совсем нет ни в русском, ни в испанском. Попробуйте сказать «а», слегка сжав горло, как будто врач прижал язык ложкой. Это сжатие и есть ع."],
+ ["s14","structure","Formal writing often puts the verb first: “works the man in the office”. Everyday speech, Saudi included, usually puts the subject first, as in Russian.","Официальный текст часто начинается с глагола: «работает мужчина в офисе». В разговорной речи, и саудовской тоже, подлежащее обычно впереди, как в русском."],
+ ["d02","saudi","In Najdi, أَبي means “I want”; in standard Arabic the same letters mean “my father”. Context sorts it out.","В неджди أَبي значит «хочу», а в литературном арабском те же буквы значат «мой отец». Разбирает контекст."],
+ ["d02","saudi","Saudi أَبغى (I want) comes from the classical verb بَغى, to desire. Standard Arabic uses أُريد.","Саудовское أَبغى (хочу) — от классического глагола بَغى, «желать». В литературном языке — أُريد."],
+ ["s15","culture","The Islamic calendar is lunar, about 11 days shorter than the solar year, so Ramadan moves through the seasons. Saudi Arabia uses both calendars.","Исламский календарь лунный, примерно на 11 дней короче солнечного года, поэтому Рамадан «гуляет» по сезонам. В Саудовской Аравии используют оба календаря."],
+ ["s16","parallel","فاعِل is Arabic's -er: writer, player, driver. Spanish -dor (jugador, conductor) and Russian -тель, -ец (водитель, продавец) do the same job at the end of the word; Arabic does it inside.","فاعِل — арабский «-тель»: писатель, игрок, водитель. Испанское -dor (jugador) и русское -тель, -ец (водитель, продавец) делают то же самое в конце слова, а арабский — внутри."],
+ ["s17","parallel","مَفعَل means a place: Spanish -ería (panadería = مَخبَز, bakery) and Russian -ня (пекарня, кухня) do the same. Three languages, three ways to say “the place for”.","مَفعَل — это место: испанское -ería (panadería = مَخبَز, пекарня) и русское -ня (пекарня, кухня) делают то же. Три языка, три способа сказать «место для»."],
+ ["s17","parallel","Magazine, and Russian магазин, come from مَخازِن, storehouses, via Italian magazzino and French magasin.","Английское magazine и русское «магазин» — от مَخازِن, «склады», через итальянское magazzino и французское magasin."],
+ ["r02","culture","The Saudi weekend is Friday and Saturday. Friday noon is the main weekly prayer.","В Саудовской Аравии выходные — пятница и суббота. Пятничная полуденная молитва — главная в неделе."],
+ ["s18","parallel","Arabic has a dual number: كِتابان means “two books”. Russian once had one too: «два брата», «два стола» are traces of the old dual.","В арабском есть двойственное число: كِتابان — «две книги». Когда-то оно было и в русском: «два брата», «два стола» — его следы."],
+ ["s18","culture","Adults are often called “father of” or “mother of” their eldest son: أَبو مُحَمَّد, أُمّ مُحَمَّد. It's warm and respectful.","Взрослых часто зовут «отец» или «мать» старшего сына: أَبو مُحَمَّد, أُمّ مُحَمَّد. Это тепло и уважительно."],
+ ["d03","saudi","Saudi حَقّ (literally “right, due”) means “belonging to”: هٰذا حَقّي, this is mine. With ق as g it sounds “haggi”.","Саудовское حَقّ (букв. «право») значит «принадлежащий»: هٰذا حَقّي — это моё. С ق как г звучит «хагги»."],
+ ["d03","culture","At someone's home, take at least a little of the coffee and dates you're offered, with your right hand.","В гостях возьмите хотя бы немного предложенного кофе и фиников, и правой рукой."],
+ ["r03","saudi","Cafés say قَهوة عَرَبي with the masculine عَرَبي, where standard Arabic would need feminine عَرَبيّة. Dialects simplify agreement.","В кафе говорят قَهوة عَرَبي с мужским عَرَبي, хотя литературный язык требует женского عَرَبيّة. Диалекты упрощают согласование."],
+ ["s19","parallel","Admiral comes from أَمير البَحر, “commander of the sea”. Russian адмирал too.","«Адмирал» — от أَمير البَحر, «повелитель моря»."],
+ ["s20","parallel","Tariff (Russian тариф) comes from تَعريف, a notice or list of prices.","«Тариф» — от تَعريف, «уведомление, список цен»."],
+ ["s21","parallel","أَفعَل means both “bigger” and “the biggest”. أَكبَر is the akbar in الله أَكبَر, “God is greatest”.","أَفعَل значит и «больше», и «самый большой». أَكبَر — то самое «акбар» в الله أَكبَر, «Бог величайший»."],
+ ["s22","parallel","Russian marks the person at the end: пишу, пишешь, пишет, пишем. Arabic marks it at the start: أَكتُبُ، تَكتُبُ، يَكتُبُ، نَكتُبُ.","Русский показывает лицо в конце: пишу, пишешь, пишет, пишем. Арабский — в начале: أَكتُبُ، تَكتُبُ، يَكتُبُ، نَكتُبُ."],
+ ["s22","parallel","Arabic past and present work more like Russian aspect than English tense: كَتَبَ is a finished act (написал), يَكتُبُ an ongoing or habitual one (пишет).","Арабские прошедшее и настоящее больше похожи на русский вид, чем на английские времена: كَتَبَ — завершённое действие (написал), يَكتُبُ — длящееся или привычное (пишет)."],
+ ["f01","parallel","Form V works like Russian -ся: عَلَّمَ научил → تَعَلَّمَ научился. The added تَ turns the action back on yourself.","Форма V работает как русское -ся: عَلَّمَ научил → تَعَلَّمَ научился. Добавленное تَ возвращает действие к себе."],
+ ["f02","structure","Western grammars number the verb forms I to X; Arabic grammars name them by their pattern instead: فَعَّلَ، تَفَعَّلَ، اِستَفعَلَ. With about ten shapes, one root can give a whole family of verbs.","Западные грамматики нумеруют формы глагола от I до X, а арабские называют их по шаблону: فَعَّلَ، تَفَعَّلَ، اِستَفعَلَ. Около десяти форм дают от одного корня целую семью глаголов."],
+ ["s23","culture","Saudis often answer “How are you?” with الحَمدُ لله even on a bad day: it is gratitude, not a report.","Саудовцы часто отвечают на «как дела?» الحَمدُ لله даже в плохой день: это благодарность, а не отчёт."],
+ ["d04","saudi","مَرّة in Saudi speech means “very”: زين مَرّة, very good. In standard Arabic the same word means “once, one time”.","В саудовской речи مَرّة значит «очень»: زين مَرّة — очень хорошо. В литературном арабском то же слово значит «раз, однажды»."],
+ ["s24","structure","The Gulf writes digits as ٠ ١ ٢ ٣ ٤ ٥ ٦ ٧ ٨ ٩. Numbers run left to right even inside right-to-left text.","В Заливе цифры пишут так: ٠ ١ ٢ ٣ ٤ ٥ ٦ ٧ ٨ ٩. Числа читаются слева направо даже внутри текста справа налево."],
+ ["s24","structure","Numbers 3 to 10 take the opposite gender: ثَلاثة كُتُب (three books) uses the feminine-looking ثَلاثة with a masculine noun. Even native speakers find it tricky.","Числа от 3 до 10 принимают противоположный род: ثَلاثة كُتُب (три книги) — «женская» форма ثَلاثة с мужским словом. Это сложно даже носителям."],
+ ["s25","parallel","Spanish ojalá (“I hope”) comes from لو شاء الله, “if God willed”. You know إِن شاءَ الله: same idea, same words.","Испанское ojalá («надеюсь») — от لو شاء الله, «если бы Бог пожелал». Вы знаете إِن شاءَ الله: та же идея, те же слова."],
+ ["s25","culture","إن شاء الله goes with any future plan, big or small. Depending on tone it means a real yes or a polite maybe.","إن شاء الله говорят о любых планах, больших и малых. В зависимости от тона это настоящее «да» или вежливое «может быть»."],
+ ["","parallel","Sahara is just صَحراء, “desert”, so the Sahara Desert is the “Desert Desert”.","Сахара — это просто صَحراء, «пустыня», так что «пустыня Сахара» — «пустыня Пустыня»."],
+ ["","parallel","Giraffe comes from زَرافة, monsoon from مَوسِم (season), safari from سَفَر (journey) via Swahili.","«Жираф» — от زَرافة, «муссон» — от مَوسِم (сезон), «сафари» — от سَفَر (путешествие) через суахили."],
+ ["","parallel","Spanish has thousands of words of Arabic origin, many starting with al-: alcalde from القاضي (the judge), almacén from المَخزَن (storehouse), aldea from الضَّيعة (village).","В испанском тысячи слов арабского происхождения, многие начинаются с al-: alcalde от القاضي (судья), almacén от المَخزَن (склад), aldea от الضَّيعة (деревня)."],
+ ["","structure","Arabic has no capital letters. Instead, each letter changes its shape depending on its position in the word.","В арабском нет заглавных букв. Вместо этого каждая буква меняет форму в зависимости от места в слове."]
 ]
 };

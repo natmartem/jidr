@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- Jidr · Copyright © 2026 Natalia · SPDX-License-Identifier: AGPL-3.0-or-later · see LICENSE and README.md -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -57,6 +58,7 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 .rt{color:var(--root)}
 .hit{color:var(--hit)}
 .l-ru{color:var(--mute)}
+.ai{font-family:var(--f-ar);font-size:1.3em;line-height:1;direction:rtl;unicode-bidi:isolate;white-space:nowrap}
 body[data-lang="en"] .l-ru,body[data-lang="en"] .t-ru{display:none}
 body[data-lang="ru"] .l-en,body[data-lang="ru"] .t-en,body[data-lang="both"] .t-ru{display:none}
 body[data-lang="ru"] .l-ru{color:inherit}
@@ -145,7 +147,8 @@ main{padding-top:16px;display:flex;flex-direction:column;gap:12px}
 .snd .lg{display:inline-block;width:24px;font-size:11px;font-weight:600;color:var(--mute)}
 .forms{grid-column:1 / -1;display:flex;flex-wrap:wrap;gap:6px}
 .fm{text-align:center;min-width:56px;background:var(--tint);border-radius:8px;padding:2px 8px 3px}
-.fm .ar{font-size:30px;line-height:1.35;display:block}
+.fm .ar{font-size:30px;line-height:1.85;display:block}
+.fm small{margin-top:-2px}
 .fm small{font-size:10.5px;display:block}
 .alike{grid-column:1 / -1;font-size:13px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
 .alike .ar{font-size:24px;line-height:1.2}
@@ -171,9 +174,6 @@ main{padding-top:16px;display:flex;flex-direction:column;gap:12px}
 .sticky-cta .btn.primary{box-shadow:0 6px 20px rgba(0,0,0,.18)}
 
 .lex{grid-column:1 / -1;display:flex;flex-direction:column;gap:2px;margin-top:4px}
-.lex .syl{gap:5px}
-.lex .sy{min-width:44px;padding:0 4px 2px;flex:1 1 44px;max-width:60px}
-.lex .sy .ar{font-size:26px}
 .lx{display:grid;grid-template-columns:minmax(96px,38%) minmax(0,1fr) auto;gap:10px;align-items:center;border-top:1px solid var(--line);padding:4px 0}
 .lx .ar{font-size:32px;line-height:1.5;text-align:center}
 .lx>span:nth-child(2){font-size:14px}
@@ -184,11 +184,11 @@ main{padding-top:16px;display:flex;flex-direction:column;gap:12px}
 .mrk:first-of-type{border-top:0}
 .mrk-ex{font-size:34px;text-align:center;color:var(--accent)}
 .mrk p{font-size:14px;color:var(--mute)}
-.syl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px 0;border-top:1px dashed var(--line)}
+.syl{display:flex;flex-wrap:nowrap;gap:5px;align-items:center;padding:6px 0;border-top:1px dashed var(--line)}
 .syl:first-of-type{border-top:0}
-.sy{min-width:52px;text-align:center;background:var(--tint);border-radius:8px;padding:0 8px 2px}
-.sy .ar{display:block;font-size:30px;line-height:1.5}
-.sy small{display:block;font-size:12px;margin-top:-4px}
+.sy{flex:1 1 40px;min-width:0;max-width:60px;text-align:center;background:var(--tint);border-radius:8px;padding:0 2px}
+.sy .ar{display:block;font-size:28px;line-height:1.9}
+.sy small{display:block;font-size:12px;line-height:1.2;padding-bottom:2px}
 
 button.pchip{border:0;color:inherit;cursor:pointer}
 button.pc{border:0;font:inherit;color:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
@@ -209,6 +209,40 @@ button.pc .tag{margin-top:4px}
 .peq-f .w{font-size:32px}
 .peq-m{font-size:14px}
 body.noscroll{overflow:hidden}
+
+.sylg{display:grid;grid-template-columns:34px repeat(6,minmax(0,1fr));gap:5px;align-items:center}
+.sylg .vh{text-align:center;font-size:12.5px;color:var(--mute);font-weight:600}
+.sylg .sy{text-align:center;background:var(--tint);border-radius:8px;font-size:28px;line-height:1.9;min-width:0}
+.sylg .sys .spk{width:30px;height:30px}
+.lname{font-size:24px;line-height:1.3;color:var(--accent)}
+.cue{font-size:14px;color:var(--mute)}
+.mn{font-size:13.5px;background:var(--tint);border-radius:8px;padding:4px 8px}
+.q-cue{font:600 22px/1.35 var(--f-body);color:var(--accent);max-width:22ch}
+.vchip{display:inline-block;border-radius:999px;background:var(--root-tint);color:var(--root);font:700 18px var(--f-display);padding:2px 14px}
+.vl{font:700 20px var(--f-display)}
+.q-pic,.pic{font-size:54px;line-height:1.2}
+.pic{font-size:40px}
+.gl{font-size:24px;color:var(--root);letter-spacing:.15em}
+.fact{background:var(--tint);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.fact .fk{font-size:12px;font-weight:600;letter-spacing:.03em;color:var(--accent)}
+.fact p{font-size:14.5px}
+details.disc>summary{list-style:none;cursor:pointer}
+details.disc>summary::-webkit-details-marker{display:none}
+.sess{gap:8px}
+.sb{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 12px;width:100%}
+.sb:disabled{opacity:.5}
+.sb-n{width:28px;height:28px;border-radius:50%;background:var(--tint);display:grid;place-items:center;font:700 12px var(--f-display)}
+.sb.ok .sb-n{background:var(--good);color:var(--surface)}
+.sb-t{min-width:0}.sb-t b{display:block;font-weight:600;line-height:1.3}.sb-t small{display:block;font-size:12.5px}
+.sb-m{font-size:12px;color:var(--mute)}
+.pair{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding:8px 0;border-top:1px dashed var(--line)}
+.pair:first-of-type{border-top:0}
+.pw{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.pw .ar{font-size:34px;line-height:1.5}
+.pw small{font-size:12.5px}
+.vs{font-size:20px;color:var(--mute)}
+.story-t{font-size:30px;line-height:1.9;text-align:right}
+.story details>summary{cursor:pointer;color:var(--accent);font-weight:500}
 
 /* letters + roots tabs */
 .ltiles{display:flex;flex-wrap:wrap;gap:8px;direction:rtl}
@@ -247,7 +281,7 @@ details.rt-d .wl{padding:0 14px 8px}
 .qhead .bar{flex:1}
 .qlabel{font-weight:600;color:var(--mute);text-align:center}
 .qbox{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;min-height:110px;justify-content:center}
-.q-letter{font-size:104px;line-height:1.25;color:var(--accent)}
+.q-letter{font-size:104px;line-height:1.75;color:var(--accent)}
 .q-word{font-size:60px;line-height:1.45}
 .q-phrase{font-size:38px;line-height:1.6}
 .q-mean{font:600 22px/1.35 var(--f-body)}
@@ -334,11 +368,13 @@ label.btn{display:inline-block}
 "use strict";
 /* ================= basics ================= */
 const C=window.COURSE;
-const APP_VERSION="2.3.0",STATE_VER=2;
+const APP_VERSION="3.0.0",STATE_VER=2;
 const $=(s,r)=>(r||document).querySelector(s);
 const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const bi=(en,ru)=>`<span class="l-en">${en}</span><span class="l-ru">${ru}</span>`;
+const AR_RUN=/[\u25CC\u0600-\u06FF]+(?:[ \u00A0]+[\u25CC\u0600-\u06FF]+)*/g;
+const ai=t=>/class="ar|data-/.test(t)?t:String(t).replace(AR_RUN,m=>`<span class="ai" lang="ar">${m}</span>`);
+const bi=(en,ru)=>`<span class="l-en">${ai(en)}</span><span class="l-ru">${ai(ru)}</span>`;
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const uniq=a=>[...new Set(a)];
@@ -355,20 +391,21 @@ function clusters(ar){const out=[];for(const ch of ar){if(HAR.test(ch)&&out.leng
 /* ================= letters ================= */
 const LET=C.letters.map(a=>({c:a[0],n:a[1],tr:a[2],en:a[3],ru:a[4],dots:C.dots[a[5]],conn:!!a[6],fam:a[7],say:a[8],key:"L:"+a[0]}));
 const byC={};LET.forEach(l=>byC[l.c]=l);
+const LI=C.letterInfo||{};LET.forEach(l=>{const x=LI[l.c]||[];l.name=x[0]||l.c;l.cue=x[1]||[l.tr,l.tr];l.mn=x[2]||null});
 C.sounds.forEach((g,i)=>{for(const c of g.L)if(byC[c])byC[c].sg=i});
 function reqLetters(ar){const o=new Set();for(const ch of ar){if(HAR.test(ch)||PUNCT.test(ch))continue;for(const c of (SEAT[ch]||ch))if(byC[c])o.add(c)}return [...o]}
 function forms(l){
   if(l.c==="ء")return [["alone","отдельно",l.c]];
-  if(l.c==="ة")return [["alone","отдельно",l.c],["end","в конце",ZWJ+l.c]];
-  if(l.conn)return [["alone","отдельно",l.c],["start","в начале",l.c+ZWJ],["middle","в середине",ZWJ+l.c+ZWJ],["end","в конце",ZWJ+l.c]];
-  return [["alone","отдельно",l.c],["end","в конце",ZWJ+l.c]];
+  if(l.c==="ة")return [["alone","отдельно",l.c],["end","в конце","ـ"+l.c]];
+  if(l.conn)return [["alone","отдельно",l.c],["start","в начале",l.c+"ـ"],["middle","в середине","ـ"+l.c+"ـ"],["end","в конце","ـ"+l.c]];
+  return [["alone","отдельно",l.c],["end","в конце","ـ"+l.c]];
 }
 
 /* ================= saved data (lives on this phone) =================
    localStorage "jidr-state": progress + settings. "jidr-packs": lessons added in the app.
    Recordings loaded from a file live in IndexedDB. Code updates never touch any of these.
    If the saved shape changes, bump STATE_VER and upgrade inside migrate(). */
-const DEF={ver:STATE_VER,done:[],srs:{},lang:"both",tab:"path",xp:0,streak:0,lastDay:0,tr:"off",auto:true,letView:"shape",lastBackup:0};
+const DEF={ver:STATE_VER,done:[],srs:{},lang:"both",tab:"path",xp:0,streak:0,lastDay:0,tr:"off",auto:true,sess:null,seenF:[],letView:"shape",lastBackup:0};
 let S=Object.assign({},DEF,{done:[],srs:{}});
 let PACKS=[],storageOK=true;
 function migrate(s){
@@ -380,6 +417,7 @@ function migrate(s){
   if(!s.srs||typeof s.srs!=="object")s.srs={};
   if(!["en","ru","both"].includes(s.lang))s.lang="both";
   if(!["off","tap"].includes(s.tr))s.tr="off";
+  if(!Array.isArray(s.seenF))s.seenF=[];
   return s;
 }
 try{const raw=localStorage.getItem("jidr-state");if(raw)S=migrate(JSON.parse(raw))}catch(e){}
@@ -417,35 +455,40 @@ const MARKS=[
   en:"Hamza under the alif means the word opens with an i: إِلى = ilā.",
   ru:"Хамза под алифом — слово начинается на «и»: إِلى = иля."}
 ];
-const VOW=[["\u064E","a"],["\u0650","i"],["\u064F","u"]],LONG=[["ا","ā","\u064E"],["ي","ī","\u0650"],["و","ū","\u064F"]];
-const ltr=l=>l.tr.split(" ")[0];
-/* syllables for one letter: short a/i/u, plus long ā/ī/ū when those letters are known */
+const VK=["a","i","u","ā","ī","ū"];
+const VLAB={a:["a","а"],i:["i","и"],u:["u","у"],"ā":["aa","аа"],"ī":["ii","ии"],"ū":["uu","уу"]};
+const VMARK={a:"\u064E",i:"\u0650",u:"\u064F"},VLONG={"ā":["\u064E","ا"],"ī":["\u0650","ي"],"ū":["\u064F","و"]};
+/* syllables for one letter: short a/i/u, plus long aa/ii/uu when those letters are known */
 function sylFor(l,ks){
   if("اءة".includes(l.c))return [];
-  return VOW.map(([m,v])=>({ar:l.c+m,tr:ltr(l)+v})).concat(LONG.filter(x=>ks.has(x[0])).map(([c,v,m])=>({ar:l.c+m+c,tr:ltr(l)+v})));
+  const out=["a","i","u"].map(v=>({ar:l.c+VMARK[v],v}));
+  Object.keys(VLONG).forEach(v=>{const [m,c]=VLONG[v];if(ks.has(c))out.push({ar:l.c+m+c,v})});
+  return out;
 }
+const vhead=()=>`<span></span>${VK.map(v=>`<span class="vh">${bi(VLAB[v][0],VLAB[v][1])}</span>`).join("")}`;
+const sylRow=(l,ks)=>{const sy=sylFor(l,ks);return `<span class="sys">${spk(l.key)}</span>${VK.map(v=>{const x=sy.find(o=>o.v===v);return x?`<span class="sy ar" lang="ar">${x.ar}</span>`:"<span></span>"}).join("")}`};
 const lettersUpTo=st=>new Set(STEPS.slice(0,st.si+1).flatMap(s=>s.letters.map(l=>l.c)));
 const splitHtml=ar=>clusters(ar).map(c=>c===" "?"\u2003":esc(c)).join(" ");
 const splitBtn=ar=>clusters(ar).filter(c=>c.trim()).length<3?"":`<button type="button" class="trv" data-split>${bi("Split","По буквам")}</button><span class="splt ar" lang="ar" hidden>${splitHtml(ar)}</span>`;
 function basicVowelCard(){
-  const m=[["بَ","ba","fatḥa"],["بِ","bi","kasra"],["بُ","bu","ḍamma"],["با","bā","+ ا"],["بي","bī","+ ي"],["بو","bū","+ و"]];
+  const m=[["بَ","a","fatha"],["بِ","i","kasra"],["بُ","u","damma"],["با","ā","+ ا"],["بي","ī","+ ي"],["بو","ū","+ و"]];
   return `<section class="card"><h2>${bi("How to read vowels","Как читать гласные")}</h2>
-  <p class="lead">${bi("Letters are consonants. A small mark above or below adds a short vowel. A long vowel is a letter: ا, ي or و. A letter with no mark has no vowel after it: بَيت = b-a-y-t.","Буквы — это согласные. Маленький значок сверху или снизу добавляет краткую гласную. Долгая гласная — это буква: ا, ي или و. Буква без значка читается без гласной: بَيت = б-а-й-т.")}</p>
-  <div class="marks">${m.map(x=>`<div class="mk"><span class="ar">${x[0]}</span><b>${x[1]}</b><small>${x[2]}</small></div>`).join("")}</div></section>`;
+  <p class="lead">${bi("Letters are consonants. A small mark above or below adds a short vowel. A long vowel is a letter: ا, ي or و. A letter with no mark has no vowel after it.","Буквы — это согласные. Маленький значок сверху или снизу добавляет краткую гласную. Долгая гласная — это буква: ا, ي или و. Буква без значка читается без гласной.")}</p>
+  <div class="marks">${m.map(x=>`<div class="mk"><span class="ar">${x[0]}</span><b>${bi(VLAB[x[1]][0],VLAB[x[1]][1])}</b><small>${x[2]}</small></div>`).join("")}</div></section>`;
 }
 function marksCard(st){
   if(!st.marks||!st.marks.length)return "";
   return `<section class="card"><h2>${bi("New in the writing","Новое в письме")}</h2>${st.marks.map(m=>`<div class="mrk"><div class="ar mrk-ex" lang="ar">${esc(m.ex)}</div><div><b>${bi(m.t[0],m.t[1])}</b><p class="bl">${bi(m.en,m.ru)}</p></div></div>`).join("")}</section>`;
 }
 function sylCard(st){
-  const ks=lettersUpTo(st),rows=st.letters.map(l=>[l,sylFor(l,ks)]).filter(r=>r[1].length);
-  if(!rows.length)return "";
-  return `<section class="card"><h2>${bi("Read these first","Сначала слоги")}</h2><p class="lead">${bi("Each new letter with each vowel. Read the Arabic, then glance at the sound below.","Каждая новая буква с каждой гласной. Прочитайте по-арабски, потом сверьтесь со звуком внизу.")}</p>
-  ${rows.map(([l,sy])=>`<div class="syl">${spk(l.key)}${sy.map(x=>`<div class="sy"><span class="ar">${x.ar}</span><small>${x.tr}</small></div>`).join("")}</div>`).join("")}</section>`;
+  const ks=lettersUpTo(st),ls=st.letters.filter(l=>sylFor(l,ks).length);
+  if(!ls.length)return "";
+  return `<section class="card"><h2>${bi("Read these first","Сначала слоги")}</h2><p class="lead">${bi("Each new letter with each vowel. The column tells you the vowel; the letter is yours to recognize.","Каждая новая буква с каждой гласной. Столбец подсказывает гласную, а букву узнавайте сами.")}</p>
+  <div class="sylg">${vhead()}${ls.map(l=>sylRow(l,ks)).join("")}</div></section>`;
 }
 
 /* ================= content model ================= */
-let STEPS=[],WORDS=[],PHRASES=[],ITEMS={},ROOTM={};
+let STEPS=[],WORDS=[],PHRASES=[],ITEMS={},ROOTM={},PAIRS={};
 function buildData(){
   ROOTM=Object.assign({},C.roots);
   STEPS=C.steps.map(s=>Object.assign({},s));
@@ -464,6 +507,7 @@ function buildData(){
     st.W.forEach(w=>{WORDS.push(w);ITEMS[w.key]=w});
     st.P.forEach(p=>{PHRASES.push(p);ITEMS[p.key]=p});
   });
+  PAIRS={};STEPS.forEach(st=>(st.pairs||[]).forEach(([a,b])=>{PAIRS[a]=b;PAIRS[b]=a}));
   const seenM=new Set();
   STEPS.forEach(st=>{st.marks=[];const ars=[...st.W,...st.P].map(x=>x.ar);
     MARKS.forEach(m=>{if(seenM.has(m.k))return;const ex=ars.find(m.test);if(ex){seenM.add(m.k);st.marks.push(Object.assign({ex},m))}})});
@@ -540,11 +584,9 @@ function markDone(st){
 /* ================= header ================= */
 function renderStats(){
   const ks=knownSet(),wl=WORDS.filter(learned).length,rd=WORDS.filter(w=>readable(w,ks)).length;
-  const due=dueItems().length;
   $("#stats").innerHTML=
     `<span class="pill">${ks.size}/${LET.length} ${bi("letters","букв")}</span>`+
     `<span class="pill root">${rd} ${bi("words you can read","слов читаете")}</span>`+
-    (due&&!Q?`<span class="pill">${due} ${bi("to review","на повтор")}</span>`:"")+
     (storageOK?"":`<span class="pill warn">⚠ ${bi("progress not saved","прогресс не сохраняется")}</span>`);
   document.body.dataset.lang=S.lang;
   $$(".lang button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lang===S.lang)));
@@ -591,23 +633,24 @@ function letterExamples(l){
 function letterCard(l,withEx){
   const fam=LET.filter(x=>x.fam===l.fam),sg=l.sg!=null?C.sounds[l.sg]:null;
   return `<div class="lcard"><div class="big ar">${l.c}</div>
-  <div class="lc-meta"><div class="nm"><b>${l.n}</b><span class="tr">${l.tr}</span>${spk(l.key)}</div>
+  <div class="lc-meta"><div class="nm"><b class="ar lname" lang="ar">${l.name}</b><span class="cue">${bi(esc(l.cue[0]),esc(l.cue[1]))}</span>${spk(l.key)}</div>
    <span class="dots">${bi(l.dots[0],l.dots[1])}</span>
+   ${l.mn?`<div class="mn">💡 ${bi(esc(l.mn[0]),esc(l.mn[1]))}</div>`:""}
    <div class="snd"><span class="lg">EN</span>${l.en}</div><div class="snd"><span class="lg">RU</span>${l.ru}</div></div>
   <div class="forms">${forms(l).map(f=>`<div class="fm"><span class="ar">${f[2]}</span><small>${bi(f[0],f[1])}</small></div>`).join("")}</div>
   ${fam.length>1?`<div class="alike"><small>${bi("Looks like","Похожа на")}</small>${fam.map(x=>`<span class="ar${x===l?" me":""}">${x.c}</span>`).join("")}</div>`:""}
   ${sg?`<div class="alike"><small>${bi("Sounds like","Звучит похоже")}</small>${[...sg.L].map(c=>`<span class="ar${c===l.c?" me":""}">${c}</span>`).join("")}<small>${bi(sg.en,sg.ru)}</small></div>`:""}
-  ${withEx?(()=>{const sy=sylFor(l,new Set(LET.map(x=>x.c)));return sy.length?`<div class="lex"><small>${bi("Syllables","Слоги")}</small><div class="syl" style="border:0">${sy.map(x=>`<div class="sy"><span class="ar">${x.ar}</span><small>${x.tr}</small></div>`).join("")}</div></div>`:""})():""}
+  ${withEx?(()=>{const all=new Set(LET.map(x=>x.c));return sylFor(l,all).length?`<div class="lex"><small>${bi("Syllables","Слоги")}</small><div class="sylg">${vhead()}${sylRow(l,all)}</div></div>`:""})():""}
   ${withEx?(()=>{const ex=letterExamples(l);return ex.length?`<div class="lex"><small>${bi("In words","В словах")}</small>${ex.map(e=>`<div class="lx"><span class="ar" lang="ar">${e.html}</span><span><small class="tag">${bi(e.en,e.ru)}</small> ${bi(esc(e.w.en),esc(e.w.ru))}${learned(e.w)?"":` <span class="need">· ${bi("step","шаг")} ${e.w.step.si+1}</span>`}</span>${spk(e.w.key)}</div>`).join("")}</div>`:""})():""}</div>`;
 }
 function vowelCard(){
-  const m=[["بَ","ba","fatḥa","а"],["بِ","bi","kasra","и"],["بُ","bu","ḍamma","у"],["بْ","b","sukūn",bi("no vowel","без гласной")],["بّ","bb","shadda",bi("doubled","удвоение")],["بً","ban","tanwīn",bi("-an ending","окончание -ан")]];
+  const m=[["بَ",bi("a","а"),"fatha",""],["بِ",bi("i","и"),"kasra",""],["بُ",bi("u","у"),"damma",""],["بْ","–","sukun",bi("no vowel","без гласной")],["بّ","×2","shadda",bi("doubled","удвоение")],["بً",bi("-an","-ан"),"tanwin",bi("ending","окончание")]];
   return `<section class="card"><h2>${bi("Vowel marks","Знаки гласных")}</h2>
-  <p class="lead">${bi("Letters are consonants. Small marks add short vowels. Long vowels use a letter: ا ā, ي ī, و ū. A small ٰ above a letter is a hidden long ā, as in هٰذا.","Буквы — это согласные. Маленькие значки добавляют краткие гласные. Долгие гласные пишутся буквой: ا ā, ي ī, و ū. Маленький ٰ над буквой — скрытое долгое ā, как в هٰذا.")}</p>
+  <p class="lead">${bi("Letters are consonants. Small marks add short vowels. Long vowels use a letter: ا aa, ي ii, و uu. A small ◌ٰ above a letter is a hidden long aa, as in هٰذا.","Буквы — это согласные. Маленькие значки добавляют краткие гласные. Долгие гласные пишутся буквой: ا аа, ي ии, و уу. Маленький ◌ٰ над буквой — скрытое долгое аа, как в هٰذا.")}</p>
   <div class="marks">${m.map(x=>`<div class="mk"><span class="ar">${x[0]}</span><b>${x[1]}</b><small>${x[2]}</small><small>${x[3]}</small></div>`).join("")}</div></section>`;
 }
-const stepPreview=st=>st.L?spaced(st.L):st.root?spaced(st.root):st.pat?C.pats[st.pat].t:(st.P[0]||st.W[0]||{ar:""}).ar;
-const kindLabel=st=>({letters:bi("New letters","Новые буквы"),root:bi("Root","Корень"),pattern:bi("Pattern","Шаблон"),grammar:bi("Grammar","Грамматика"),theme:bi("Words","Слова")})[st.kind]||"";
+const stepPreview=st=>st.pairs?st.pairs[0].join(" · "):st.L?spaced(st.L):st.root?spaced(st.root):st.pat?C.pats[st.pat].t:(st.P[0]||st.W[0]||{ar:""}).ar;
+const kindLabel=st=>({letters:bi("New letters","Новые буквы"),root:bi("Root","Корень"),pattern:bi("Pattern","Шаблон"),grammar:bi("Grammar","Грамматика"),theme:bi("Words","Слова"),sound:bi("Ear","Слух"),spoken:bi("Saudi","Саудовский"),story:bi("Story","Рассказ")})[st.kind]||"";
 const counts=st=>[st.letters.length?`${st.letters.length} ${bi("letters","букв")}`:"",st.W.length?`+${st.W.length} ${bi("words","слов")}`:"",st.P.length?`+${st.P.length} ${bi("phrases","фраз")}`:""].filter(Boolean).join(" · ");
 
 /* ================= pattern sheet: every word built on one pattern ================= */
@@ -628,6 +671,13 @@ function patSheet(code){
    <p class="kind" style="margin-top:6px">${bi("Other patterns","Другие шаблоны")}</p>
    <div class="row">${others.map(k=>`<button type="button" class="pchip ar" data-pat="${k}">${patT(k)}</button>`).join("")}</div></div>`;
 }
+function openSheet(inner){
+  let box=$("#sheet");
+  if(!box){box=document.createElement("div");box.id="sheet";document.body.appendChild(box)}
+  if(!sheetOpen){history.pushState({sheet:1},"");sheetOpen=true}
+  box.innerHTML=`<div class="sheet-bg" data-closesheet></div><div class="sheet" role="dialog" aria-modal="true">${inner}</div>`;
+  const sh=$(".sheet",box);if(sh)sh.scrollTop=0;document.body.classList.add("noscroll");
+}
 function openPat(code){
   let box=$("#sheet");
   if(!box){box=document.createElement("div");box.id="sheet";document.body.appendChild(box)}
@@ -641,19 +691,41 @@ function closeSheet(fromPop){
   sheetOpen=false;
 }
 
+/* ================= fun facts ================= */
+const FACTS=(C.facts||[]).map((f,i)=>({id:i,step:f[0],k:f[1],en:f[2],ru:f[3]}));
+const FK={parallel:["🔗",["Parallels","Параллели"]],culture:["🌍",["Culture","Культура"]],structure:["🧩",["How Arabic works","Как устроен арабский"]],mnemonic:["💡",["Memory trick","Мнемоника"]],saudi:["🇸🇦",["Saudi Arabic","Саудовский арабский"]]};
+const factCard=f=>{const k=FK[f.k]||FK.structure;return `<div class="fact"><span class="fk">${k[0]} ${bi(k[1][0],k[1][1])}</span><p class="bl">${bi(esc(f.en),esc(f.ru))}</p></div>`};
+const factsOf=st=>FACTS.filter(f=>f.step===st.id);
+const unlockedFacts=()=>FACTS.filter(f=>!f.step||S.done.includes(f.step));
+function openFact(){
+  const all=unlockedFacts();if(!all.length)return;
+  const fresh=all.filter(f=>!S.seenF.includes(f.id)),f=pick(fresh.length?fresh:all);
+  if(!S.seenF.includes(f.id))S.seenF.push(f.id);markSess("discover");
+  openSheet(`<div class="row" style="justify-content:space-between"><span class="kind">${bi("Read and discover","Читать и узнавать")}</span><button type="button" class="x" data-closesheet aria-label="Close">×</button></div>
+   ${factCard(f)}<div class="row"><button type="button" class="btn primary" data-discover>${bi("Another one","Ещё один")}</button><button type="button" class="btn" data-closesheet>${bi("Close","Закрыть")}</button></div>
+   <small class="muted">${S.seenF.filter(id=>all.some(x=>x.id===id)).length}/${all.length} ${bi("facts seen so far. More unlock as you go.","фактов прочитано. Новые открываются по ходу пути.")}</small>`);
+}
+/* today's session: four parts, done marks reset each day, nothing is counted against you */
+const sDone=id=>!!(S.sess&&S.sess.day===today()&&S.sess.b.includes(id));
+function markSess(id){if(!S.sess||S.sess.day!==today())S.sess={day:today(),b:[]};if(!S.sess.b.includes(id))S.sess.b.push(id);save()}
+function sessionCard(cur){
+  const started=S.done.length>0;
+  const blk=(id,n,min,title,sub,attrs,dis)=>`<button type="button" class="sb${sDone(id)?" ok":""}" ${dis?"disabled":attrs}><span class="sb-n">${sDone(id)?"✓":n}</span><span class="sb-t"><b>${title}</b><small>${sub}</small></span><span class="sb-m">${min}</span></button>`;
+  return `<section class="card sess"><h2>${bi("Today · about 25 minutes","Сегодня · около 25 минут")}</h2>
+   <p class="lead">${bi("Four short parts. Any order works, and so does stopping early.","Четыре коротких части. Можно в любом порядке и можно остановиться раньше.")}</p>
+   ${blk("ear",1,"5′",bi("Ear and letters","Слух и буквы"),started?bi("Sound pairs, heavy letters, look-alikes","Звуковые пары, тяжёлые буквы, похожие буквы"):bi("Opens after your first step","Откроется после первого шага"),'data-sess="ear"',!started)}
+   ${blk("review",2,"8′",bi("Review","Повторение"),started?bi("A mix from what you've learned","Смесь из пройденного"):bi("Opens after your first step","Откроется после первого шага"),'data-sess="review"',!started)}
+   ${blk("step",3,"10′",cur?`${bi("Next","Дальше")}: ${bi(esc(cur.t[0]),esc(cur.t[1]))}`:bi("All steps done","Все шаги пройдены"),cur?`${kindLabel(cur)} · ${counts(cur)}`:bi("Add lessons in More","Добавьте уроки во вкладке «Ещё»"),cur?`data-step="${cur.id}"`:"",!cur)}
+   ${blk("discover",4,"3′",bi("Read and discover","Читать и узнавать"),bi("A fun fact: parallels, culture, memory tricks","Интересный факт: параллели, культура, мнемоника"),"data-discover",false)}
+  </section>`;
+}
+
 /* ================= Path tab ================= */
 let UI={step:null,openL:null};
 function renderPath(){
   const ci=curIndex(),cur=STEPS[ci],ks=knownSet();
-  const wl=WORDS.filter(learned).length,pl=PHRASES.filter(learned).length,due=dueItems().length;
-  let h="";
-  if(cur){
-    h+=`<section class="card hero"><span class="kind" style="color:inherit;opacity:.8">${bi("Next","Дальше")} · ${bi("step","шаг")} ${ci+1} · ${kindLabel(cur)}</span>
-    <h2 style="font-size:18px">${bi(esc(cur.t[0]),esc(cur.t[1]))}</h2>
-    <div class="hero-ar ar">${esc(stepPreview(cur))}</div><small>${counts(cur)}</small>
-    <button type="button" class="btn big" data-step="${cur.id}">${ci===0&&!S.done.length?bi("Start","Начать"):bi("Continue","Продолжить")}</button></section>`;
-  }else h+=`<section class="card hero"><h2>${bi("Path complete!","Путь пройден!")}</h2><p>${bi("Keep things fresh with daily review, or add new lessons in More.","Повторяйте каждый день или добавьте уроки во вкладке «Ещё».")}</p></section>`;
-  if(due&&S.done.length)h+=`<button type="button" class="dr main" data-drill="review"><b>${bi("Daily review","Ежедневный повтор")}</b><small>${due} ${bi("items are due · 12 quick questions","к повтору · 12 быстрых вопросов")}</small></button>`;
+  const wl=WORDS.filter(learned).length,pl=PHRASES.filter(learned).length;
+  let h=sessionCard(cur);
   h+=`<section class="card"><div class="kpis">
    <div class="kpi"><b>${ks.size}<small>/${LET.length}</small></b><small>${bi("letters","букв")}</small></div>
    <div class="kpi"><b>${wl}</b><small>${bi("words learned","слов выучено")}</small></div>
@@ -666,6 +738,8 @@ function renderPath(){
      <span class="st-n">${done?"✓":st.si+1}</span>
      <span class="st-t"><b>${bi(esc(st.t[0]),esc(st.t[1]))}</b><small>${kindLabel(st)} · ${counts(st)}</small></span>
      <span class="st-ar ar">${esc(stepPreview(st))}</span></button>`}).join("")+`</div>`;
+  const uf=unlockedFacts();
+  h+=`<details class="card disc"><summary><h2>${bi("Fun facts you've unlocked","Открытые интересные факты")} <small>· ${uf.length}/${FACTS.length}</small></h2></summary>${uf.map(factCard).join("")}</details>`;
   return h;
 }
 function renderStep(){
@@ -680,8 +754,15 @@ function renderStep(){
   h+=marksCard(st);
   if(st.root&&st.kind!=="grammar")h+=`<section class="card"><div class="rootbig ar">${spaced(st.root)}</div><p style="text-align:center">${ROOTM[st.root]?bi(esc(ROOTM[st.root][0]),esc(ROOTM[st.root][1])):""}</p></section>`;
   if(st.pat)h+=`<section class="card"><button type="button" class="patbig ar pbtn" data-pat="${st.pat}">${patT(st.pat)}</button><p style="text-align:center">${bi(esc(C.pats[st.pat].en),esc(C.pats[st.pat].ru))}</p></section>`;
-  if(st.W.length)h+=`<section class="card"><h2>${bi("Words","Слова")} <small>· ${st.W.length}</small></h2><div class="wl">${st.W.map(w=>wordRow(w)).join("")}</div></section>`;
-  if(st.P.length)h+=`<section class="card"><h2>${bi("Phrases","Фразы")} <small>· ${st.P.length}</small></h2><div class="wl">${st.P.map(phraseRow).join("")}</div></section>`;
+  if(st.pairs&&st.pairs.length)h+=`<section class="card"><h2>${bi("Listen for the difference","Слушайте разницу")}</h2><p class="lead">${bi("Each pair differs by one sound. Read both, play both if they're recorded, and notice what changes.","Слова в паре отличаются одним звуком. Прочитайте оба, включите запись, если она есть, и заметьте разницу.")}</p>
+   ${st.pairs.map(([a,b])=>{const A=ITEMS["W:"+a],B=ITEMS["W:"+b];return `<div class="pair">${[A,B].map(x=>`<div class="pw"><span class="ar" lang="ar">${esc(x.ar)}</span><small>${bi(esc(x.en),esc(x.ru))}</small>${spk(x.key)}</div>`).join(`<span class="vs">≠</span>`)}</div>`}).join("")}</section>`;
+  const inPair=new Set((st.pairs||[]).flat()),restW=st.W.filter(w=>!inPair.has(w.ar));
+  if(st.kind==="story")h+=`<section class="card story"><div class="ar story-t" lang="ar">${st.P.map(p=>esc(p.ar)).join(" ")}</div>
+   ${st.P.some(p=>hasA(p.key))?`<div class="row">${st.P.map(p=>spk(p.key)).join("")}</div>`:""}
+   <details><summary>${bi("Sentence by sentence, with translation","По предложениям, с переводом")}</summary><div class="wl">${st.P.map(phraseRow).join("")}</div></details></section>`;
+  if(restW.length)h+=`<section class="card"><h2>${bi("Words","Слова")} <small>· ${restW.length}</small></h2><div class="wl">${restW.map(w=>wordRow(w)).join("")}</div></section>`;
+  if(st.P.length&&st.kind!=="story")h+=`<section class="card"><h2>${bi("Phrases","Фразы")} <small>· ${st.P.length}</small></h2><div class="wl">${st.P.map(phraseRow).join("")}</div></section>`;
+  const fs=factsOf(st);if(fs.length)h+=`<section class="card"><h2>${bi("Did you know","А вы знали")}</h2>${fs.map(factCard).join("")}</section>`;
   h+=`<div class="sticky-cta"><button type="button" class="btn primary big" data-stepquiz="${st.id}">${done?bi("Drill again","Повторить"):bi("I'm ready: drill it","Готово: тренировка")}</button></div>`;
   if(!done)h+=`<button type="button" class="btn link" data-skip="${st.id}" style="align-self:center">${bi("I already know this, skip","Я это знаю, пропустить")}</button>`;
   return h;
@@ -707,20 +788,20 @@ function lookAlikes(l,n,within){
 const bigAr=(ar,cls)=>`<div class="ar ${cls}" lang="ar">${ar}</div>`;
 const meanHtml=it=>`<div class="q-mean">${bi(esc(it.en),esc(it.ru))}</div>`;
 function gL_pick(l){
-  const ds=lookAlikes(l,3);if(ds.length<1)return null;
-  const prompt=hasA(l.key)?spk(l.key,true):`<div class="q-snd">${esc(l.tr)}</div><small>${l.n}</small>`;
-  return {kind:"choice",item:l,label:LBL.findL,prompt,audio:hasA(l.key)?l.key:null,opts:shuffle([l,...ds]).map(x=>({k:x.c,html:`<span class="ar">${x.c}</span>`})),ans:l.c};
+  const ds=lookAlikes(l,3);if(ds.length<1)return null;const a=hasA(l.key);
+  return {kind:"choice",item:l,label:LBL.findL,prompt:a?spk(l.key,true):cueHtml(l),audio:a?l.key:null,opts:shuffle([l,...ds]).map(x=>({k:x.c,html:`<span class="ar">${x.c}</span>`})),ans:l.c};
 }
+const cueHtml=l=>`<div class="q-cue">${bi(esc(l.cue[0]),esc(l.cue[1]))}</div>`;
 function gL_name(l){
-  const ds=lookAlikes(l,3);if(ds.length<1)return null;
-  return {kind:"choice",item:l,label:LBL.whatS,prompt:bigAr(l.c,"q-letter"),opts:shuffle([l,...ds]).map(x=>({k:x.c,html:`<b>${esc(x.tr)}</b><small>${x.n}</small>`})),ans:l.c};
+  const ds=lookAlikes(l,4).filter(x=>x.cue[0]!==l.cue[0]).slice(0,3);if(ds.length<1)return null;
+  return {kind:"choice",item:l,label:LBL.whatS,prompt:bigAr(l.c,"q-letter"),opts:shuffle([l,...ds]).map(x=>({k:x.c,html:`<b>${bi(esc(x.cue[0]),esc(x.cue[1]))}</b>`})),ans:l.c};
 }
 function gL_sound(l){
   if(l.sg==null)return null;
   const grp=pool.L.filter(x=>x.sg===l.sg);if(grp.length<2)return null;
   const extra=lookAlikes(l,4).filter(x=>!grp.includes(x)).slice(0,Math.max(0,3-(grp.length-1)));
   const sg=C.sounds[l.sg],a=hasA(l.key);
-  const prompt=a?spk(l.key,true):`<div class="q-snd">${esc(l.tr)}</div><p class="bl" style="max-width:34ch">${bi(esc(l.en),esc(l.ru))}</p>`;
+  const prompt=a?spk(l.key,true):`${cueHtml(l)}<p class="bl" style="max-width:34ch">${bi(esc(l.en),esc(l.ru))}</p>`;
   return {kind:"choice",item:l,label:a?LBL.hear:LBL.descr,prompt,audio:a?l.key:null,opts:shuffle(grp.concat(extra)).map(x=>({k:x.c,html:`<span class="ar">${x.c}</span>`})),ans:l.c,after:`<small>${bi(esc(sg.en),esc(sg.ru))}</small>`};
 }
 function gL_inword(l){
@@ -817,25 +898,81 @@ function gP_gap(p){
   const html=p.parts.map((w,i)=>i===gi?`<span class="hit">＿＿</span>`:esc(w)).join(" ");
   return {kind:"choice",item:p,label:LBL.gap,prompt:bigAr(html,"q-phrase")+`<small>${bi(esc(p.en),esc(p.ru))}</small>`,opts:shuffle([gw,...ds]).map(a=>({k:a,html:`<span class="ar sm">${esc(a)}</span>`})),ans:gw};
 }
-const LBL_S={read:["How do you read it?","Как это читается?"],find:["Find this syllable","Найдите слог"]};
-function sylOpts(l,ks){
-  const own=sylFor(l,ks);if(!own.length)return null;
-  const x=pick(own),alt=lookAlikes(l,4).filter(o=>!"اءة".includes(o.c));
-  const vow=x.ar.slice(1);/* same vowel on a look-alike letter */
-  const foreign=alt.slice(0,2).map(o=>({ar:o.c+vow,tr:ltr(o)+x.tr.slice(ltr(l).length)}));
-  const ds=uniq(shuffle(own.filter(o=>o!==x)).slice(0,2).concat(foreign).map(o=>JSON.stringify(o))).map(o=>JSON.parse(o)).filter(o=>o.tr!==x.tr&&o.ar!==x.ar).slice(0,3);
-  return ds.length>=2?{x,ds}:null;
-}
+/* syllables: which vowel is written, and which syllable has this vowel */
 function gS_read(l){
-  const r=sylOpts(l,new Set(pool.L.map(o=>o.c)));if(!r)return null;
-  return {kind:"choice",item:l,label:LBL_S.read,prompt:bigAr(r.x.ar,"q-letter"),opts:shuffle([r.x,...r.ds]).map(o=>({k:o.tr,html:`<b>${esc(o.tr)}</b>`})),ans:r.x.tr};
+  const sy=sylFor(l,new Set(pool.L.map(o=>o.c)));if(sy.length<3)return null;
+  const x=pick(sy),ds=shuffle(sy.filter(o=>o.v!==x.v)).slice(0,3);
+  return {kind:"choice",item:l,label:["Which vowel?","Какая гласная?"],prompt:bigAr(x.ar,"q-letter"),opts:shuffle([x,...ds]).map(o=>({k:o.v,html:`<b class="vl">${bi(VLAB[o.v][0],VLAB[o.v][1])}</b>`})),ans:x.v};
 }
 function gS_find(l){
-  const r=sylOpts(l,new Set(pool.L.map(o=>o.c)));if(!r)return null;
-  return {kind:"choice",item:l,label:LBL_S.find,prompt:`<div class="q-snd">${esc(r.x.tr)}</div>`,opts:shuffle([r.x,...r.ds]).map(o=>({k:o.ar,html:`<span class="ar">${o.ar}</span>`})),ans:r.x.ar};
+  const ks=new Set(pool.L.map(o=>o.c)),sy=sylFor(l,ks);if(sy.length<3)return null;
+  const x=pick(sy),own=shuffle(sy.filter(o=>o.v!==x.v)).slice(0,2);
+  const m=uniq(famMates(l,pool.L).concat(lookAlikes(l,3))).filter(o=>!"اءة".includes(o.c)&&o!==l)[0];
+  const opts=uniq([x.ar,...own.map(o=>o.ar)].concat(m?[m.c+x.ar.slice(1)]:[])).slice(0,4);if(opts.length<3)return null;
+  return {kind:"choice",item:l,label:["Find this syllable","Найдите этот слог"],prompt:`<div class="ar q-letter">${l.c}</div><div class="vchip">+ ${bi(VLAB[x.v][0],VLAB[x.v][1])}</div>`,opts:shuffle(opts).map(a=>({k:a,html:`<span class="ar">${a}</span>`})),ans:x.ar};
 }
+
+/* ear: two words that differ by one sound (heavy/light, throat, vowel length) */
+function gW_pair(w){
+  const pa=PAIRS[w.ar],o=pa&&ITEMS["W:"+pa];if(!o)return null;
+  const aud=hasA(w.key)&&hasA(o.key);
+  return {kind:"choice",item:w,label:aud?["Which word did you hear?","Какое слово прозвучало?"]:["Which one means this?","Какое из них значит это?"],
+    prompt:aud?spk(w.key,true):meanHtml(w)+(picOf(w)?`<div class="q-pic">${picOf(w)}</div>`:""),audio:aud?w.key:null,
+    opts:shuffle([w,o]).map(x=>({k:x.key,html:`<span class="ar">${esc(x.ar)}</span>`})),ans:w.key,
+    after:`<small>${bi(`${esc(o.ar)} = ${esc(o.en)}`,`${esc(o.ar)} = ${esc(o.ru)}`)}</small>`};
+}
+/* heavy letters: tap them in order */
+const HEAVY="خصضغطقظ";
+function gW_heavy(w){
+  const sk=skel(w.ar);if(/\s/.test(sk)||sk.length<2)return null;
+  const t=[...sk].filter(c=>HEAVY.includes(c)).join("");if(!t)return null;
+  return {kind:"tiles",mode:"heavy",item:w,label:["Tap the heavy letters, in order","Нажмите тяжёлые буквы по порядку"],prompt:bigAr(esc(w.ar),"q-word"),
+    tiles:[...sk],target:t,join:"",need:t.length,after:`<small>${bi("Always heavy: خ ص ض غ ط ق ظ","Всегда тяжёлые: خ ص ض غ ط ق ظ")}</small>`};
+}
+/* pictures: meaning without English */
+const picOf=w=>C.pics&&C.pics[w.ar];
+function gW_pic(w){
+  const p=picOf(w);if(!p)return null;
+  if(Math.random()<.5){
+    const ds=shuffle(uniq(Object.values(C.pics).filter(e=>e!==p))).slice(0,3);
+    return {kind:"choice",item:w,label:["Which picture?","Какая картинка?"],prompt:bigAr(esc(w.ar),"q-word"),opts:shuffle([p,...ds]).map(e=>({k:e,html:`<span class="pic">${e}</span>`})),ans:p};
+  }
+  const ds=shuffle(pool.W.filter(x=>x!==w&&picOf(x)&&picOf(x)!==p)).slice(0,3);if(ds.length<2)return null;
+  return {kind:"choice",item:w,label:LBL.findW,prompt:`<div class="q-pic">${p}</div>`,opts:shuffle([w,...ds]).map(x=>({k:x.key,html:`<span class="ar">${esc(x.ar)}</span>`})),ans:w.key};
+}
+/* little words that stick: read the parts of a word in Arabic order */
+const CL_PRE=[["","",""],["وَ","and","и"],["بِ","with","с"],["لِ","for","для"]];
+const CL_SUF=[["ي","my","мой"],["كَ","your (m)","твой (м.)"],["كِ","your (f)","твой (ж.)"],["هُ","his","его"],["ها","her","её"],["نا","our","наш"],["هُم","their","их"]];
+const CL_NOUNS=new Set(["بَيت","كِتاب","قَلب","صَديق","دَرس","مَكتَب","مَدرَسة","سَيّارة","عائِلة","رِسالة","عَمَل","قَهوة","مَطعَم","شارِع"]);
+const firstSense=t=>String(t).split(/[,;(]/)[0].trim();
+function attach(noun,pre,suf){
+  let st=noun;if(st.endsWith("ة")){st=st.slice(0,-1);if(!HAR.test(st.slice(-1)))st+="َ";st+="ت"}
+  const gen=pre[0]==="بِ"||pre[0]==="لِ";let sf=suf[0],cv="";
+  if(sf!=="ي")cv=gen?"ِ":"ُ";
+  if(gen){if(sf==="هُ")sf="هِ";if(sf==="هُم")sf="هِم"}
+  return pre[0]+st+cv+sf;
+}
+const gloss=(n,pre,suf,ru)=>[pre[ru?2:1],firstSense(ru?n.ru:n.en),suf[ru?2:1]].filter(Boolean).join(" · ");
+function gW_clitic(w){
+  if(!CL_NOUNS.has(w.ar))return null;
+  const pre=Math.random()<.4?CL_PRE[0]:pick(CL_PRE.slice(1)),suf=pick(CL_SUF);
+  const vs=[[pre,suf]];shuffle(CL_SUF.filter(x=>x!==suf)).slice(0,2).forEach(x=>vs.push([pre,x]));vs.push([pick(CL_PRE.filter(x=>x!==pre)),suf]);
+  return {kind:"choice",item:w,label:["What is inside this word?","Что внутри этого слова?"],prompt:bigAr(esc(attach(w.ar,pre,suf)),"q-word"),
+    opts:shuffle(vs.map(([a,b],i)=>({k:"g"+i,html:bi(esc(gloss(w,a,b,false)),esc(gloss(w,a,b,true)))}))),ans:"g0",one:true,
+    after:`<div class="ar">${[pre[0],w.ar,suf[0]].filter(Boolean).map(esc).join(" + ")}</div>`};
+}
+/* odd one out: which word is from a different root */
+function gW_odd(w){
+  if(!w.root)return null;
+  const fam=uniq(pool.W.filter(x=>x.root===w.root&&x!==w&&nrm(x.ar)!==nrm(w.ar)));if(fam.length<2)return null;
+  const rs=new Set(nrm(w.root)),odd=shuffle(pool.W.filter(x=>x.root&&x.root!==w.root&&[...new Set(nrm(x.ar))].filter(c=>rs.has(c)).length>=2))[0];if(!odd)return null;
+  return {kind:"choice",item:w,label:["Which word has a different root?","У какого слова другой корень?"],prompt:`<div class="q-root ar"><span class="r">${spaced(w.root)}</span></div>`,
+    opts:shuffle([w,...shuffle(fam).slice(0,2),odd]).map(x=>({k:x.key,html:`<span class="ar">${esc(x.ar)}</span>`})),ans:odd.key,
+    after:`<div class="ar">${hl(odd.ar,odd.root)} · <span class="rt">${spaced(odd.root)}</span></div>`};
+}
+
 const TIERS={L:[[gL_name,gL_pick,gS_read,gL_form],[gL_pick,gL_sound,gL_inword,gS_find,gL_form],[gL_inword,gL_sound,gL_form,gS_find]],
-  W:[[gW_mean,gW_pick],[gW_pick,gW_listen,gW_pat,gW_root,gW_spot],[gW_spell,gW_root,gW_make,gW_listen,gW_spot]],
+  W:[[gW_mean,gW_pick,gW_pic],[gW_pick,gW_listen,gW_pat,gW_root,gW_spot,gW_pair,gW_clitic,gW_heavy,gW_pic],[gW_spell,gW_root,gW_make,gW_listen,gW_spot,gW_pair,gW_odd,gW_clitic]],
   P:[[gP_mean,gP_order],[gP_order,gP_gap],[gP_order,gP_gap]]};
 function genFor(it,tier){
   for(let t=tier;t>=0;t--){for(const g of shuffle(TIERS[it.type][t])){const q=g(it);if(q)return q}}
@@ -856,12 +993,27 @@ let Q=null;
 function buildStepQuiz(st){
   setPool(st);
   const out=[];
+  if(st.kind==="story"){
+    st.P.forEach(p=>{const q=gP_mean(p);if(q)out.push(q)});
+    shuffle(st.P).slice(0,4).forEach(p=>{const q=pick([gP_order,gP_gap])(p)||gP_order(p);if(q)out.push(q)});
+    st.W.forEach(w=>{const q=gW_pic(w)||gW_mean(w);if(q)out.push(q)});
+    return out.slice(0,14);
+  }
+  if(st.kind==="sound"){
+    st.W.forEach(w=>{const q=gW_pair(w);if(q)out.push(q)});
+    shuffle(st.W).forEach(w=>{const q=gW_heavy(w)||gW_pic(w)||gW_mean(w);if(q&&out.length<12)out.push(q)});
+    shuffle(st.W).forEach(w=>{const q=gW_pair(w);if(q&&out.length<15)out.push(q)});
+    st.P.forEach(p=>{const q=gP_mean(p);if(q)out.push(q)});
+    return out.slice(0,16);
+  }
   st.letters.forEach(l=>{const a=pick([gL_name,gL_pick])(l)||gL_pick(l);if(a)out.push(a)});
   st.letters.forEach(l=>{const b=pick([gS_read,gS_find])(l)||gS_read(l);if(b)out.push(b)});
   if(st.letters.length)st.letters.forEach(l=>{const c=pick([gL_form,gL_inword])(l)||gL_form(l)||gL_inword(l);if(c&&out.length<12)out.push(c)});
   const ph=st.kind==="letters"?st.P.slice(0,1):st.P;
   const ws=st.W.slice(0,Math.max(4,16-out.length-ph.length));
-  ws.forEach((w,i)=>{const gens=st.kind==="root"||st.kind==="pattern"?[gW_root,gW_make,gW_pat,gW_mean,gW_pick,gW_spot]:[gW_mean,gW_pick,gW_spell,gW_spot];const q=(i<2?gW_mean(w):null)||shuffle(gens).map(g=>g(w)).find(Boolean)||genFor(w,0);if(q)out.push(q)});
+  const gens=st.kind==="root"||st.kind==="pattern"?[gW_root,gW_make,gW_pat,gW_mean,gW_pick,gW_spot,gW_odd]:st.kind==="spoken"?[gW_mean,gW_pick,gW_pic]:[gW_mean,gW_pick,gW_spell,gW_spot,gW_pic];
+  ws.forEach((w,i)=>{const q=(i<2?(gW_pic(w)||gW_mean(w)):null)||shuffle(gens).map(g=>g(w)).find(Boolean)||genFor(w,0);if(q)out.push(q)});
+  if(st.id==="c01")shuffle(pool.W.filter(w=>CL_NOUNS.has(w.ar))).slice(0,5).forEach(n=>{const q=gW_clitic(n);if(q)out.push(q)});
   ph.forEach(p=>{const q=(st.kind==="letters"?gP_mean(p):null)||gP_order(p)||gP_mean(p);if(q)out.push(q)});
   return out.slice(0,18);
 }
@@ -871,8 +1023,18 @@ function buildReview(){
   const pr=all.map(it=>{const r=S.srs[it.key]||{b:0,d:0};return [(r.d<=d?0:100)+r.b*3+(r.d-d)+Math.random()*2-(r.w||0)*.3,it]}).sort((a,b)=>a[0]-b[0]).slice(0,12).map(a=>a[1]);
   return shuffle(pr).map(it=>genFor(it,tierOf(it))).filter(Boolean);
 }
+function buildEar(){
+  setPool();const out=[];
+  shuffle(pool.W.filter(w=>learned(w)&&PAIRS[w.ar])).slice(0,4).forEach(w=>{const q=gW_pair(w);if(q)out.push(q)});
+  shuffle(pool.W.filter(learned)).map(gW_heavy).filter(Boolean).slice(0,2).forEach(q=>out.push(q));
+  shuffle(pool.L).forEach(l=>{if(out.length>=10)return;const q=pick([gL_sound,gL_form,gS_find,gL_pick,gL_name])(l)||gL_pick(l);if(q)out.push(q)});
+  return shuffle(out).slice(0,10);
+}
 const DRILLS={
-  review:{t:["Daily review","Ежедневный повтор"],ok:()=>learnedItems().length>=4,build:buildReview},
+  review:{t:["Review","Повторение"],ok:()=>learnedItems().length>=4,build:buildReview},
+  ear:{t:["Ear and letters","Слух и буквы"],ok:()=>{setPool();return pool.L.length>=2},build:buildEar},
+  clitic:{t:["Little words that stick","Прилипающие слова"],ok:()=>WORDS.filter(w=>learned(w)&&CL_NOUNS.has(w.ar)).length>=2,build:()=>{setPool();const ns=pool.W.filter(w=>learned(w)&&CL_NOUNS.has(w.ar));return shuffle(ns.concat(ns,ns)).slice(0,10).map(gW_clitic).filter(Boolean)}},
+  saudi:{t:["Saudi spoken","Саудовская речь"],ok:()=>[...WORDS,...PHRASES].filter(x=>learned(x)&&x.step.kind==="spoken").length>=3,build:()=>{setPool();const it=shuffle([...WORDS,...PHRASES].filter(x=>learned(x)&&(x.step.kind==="spoken"||x.step.spoken)));return it.slice(0,12).map(x=>x.type==="W"?(pick([gW_mean,gW_pick,gW_pic])(x)||gW_mean(x)):(pick([gP_order,gP_mean])(x)||gP_mean(x))).filter(Boolean)}},
   syll:{t:["Syllables","Слоги"],ok:()=>{setPool();return pool.L.filter(l=>gS_read(l)).length>=2},build:()=>{setPool();const c=pool.L.filter(l=>gS_read(l));return shuffle(c.concat(c,c)).slice(0,12).map(l=>pick([gS_read,gS_find])(l)).filter(Boolean)}},
   inside:{t:["Letters inside words","Буквы внутри слов"],ok:()=>{setPool();return pool.L.filter(l=>gL_form(l)).length>=2},build:()=>{setPool();const ls=pool.L.filter(l=>gL_form(l));const out=[];for(let i=0;i<14;i++){const g=pick([gL_form,gL_form,gL_inword,"spot"]);const q=g==="spot"?gW_spot(pick(pool.W.filter(learned).length?pool.W.filter(learned):pool.W)):g(pick(ls));if(q)out.push(q)}return out.slice(0,12)}},
   alike:{t:["Look-alike letters","Похожие буквы"],ok:()=>{setPool();return pool.L.length>=3},build:()=>{setPool();return shuffle(pool.L).concat(shuffle(pool.L)).slice(0,12).map(l=>pick([gL_pick,gL_inword,gL_name])(l)||gL_pick(l)).filter(Boolean)}},
@@ -905,7 +1067,7 @@ function afterQuiz(){
 }
 function itemReveal(it){
   if(!it)return "";
-  if(it.type==="L")return `<div class="row"><span class="ar" style="font-size:40px">${it.c}</span><b>${it.n}</b><span class="tr">${esc(it.tr)}</span>${spk(it.key)}</div>`;
+  if(it.type==="L")return `<div class="row"><span class="ar" style="font-size:40px">${it.c}</span><b class="ar lname">${it.name}</b><span>${bi(esc(it.cue[0]),esc(it.cue[1]))}</span>${spk(it.key)}</div>${it.mn?`<small>💡 ${bi(esc(it.mn[0]),esc(it.mn[1]))}</small>`:""}`;
   return `<div class="row"><span class="ar">${hl(it.ar,it.root)}</span>${spk(it.key)}${splitBtn(it.ar)}${trBtn(it)}</div><div>${bi(esc(it.en),esc(it.ru))}</div>`;
 }
 function answer(ok,shownAns){
@@ -935,14 +1097,14 @@ function tileTap(btn){
   if(Q.picked.length===q.need)check();
 }
 function builtStr(){const q=cur();return Q.picked.map(i=>q.tiles[i]).join(q.join)}
-function updBuilt(){const q=cur(),b=$("#built");b.textContent=q.mode==="root"?Q.picked.map(i=>q.tiles[i]).join(" "):builtStr();const c=$("[data-check]");if(c)c.disabled=!Q.picked.length}
+function updBuilt(){const q=cur(),b=$("#built");b.textContent=q.mode==="root"||q.mode==="heavy"?Q.picked.map(i=>q.tiles[i]).join(" "):builtStr();const c=$("[data-check]");if(c)c.disabled=!Q.picked.length}
 function undo(){if(Q.answered||!Q.picked.length)return;const i=Q.picked.pop();const b=$(`[data-tile="${i}"]`);if(b)b.disabled=false;updBuilt()}
 function check(){
   const q=cur();if(Q.answered)return;
   const got=q.mode==="root"?nrm(Q.picked.map(i=>q.tiles[i]).join("")):builtStr();
   const ok=got===q.target;
   $("#built").classList.add(ok?"ok":"no");$$(".tile").forEach(b=>b.disabled=true);$("[data-check]").disabled=true;
-  const show=q.mode==="root"?`<div class="ar rootbig" style="font-size:34px">${spaced(q.item.root)}</div>`:`<div class="ar">${esc(q.mode==="spell"?q.item.ar:q.target)}</div>`;
+  const show=q.mode==="heavy"?`<div class="ar rootbig" style="font-size:34px">${spaced(q.target)}</div>`:q.mode==="root"?`<div class="ar rootbig" style="font-size:34px">${spaced(q.item.root)}</div>`:`<div class="ar">${esc(q.mode==="spell"?q.item.ar:q.target)}</div>`;
   answer(ok,ok?"":show);
 }
 function renderEnd(){
@@ -951,7 +1113,7 @@ function renderEnd(){
 `;
   if(Q.step){
     const st=STEPS.find(s=>s.id===Q.step),ks=knownSet(),rd=WORDS.filter(w=>readable(w,ks)).length;
-    h+=`<h2 style="text-align:center">${pc>=60?bi("Step complete!","Шаг пройден!"):bi("Step saved. Repeat it soon.","Шаг засчитан. Повторите его скоро.")}</h2>`;
+    h+=`<h2 style="text-align:center">${pc>=60?bi("Step complete!","Шаг пройден!"):bi("Step saved. Come back to it whenever you like.","Шаг засчитан. Возвращайтесь к нему, когда захотите.")}</h2>`;
     if(st.letters.length)h+=`<div class="unl ar">${st.letters.map(l=>`<span>${l.c}</span>`).join("")}</div>`;
     h+=`<div class="unl">${st.W.slice(0,12).map(w=>`<span class="ar">${hl(w.ar,w.root)}</span>`).join("")}</div>
     <p style="text-align:center">${bi(`Unlocked: ${st.W.length} words, ${st.P.length} phrases. You can now read <b>${rd}</b> words.`,`Открыто: слов — ${st.W.length}, фраз — ${st.P.length}. Теперь вы читаете <b>${rd}</b> слов.`)}</p>`;
@@ -965,7 +1127,8 @@ function renderEnd(){
 }
 function finishQuiz(){
   if(Q.finished)return;Q.finished=true;
-  if(Q.step){const st=STEPS.find(s=>s.id===Q.step);if(st)markDone(st)}
+  if(Q.step){const st=STEPS.find(s=>s.id===Q.step);if(st)markDone(st);markSess("step")}
+  if(Q.sess)markSess(Q.sess);
   save();
   if(Q.step&&Q.ok/Q.qs.length>=.6)setTimeout(confetti,80);
 }
@@ -973,17 +1136,20 @@ function finishQuiz(){
 /* ================= Practice tab ================= */
 function renderPractice(){
   if(!S.done.length)return `<section class="card"><h2>${bi("Practice","Тренировка")}</h2><p class="lead">${bi("Finish the first step on the Path to unlock drills.","Пройдите первый шаг на вкладке «Путь», чтобы открыть тренировки.")}</p><button type="button" class="btn primary" data-tab="path">${bi("Go to Path","К пути")}</button></section>`;
-  const due=dueItems().length,na=audioCount();
-  const d=(id,ar,en,ru,cls)=>{const D=DRILLS[id],ok=D.ok();return `<button type="button" class="dr${cls?" "+cls:""}" data-drill="${id}" ${ok?"":"disabled"}><span class="ar">${ar}</span><b>${bi(D.t[0],D.t[1])}</b><small>${ok?bi(en,ru):bi("Unlocks as you progress","Откроется дальше")}</small></button>`};
+  const na=audioCount();
+  const d=(id,ar,en,ru,cls)=>{const D=DRILLS[id],ok=D.ok();return `<button type="button" class="dr${cls?" "+cls:""}" data-drill="${id}" ${ok?"":"disabled"}><span class="ar">${ar}</span><b>${bi(D.t[0],D.t[1])}</b><small>${ok?bi(en,ru):bi("Opens as you go along the path","Откроется по ходу пути")}</small></button>`};
   return `<div class="drills">
-   ${d("review","↻",`${due} due · weakest items first`,`${due} к повтору · сначала слабые`,"main")}
-   ${d("syll","بَ بِ بُ","Read letters with vowels before whole words","Буквы с гласными — до целых слов")}
+   ${d("review","↻","A mix from everything you've learned, weakest first","Смесь из пройденного, сначала самое слабое","main")}
+   ${d("ear","صَيف · سَيف",na?"Sound pairs, heavy letters, look-alikes, with audio":"Sound pairs, heavy letters, look-alikes. Even better with recordings",na?"Звуковые пары, тяжёлые буквы, похожие буквы, со звуком":"Звуковые пары, тяжёлые буквы, похожие буквы. С записями ещё лучше")}
+   ${d("syll","بَ بِ بُ","Letters with vowels, before whole words","Буквы с гласными — до целых слов")}
    ${d("inside","ـبـ ـتـ ـنـ","Look-alikes at the start, middle and end of words","Похожие буквы в начале, середине и конце слова")}
    ${d("alike","ب ت ث","Dots decide: tell look-alike letters apart","Решают точки: различайте похожие буквы")}
-   ${d("sound","س ص ث",na?"Hear it, pick the letter":"Read the sound, pick the letter. Better with recordings",na?"Слушайте и выбирайте букву":"Читайте описание звука и выбирайте. Лучше с записями")}
+   ${d("sound","س ص ث",na?"Hear it, pick the letter":"Read the sound cue, pick the letter",na?"Слушайте и выбирайте букву":"Читайте подсказку о звуке и выбирайте букву")}
    ${d("spell","ك ت ا ب","Build words from loose letters","Собирайте слова из отдельных букв")}
    ${d("roots","ف ع ل","Find roots, plug them into patterns","Ищите корни, вставляйте в шаблоны")}
+   ${d("clitic","وَبَيتُنا","Peel off and, with, my, our…","Отделяйте и, с, мой, наш…")}
    ${d("phrases","…؟","Order and complete real phrases","Собирайте и дополняйте фразы")}
+   ${d("saudi","وِش تَبغى؟","Everyday Saudi words and phrases","Повседневные саудовские слова и фразы")}
    ${d("listen","🔊",`Pick what you hear (${na} recordings)`,`Выбирайте услышанное (записей: ${na})`)}
   </div>`;
 }
@@ -993,9 +1159,9 @@ function renderLetters(){
   const ks=knownSet(),byShape=S.letView!=="sound";
   let h=`<div class="seg" role="group"><button type="button" data-view="shape" aria-pressed="${byShape}">${bi("By shape","По форме")}</button><button type="button" data-view="sound" aria-pressed="${!byShape}">${bi("By sound","По звуку")}</button></div>`;
   const tile=l=>`<button type="button" class="lt${ks.has(l.c)?"":" off"}" data-let="${l.c}" aria-expanded="${UI.openL===l.c}">${l.c}${hasA(l.key)?`<span class="au"></span>`:""}</button>`;
-  const groups=byShape?uniq(LET.map(l=>l.fam)).map(f=>({t:C.shapes[f],L:LET.filter(l=>l.fam===f)})):C.sounds.map(g=>({t:g.t,L:[...g.L].map(c=>byC[c]),en:g.en,ru:g.ru}));
+  const groups=byShape?uniq(LET.map(l=>l.fam)).map(f=>({t:C.shapes[f],L:LET.filter(l=>l.fam===f)})):C.sounds.map(g=>({t:g.t,L:[...g.L].map(c=>byC[c]),en:g.en,ru:g.ru,lt:spaced(g.L)}));
   h+=groups.map(g=>{const open=g.L.find(l=>l.c===UI.openL);const any=g.L.some(l=>hasA(l.key));
-    return `<section class="card"><div class="row" style="justify-content:space-between"><h2>${bi(esc(g.t[0]),esc(g.t[1]))}</h2>${!byShape&&any?`<button type="button" class="btn" data-playall="${g.L.map(l=>l.c).join("")}">▶ ${bi("Play all","Все")}</button>`:""}</div>
+    return `<section class="card"><div class="row" style="justify-content:space-between"><h2>${g.lt?`<span class="ar gl">${g.lt}</span> `:""}${bi(esc(g.t[0]),esc(g.t[1]))}</h2>${!byShape&&any?`<button type="button" class="btn" data-playall="${g.L.map(l=>l.c).join("")}">▶ ${bi("Play all","Все")}</button>`:""}</div>
     ${g.en?`<p class="lead">${bi(esc(g.en),esc(g.ru))}</p>`:""}<div class="ltiles">${g.L.map(tile).join("")}</div>${open?letterCard(open,true):""}</section>`}).join("");
   return h+vowelCard();
 }
@@ -1229,6 +1395,8 @@ document.addEventListener("click",e=>{
   const d=t.dataset;
   if(d.play!==undefined){e.stopPropagation();return play(d.play,t)}
   if(d.closesheet!==undefined)return closeSheet();
+  if(d.discover!==undefined)return openFact();
+  if(d.sess){const D=DRILLS[d.sess];if(!D||!D.ok())return;return startQuiz(D.build(),{drill:d.sess,sess:d.sess})}
   if(d.pat&&!d.opt)return openPat(d.pat);
   if(d.split!==undefined){const sp=t.nextElementSibling;if(sp){sp.hidden=!sp.hidden;t.setAttribute("aria-pressed",String(!sp.hidden))}return}
   if(d.tr!==undefined){const s=document.createElement("span");s.className="trs";s.textContent=d.tr;t.replaceWith(s);return}
