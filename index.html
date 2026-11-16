@@ -278,6 +278,11 @@ details.disc>summary::-webkit-details-marker{display:none}
 .vgrid th.ar{font-size:20px;letter-spacing:.15em}
 a{color:var(--accent)}
 
+.foot{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px 8px;margin-top:28px;padding:14px 0 4px;border-top:1px solid var(--line);font-size:13px;color:var(--mute)}
+.foot a{display:inline-flex;align-items:center;gap:5px;color:var(--mute);text-decoration:none}
+.foot a:first-child{color:var(--accent);font-weight:500}
+.foot a:hover{text-decoration:underline}
+
 /* letters + roots tabs */
 .ltiles{display:flex;flex-wrap:wrap;gap:8px;direction:rtl}
 .lt{width:56px;height:62px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font:32px/1 var(--f-ar);display:grid;place-items:center;position:relative}
@@ -394,6 +399,7 @@ label.btn{display:inline-block}
     </nav>
   </header>
   <main id="view"></main>
+  <footer class="foot" id="foot"></footer>
 </div>
 <div id="toast" role="status"></div>
 <audio id="player" preload="none"></audio>
@@ -633,6 +639,12 @@ function markDone(st){
 }
 
 /* ================= header ================= */
+const GH=`<svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>`;
+function renderFoot(){
+  const f=$("#foot");if(!f)return;f.hidden=!!Q;
+  f.innerHTML=`<a href="${esc(REPO)}" target="_blank" rel="noopener">${GH} ${bi("Source code on GitHub","Исходный код на GitHub")}</a>
+   <span>·</span><a href="LICENSE">AGPL-3.0</a><span>·</span><a href="LICENSE-CONTENT.txt">CC BY-NC-SA 4.0</a><span>·</span><span>© 2026 natmartem</span>`;
+}
 function renderStats(){
   const ks=knownSet(),wl=WORDS.filter(learned).length,rd=WORDS.filter(w=>readable(w,ks)).length;
   $("#stats").innerHTML=
@@ -1556,7 +1568,7 @@ document.addEventListener("change",e=>{
 /* ================= router and events ================= */
 const TABS=["path","practice","letters","roots","manage"];
 function render(){
-  renderStats();
+  renderStats();renderFoot();
   const v=$("#view");
   if(Q){v.innerHTML=Q.i>=Q.qs.length?(finishQuiz(),renderStats(),renderEnd()):renderQuiz();return}
   const map={path:()=>UI.step?renderStep():renderPath(),practice:renderPractice,letters:renderLetters,roots:renderRoots,manage:renderManage};
