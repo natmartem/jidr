@@ -26,6 +26,6 @@ In short:
 
 ## How it was made
 
-Built with AI assistance (Claude, by Anthropic). The design, learning approach and lesson selection were directed by natmartem, who also reviewed and curated every change and tested the app hands-on on a real device, reporting the bugs and inconsistencies that shaped each version. Purely machine-written parts may not be protected by copyright in some countries; the licenses above apply to everything that is.
+Built with AI assistance (Claude, by Anthropic). The design, learning approach, lesson selection and every change were directed, reviewed and curated by natmartem. Purely machine-written parts may not be protected by copyright in some countries; the licenses above apply to everything that is.
 
 Copyright © 2026 natmartem.
