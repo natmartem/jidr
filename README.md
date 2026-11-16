@@ -24,4 +24,8 @@ In short:
 - **Lessons:** you may share and adapt them for non-commercial purposes, with credit, under the same license.
 - **Recordings:** do not reuse them without the speaker's permission.
 
-Copyright © 2026 Natalia.
+## How it was made
+
+Built with AI assistance (Claude, by Anthropic). The design, learning approach, lesson selection and every change were directed, reviewed and curated by natmartem. Purely machine-written parts may not be protected by copyright in some countries; the licenses above apply to everything that is.
+
+Copyright © 2026 natmartem.

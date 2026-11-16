@@ -1,4 +1,4 @@
-/* Jidr · Copyright © 2026 Natalia · SPDX-License-Identifier: AGPL-3.0-or-later */
+/* Jidr · Copyright © 2026 natmartem · SPDX-License-Identifier: AGPL-3.0-or-later */
 /* Jidr service worker.
    - index.html, course.js, jidr-audio*.json: network first (a new upload shows up the next time you open the app online),
      falling back to the saved copy when offline or the network is slow.

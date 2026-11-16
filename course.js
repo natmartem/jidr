@@ -1,4 +1,4 @@
-/* Jidr course content · Copyright © 2026 Natalia · SPDX-License-Identifier: CC-BY-NC-SA-4.0 · see LICENSE-CONTENT.txt */
+/* Jidr course content · Copyright © 2026 natmartem · SPDX-License-Identifier: CC-BY-NC-SA-4.0 · see LICENSE-CONTENT.txt */
 /* Jidr course data. Shared by index.html (the app) and record.html (the recorder).
    Word:   [arabic with vowel marks, transliteration, English, Russian, root ("" if none), pattern code ("" if none)]
    Phrase: [arabic, transliteration, English, Russian]
