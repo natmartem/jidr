@@ -113,8 +113,8 @@ roots: {
 steps: [
 { id:"s01", kind:"letters", L:"اءبتني",
   t:["Alif and the boat family","Алиф и «лодочки»"],
-  en:"ب ت ن ي share one body; only the dots change. أ is alif carrying a hamza: the word opens with a clean vowel. At the end of a word ي can drop its dots: ى, read as a long a. The ending ـي means “my”.",
-  ru:"У ب ت ن ي одно тело, меняются только точки. أ — алиф с хамзой: слово начинается с чистой гласной. В конце слова ي может потерять точки: ى, читается как долгое а. Окончание ـي значит «мой».",
+  en:"ب ت ن ي share one body; only the dots change. The little hook on أ is hamza, a real consonant: the catch in your throat in uh-oh. Alif is just its seat. Arabic words never start with a bare vowel, so أَنا really begins with that catch. The vowel mark shows which vowel: أَ a, أُ u, and for i the hamza sits below: إِ. At the end of a word ي can drop its dots: ى, read as a long a. The ending ـي means “my”.",
+  ru:"У ب ت ن ي одно тело, меняются только точки. Крючок над أ — хамза, настоящая согласная: смычка в горле, как пауза в «не-а». Алиф — лишь её подставка. Арабское слово не начинается с голой гласной, поэтому أَنا на самом деле начинается с этой смычки. Значок гласной показывает, какой звук: أَ а, أُ у, а для и хамза пишется снизу: إِ. В конце слова ي может потерять точки: ى, читается как долгое а. Окончание ـي значит «мой».",
   words:[
    ["أَنا","anā","I","я","",""],
    ["أَنتَ","anta","you (m)","ты (м.)","",""],
@@ -132,8 +132,8 @@ steps: [
 
 { id:"s02", kind:"letters", L:"لكمو",
   t:["Tall strokes and loops","Палочки и петли"],
-  en:"ل and ك are tall; م and و are small loops. لا is lam + alif tied in one knot. الـ means “the”. و alone means “and” and sticks to the next word.",
-  ru:"ل и ك высокие; م и و — маленькие петли. لا — лам и алиф, связанные в узел. الـ значит определённый артикль. و отдельно значит «и» и пишется слитно со следующим словом.",
+  en:"ل and ك are tall; م and و are small loops. لا is lam + alif tied in one knot. الـ means “the”, and every letter is a sun or a moon letter for it. Before moon letters (made with the lips, back of the tongue or throat, like ب ك م و) the l is clear: البَيت al-bayt. Before sun letters (made with the tongue tip, like ت ن ل) the l goes silent and the letter doubles: more in step 9. و alone means “and” and sticks to the next word.",
+  ru:"ل и ك высокие; م и و — маленькие петли. لا — лам и алиф, связанные в узел. الـ значит определённый артикль, и для него каждая буква — солнечная или лунная. Перед лунными (губы, задняя часть языка или горло, как ب ك م و) «л» звучит: البَيت аль-байт. Перед солнечными (кончик языка, как ت ن ل) «л» пропадает, а буква удваивается: подробнее в шаге 9. و отдельно значит «и» и пишется слитно со следующим словом.",
   words:[
    ["لا","lā","no","нет","",""],
    ["وَ","wa","and","и","",""],
@@ -286,8 +286,8 @@ steps: [
 
 { id:"s09", kind:"letters", L:"سشصضث",
   t:["Teeth and their heavy twins","Зубцы и их тяжёлые близнецы"],
-  en:"س has three teeth; ش adds three dots. ص ض add a loop and sound heavy. ث is a boat with three dots: th as in think. With الـ before س ش ص ض ث the l disappears and the letter doubles: الشّاي = ash-shāy.",
-  ru:"У س три зубца; у ش ещё три точки. ص ض с петлёй и звучат «тяжело». ث — лодочка с тремя точками: th в think. Перед س ش ص ض ث в الـ звук л пропадает, буква удваивается: الشّاي = аш-шай.",
+  en:"س has three teeth; ش adds three dots. ص ض add a loop and sound heavy. ث is a boat with three dots: th as in think. With الـ before س ش ص ض ث the l disappears and the letter doubles: الشّاي = ash-shāy. These are sun letters, like the sun itself: الشَّمس ash-shams. Moon letters keep the l: القَهوة al-qahwa.",
+  ru:"У س три зубца; у ش ещё три точки. ص ض с петлёй и звучат «тяжело». ث — лодочка с тремя точками: th в think. Перед س ش ص ض ث в الـ звук л пропадает, буква удваивается: الشّاي = аш-шай. Это солнечные буквы, как и само солнце: الشَّمس аш-шамс. Лунные буквы сохраняют «л»: القَهوة аль-кахва.",
   words:[
    ["اِسم","ism","name","имя","",""],
    ["شُكراً","shukran","thank you","спасибо","شكر",""],
@@ -859,6 +859,9 @@ facts: [
  ["","parallel","Spanish has thousands of words of Arabic origin, many starting with al-: alcalde from القاضي (the judge), almacén from المَخزَن (storehouse), aldea from الضَّيعة (village).","В испанском тысячи слов арабского происхождения, многие начинаются с al-: alcalde от القاضي (судья), almacén от المَخزَن (склад), aldea от الضَّيعة (деревня)."],
  ["s12","parallel","Standard Arabic has three cases, like a lighter Russian system: -u for the subject (как именительный), -a for the object (винительный), -i after prepositions and in “of” phrases (родительный). Saudi speech, like all dialects, has dropped them.","В литературном арабском три падежа — облегчённая русская система: -у для подлежащего (как именительный), -а для дополнения (винительный), -и после предлогов и в сочетаниях «чего/кого» (родительный). Саудовская речь, как и все диалекты, их потеряла."],
  ["","structure","Arabic has no capital letters. Instead, each letter changes its shape depending on its position in the word.","В арабском нет заглавных букв. Вместо этого каждая буква меняет форму в зависимости от места в слове."]
+ ["s01","structure","Hamza changes its seat but never its sound: أ إ on alif at the start, ؤ on و, ئ on a dotless ي, or ء alone on the line. آ is a hamza plus a long ā, as in آكُل I eat.","Хамза меняет подставку, но не звук: أ إ на алифе в начале слова, ؤ на و, ئ на ي без точек или ء одна на строке. آ — хамза плюс долгое ā, как в آكُل «я ем»."],
+ ["s02","structure","Sun letters: ت ث د ذ ر ز س ش ص ض ط ظ ل ن. Moon letters: ء ب ج ح خ ع غ ف ق ك م ه و ي. Sun letters are all made with the tip of the tongue, right where l is made, so the l blends into them.","Солнечные буквы: ت ث د ذ ر ز س ش ص ض ط ظ ل ن. Лунные: ء ب ج ح خ ع غ ف ق ك م ه و ي. Все солнечные произносятся кончиком языка, там же, где «л», поэтому «л» в них растворяется."],
+ ["s02","mnemonic","It isn't the sonorant split: ل ن ر are sun letters, but م و ي are moon letters. And ج is a moon letter because it was once a hard g at the back of the mouth.","Это не деление на сонорные: ل ن ر солнечные, а م و ي лунные. ج лунная, потому что раньше это было твёрдое «г» в глубине рта."],
 ],
 
 /* Easy reading: short texts unlocked after a step. Lines: [arabic, transliteration ("" = none), English, Russian]. Audio key "T:" + arabic. */
