@@ -142,6 +142,7 @@ main{padding-top:16px;display:flex;flex-direction:column;gap:12px}
 .lc-meta{min-width:0;display:flex;flex-direction:column;gap:4px}
 .nm{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
 .tr{font-style:italic;color:var(--mute)}
+.sm{display:inline-block;border-radius:6px;padding:0 8px;font-size:12.5px;font-weight:500}.sm.sun{background:var(--root-tint);color:var(--root)}.sm.moon{background:var(--tint);color:var(--accent)}
 .dots{display:inline-block;background:var(--root-tint);color:var(--root);border-radius:6px;padding:0 8px;font-size:12.5px;font-weight:500;align-self:flex-start}
 .snd{font-size:13.5px}
 .snd .lg{display:inline-block;width:24px;font-size:11px;font-weight:600;color:var(--mute)}
@@ -693,11 +694,14 @@ function letterExamples(l){
   });
   return out;
 }
+/* Sun letters (tongue tip): the l of الـ melts into them. ة and ى never follow الـ, so they get no badge. */
+const SUN=new Set([..."تثدذرزسشصضطظلن"]);
+const smBadge=l=>"ةى".includes(l.c)?"":`<span class="sm ${SUN.has(l.c)?"sun":"moon"}">${SUN.has(l.c)?"☀ "+bi("sun letter","солнечная"):"☾ "+bi("moon letter","лунная")}</span>`;
 function letterCard(l,withEx){
   const fam=LET.filter(x=>x.fam===l.fam),sg=l.sg!=null?C.sounds[l.sg]:null;
   return `<div class="lcard"><div class="big ar">${l.c}</div>
   <div class="lc-meta"><div class="nm"><b class="ar lname" lang="ar">${l.name}</b><span class="cue">${bi(esc(l.cue[0]),esc(l.cue[1]))}</span>${spk(l.key)}</div>
-   <span class="dots">${bi(l.dots[0],l.dots[1])}</span>
+   <span class="row" style="gap:6px"><span class="dots">${bi(l.dots[0],l.dots[1])}</span>${smBadge(l)}</span>
    ${l.mn?`<div class="mn">💡 ${bi(esc(l.mn[0]),esc(l.mn[1]))}</div>`:""}
    <div class="snd"><span class="lg">EN</span>${l.en}</div><div class="snd"><span class="lg">RU</span>${l.ru}</div></div>
   <div class="forms">${forms(l).map(f=>`<div class="fm"><span class="ar">${f[2]}</span><small>${bi(f[0],f[1])}</small></div>`).join("")}</div>

@@ -44,6 +44,8 @@ details.sec>summary::-webkit-details-marker{display:none}
 .rec i{width:22px;height:22px;border-radius:50%;background:var(--rec);transition:all .15s}
 .rec.on{background:var(--rec)}
 .rec.on i{border-radius:4px;width:18px;height:18px;background:var(--surface)}
+.rec.wait{animation:recwait .8s ease-in-out infinite}
+@keyframes recwait{50%{opacity:.4}}
 .play{width:44px;height:44px;border-radius:50%;border:0;background:var(--tint);color:var(--accent);display:grid;place-items:center}
 .play:disabled{opacity:.3}
 .timer{font:600 13px var(--f-display);color:var(--rec);min-width:28px}
@@ -127,47 +129,67 @@ function renderList(){
   $("#list").innerHTML=SECTIONS.map((s,i)=>`<details class="sec"${i===firstOpen?" open":""}><summary><h2>${esc(s.t)}</h2><span class="cnt"></span></summary>${s.rec?`<p class="recnote">${esc(s.rec)}</p>`:""}${s.items.map(rowHtml).join("")}</details>`).join("");
   progress();
 }
-/* ---- recording ---- */
-let stream=null,rec=null,recKey=null,chunks=[],tick=null,stopTimer=null;
+/* ---- recording ----
+   Every take gets its own recorder, microphone stream and chunks, so a slow save of one take can never
+   disturb the next one. The microphone is released after each take: phones handle that far better than
+   keeping it open while playing the take back. */
+let active=null,starting=false;
 const MIME=["audio/webm;codecs=opus","audio/mp4","audio/ogg;codecs=opus","audio/webm"].find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(m))||"";
-async function getStream(){
-  if(stream&&stream.active)return stream;
-  stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
-  return stream;
+function recUI(row,state){
+  const b=row.querySelector("[data-rec]");b.classList.toggle("on",state==="on");b.classList.toggle("wait",state==="wait");
+  if(state!=="on")row.querySelector(".timer").textContent="";
 }
 async function startRec(row){
-  if(rec)stopRec();
+  if(starting)return;
+  if(active)stopRec();
   if(!window.MediaRecorder||!navigator.mediaDevices){msg("bad","This browser cannot record audio. Please open the link in Chrome or Safari.");return}
-  let s;try{s=await getStream()}catch(e){msg("bad","Microphone access was blocked. Allow the microphone for this site in the browser settings, then reload the page.");return}
-  msg();
-  const key=row.dataset.key;recKey=key;chunks=[];
-  rec=new MediaRecorder(s,Object.assign(MIME?{mimeType:MIME}:{},{audioBitsPerSecond:32000}));
-  rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
-  rec.onstop=()=>saveClip(key,new Blob(chunks,{type:(rec&&rec.mimeType)||MIME||"audio/webm"}),row);
-  rec.start();
-  row.querySelector("[data-rec]").classList.add("on");
-  const t0=Date.now(),tm=row.querySelector(".timer");
-  tick=setInterval(()=>{tm.textContent=((Date.now()-t0)/1000).toFixed(0)+"s"},250);
-  stopTimer=setTimeout(stopRec,MAXS[key[0]]*1000);
+  starting=true;recUI(row,"wait");
+  let s;
+  try{s=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})}
+  catch(e){starting=false;recUI(row,"");msg("bad","Microphone access was blocked. Allow the microphone for this site in the browser settings, then try again.");return}
+  let r;
+  try{r=new MediaRecorder(s,Object.assign(MIME?{mimeType:MIME}:{},{audioBitsPerSecond:32000}))}
+  catch(e){try{r=new MediaRecorder(s)}catch(e2){starting=false;s.getTracks().forEach(t=>t.stop());recUI(row,"");msg("bad","This browser cannot record audio here.");return}}
+  const take={key:row.dataset.key,row,stream:s,rec:r,chunks:[],tick:null,timer:null,ended:false};
+  r.ondataavailable=e=>{if(e.data&&e.data.size)take.chunks.push(e.data)};
+  r.onerror=()=>{msg("bad","Recording failed. Please try that one again.");endTake(take,false)};
+  r.onstop=()=>endTake(take,true);
+  r.onstart=()=>{
+    starting=false;if(active!==take)return;recUI(row,"on");
+    const t0=Date.now(),tm=row.querySelector(".timer");
+    take.tick=setInterval(()=>{tm.textContent=((Date.now()-t0)/1000).toFixed(0)+"s"},250);
+  };
+  active=take;msg();
+  try{r.start(250)}catch(e){starting=false;active=null;endTake(take,false);msg("bad","Recording failed. Please try that one again.");return}
+  take.timer=setTimeout(()=>{if(active===take)stopRec()},MAXS[take.key[0]]*1000);
+  setTimeout(()=>{if(starting&&active===take){starting=false;recUI(row,"on")}},2500);
 }
 function stopRec(){
-  clearInterval(tick);clearTimeout(stopTimer);
-  if(rec&&rec.state!=="inactive")rec.stop();
-  document.querySelectorAll(".rec.on").forEach(b=>b.classList.remove("on"));
-  document.querySelectorAll(".timer").forEach(t=>t.textContent="");
+  const t=active;if(!t)return;
+  active=null;starting=false;clearTimeout(t.timer);clearInterval(t.tick);recUI(t.row,"");
+  try{if(t.rec.state!=="inactive")t.rec.stop();else endTake(t,true)}catch(e){endTake(t,false)}
+}
+function endTake(take,save){
+  if(take.ended)return;take.ended=true;
+  clearInterval(take.tick);clearTimeout(take.timer);
+  if(active===take)active=null;
+  take.stream.getTracks().forEach(t=>t.stop());
+  if(!active||active.row!==take.row)recUI(take.row,"");
+  if(save)saveClip(take.key,new Blob(take.chunks,{type:take.rec.mimeType||MIME||"audio/webm"}),take.row);
 }
 async function saveClip(key,blob,row){
-  rec=null;recKey=null;
-  if(blob.size<500){msg("bad","That recording was empty. Try again and speak after the button turns red.");return}
+  if(blob.size<500){msg("bad","That recording was empty. Try again and start speaking once the button turns red.");return}
   const d=await new Promise(res=>{const fr=new FileReader();fr.onload=()=>res(String(fr.result).split(",")[1]);fr.readAsDataURL(blob)});
   const clip={m:(blob.type||"audio/webm").split(";")[0],d};
   try{await put(key,clip)}catch(e){msg("bad","Could not save on this phone (storage full or private mode).");return}
   CLIPS[key]=clip;row.classList.add("done");row.querySelector("[data-play]").disabled=false;
-  playKey(key);progress();
-  /* move on to the next item that still needs a recording */
+  progress();
+  /* if they have already started the next take, stay out of the way: no playback, no scrolling */
+  if(active)return;
+  playKey(key);
   const rows=[...document.querySelectorAll(".it")],i=rows.indexOf(row);
   const nx=rows.slice(i+1).find(r=>!CLIPS[r.dataset.key]);
-  if(nx){const sec=nx.closest("details");if(sec&&!sec.open)sec.open=true;setTimeout(()=>nx.scrollIntoView({behavior:"smooth",block:"center"}),900)}
+  if(nx){const sec=nx.closest("details");if(sec&&!sec.open)sec.open=true;setTimeout(()=>{if(!active)nx.scrollIntoView({behavior:"smooth",block:"center"})},900)}
 }
 const urls={};
 function playKey(key){
@@ -203,13 +225,13 @@ async function load(file){
 document.addEventListener("click",e=>{
   const b=e.target.closest("button");if(!b)return;
   const row=b.closest(".it");
-  if(b.dataset.rec!==undefined){if(recKey&&recKey===row.dataset.key)return stopRec();return startRec(row)}
-  if(b.dataset.play!==undefined)return playKey(row.dataset.key);
+  if(b.dataset.rec!==undefined){if(active&&active.row===row)return stopRec();return startRec(row)}
+  if(b.dataset.play!==undefined){if(active)stopRec();return playKey(row.dataset.key)}
   if(b.id==="send")return send();
 });
 $("#hide").addEventListener("change",e=>$("#list").classList.toggle("hidedone",e.target.checked));
 $("#load").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];e.target.value="";if(f)load(f)});
-document.addEventListener("visibilitychange",()=>{if(document.hidden){stopRec();if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}}});
+document.addEventListener("visibilitychange",()=>{if(document.hidden)stopRec()});
 if(SP>1)document.getElementById("sptag").textContent=" · speaker "+SP;
 (async()=>{try{CLIPS=await getAll()}catch(e){msg("bad","This browser cannot save recordings (private mode?). Please use a normal window.")}renderList()})();
 </script>
