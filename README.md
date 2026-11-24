@@ -16,7 +16,7 @@ Different parts of this project are under different licenses:
 |---|---|
 | Code: `index.html`, `record.html`, `sw.js`, `manifest.webmanifest` | [GNU AGPL-3.0-or-later](LICENSE) |
 | Course content: `course.js` (lesson selection, order, explanations, translations) | [CC BY-NC-SA 4.0](LICENSE-CONTENT.txt) |
-| Fonts in `fonts/` (Amiri, Onest, Unbounded) | SIL Open Font License 1.1, see `fonts/LICENSE-*.txt` |
+| Fonts in `fonts/` (Noto Naskh Arabic, Onest, Unbounded) | SIL Open Font License 1.1, see `fonts/LICENSE-*.txt` |
 | Audio recordings (`jidr-audio.json`, `jidr-audio-2.json`, if present) | Not licensed. All rights remain with the person who recorded them. |
 
 In short:

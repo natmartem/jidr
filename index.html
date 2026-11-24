@@ -25,7 +25,7 @@
   --good:#1F7A3F; --good-tint:#DDF0E3; --bad:#B3261E; --bad-tint:#F8DEDB;
   --f-display:'Unbounded','Onest',system-ui,sans-serif;
   --f-body:'Onest','Noto Sans','Segoe UI',system-ui,sans-serif;
-  --f-ar:'Amiri','Noto Naskh Arabic','Geeza Pro','Traditional Arabic',serif;
+  --f-ar:'Noto Naskh Arabic','Geeza Pro','Traditional Arabic',serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
@@ -178,8 +178,16 @@ main{padding-top:16px;display:flex;flex-direction:column;gap:12px}
 .lx{display:grid;grid-template-columns:minmax(96px,38%) minmax(0,1fr) auto;gap:10px;align-items:center;border-top:1px solid var(--line);padding:4px 0}
 .lx .ar{font-size:32px;line-height:1.5;text-align:center}
 .lx>span:nth-child(2){font-size:14px}
+.dtag{display:inline-block;font-size:12px;border-radius:999px;padding:1px 10px;background:var(--tint);color:var(--accent);margin-bottom:4px}.dtag.sa{background:var(--root-tint);color:var(--root)}
+.dpair{display:flex;flex-direction:row-reverse;justify-content:center;align-items:center;gap:10px;font-size:24px}.dpair i,.drow i{font-style:normal;color:var(--mute);font-size:16px}
+.dtab{display:flex;flex-direction:column;gap:8px}.drow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px 8px;padding:8px 0;border-bottom:1px solid var(--line)}.drow:last-child{border-bottom:0}
+.dsa,.dmsa{display:flex;align-items:center;gap:6px}.dsa{justify-content:flex-start}.dmsa{justify-content:flex-end}.drow .ar{font-size:22px}.dsa .ar{color:var(--root)}.dm{grid-column:1/-1;text-align:center}
+.clparts{display:flex;flex-direction:row-reverse;justify-content:center;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-top:6px}
+.clparts span{display:flex;flex-direction:column;align-items:center}.clparts .ar{font-size:26px;line-height:1.5}.clparts i{font-style:normal;color:var(--mute);padding-top:8px}
 .splt{display:block;width:100%;font-size:28px;line-height:1.6;letter-spacing:.06em;color:var(--accent)}
 .wr.ph .splt{text-align:right}
+.tlx{display:block;width:100%;padding-top:2px}
+.rd .w-i .row{row-gap:4px}
 .trv[aria-pressed="true"]{border-style:solid;color:var(--accent)}
 .mrk{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:center;padding:8px 0;border-top:1px dashed var(--line)}
 .mrk:first-of-type{border-top:0}
@@ -409,7 +417,7 @@ label.btn{display:inline-block}
 "use strict";
 /* ================= basics ================= */
 const C=window.COURSE;
-const APP_VERSION="3.1.0",STATE_VER=2;
+const APP_VERSION="3.2.0",STATE_VER=2;
 const $=(s,r)=>(r||document).querySelector(s);
 const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -536,7 +544,7 @@ function sylCard(st){
 }
 
 /* ================= content model ================= */
-let STEPS=[],WORDS=[],PHRASES=[],ITEMS={},ROOTM={},PAIRS={},TEXTS=[];
+let STEPS=[],WORDS=[],PHRASES=[],ITEMS={},ROOTM={},PAIRS={},TEXTS=[],DIA=[],DIA_BY={};
 function buildData(){
   ROOTM=Object.assign({},C.roots);
   STEPS=C.steps.map(s=>Object.assign({},s));
@@ -559,6 +567,10 @@ function buildData(){
     T.items=t.lines.map(l=>({type:"T",key:"T:"+l[0],ar:l[0],tr:l[1]||"",en:l[2],ru:l[3],step:st,text:T,need:reqLetters(l[0]),parts:l[0].split(/\s+/).filter(Boolean)}));
     T.items.forEach(it=>{ITEMS[it.key]=it});return T});
   PAIRS={};STEPS.forEach(st=>(st.pairs||[]).forEach(([a,b])=>{PAIRS[a]=b;PAIRS[b]=a}));
+  /* Saudi ↔ Standard pairs, linked to the Saudi item (progress) and, if it is on the path, the Standard item (audio) */
+  const find=a=>ITEMS["W:"+a]||ITEMS["P:"+a]||ITEMS["T:"+a]||null;
+  DIA=(C.dia||[]).map(d=>({sa:d[0],msa:d[1],en:d[2],ru:d[3],nen:d[4]||"",nru:d[5]||"",it:find(d[0]),mi:find(d[1])})).filter(d=>d.it);
+  DIA_BY={};DIA.forEach(d=>{DIA_BY[d.it.key]=d;d.ph=/\s/.test(d.sa)||/\s/.test(d.msa)});
   const seenM=new Set();
   STEPS.forEach(st=>{st.marks=[];const ars=[...st.W,...st.P].map(x=>x.ar);
     MARKS.forEach(m=>{if(seenM.has(m.k))return;const ex=ars.find(m.test);if(ex){seenM.add(m.k);st.marks.push(Object.assign({ex},m))}})});
@@ -676,6 +688,11 @@ function phraseRow(p){
   return `<div class="wr ph"><div class="w-ar ar" lang="ar">${esc(p.ar)}</div>
   <div class="w-i"><div>${bi(esc(p.en),esc(p.ru))}</div><div class="row">${spk(p.key)}${splitBtn(p.ar)}${trBtn(p)}</div></div></div>`;
 }
+/* reading line: the translation stays hidden until tapped, like Split */
+function readRow(p){
+  return `<div class="wr ph rd"><div class="w-ar ar" lang="ar">${esc(p.ar)}</div>
+  <div class="w-i"><div class="row">${spk(p.key)}${splitBtn(p.ar)}${trBtn(p)}<button type="button" class="trv" data-split>${bi("Translation","Перевод")}</button><span class="tlx" hidden>${bi(esc(p.en),esc(p.ru))}</span></div></div></div>`;
+}
 /* example words for a letter: one where it starts the word, one in the middle, one at the end */
 const MATCH={"ا":"اأإآ","ء":"ءأإؤئآ","ي":"يى","و":"وؤ"};
 function letterExamples(l){
@@ -764,7 +781,7 @@ function textCard(t){
   return `<div class="txt"><div class="row" style="justify-content:space-between"><b>${bi(esc(t.t[0]),esc(t.t[1]))}${t.spoken?` <span class="tag">${bi("Saudi","Саудовский")}</span>`:""}</b>${read?`<span class="tag">✓</span>`:""}</div>
    <div class="ar story-t" lang="ar">${t.items.map(it=>`<span class="tl">${esc(off?bare(it.ar):it.ar)}</span>`).join(" ")}</div>
    ${t.items.some(it=>hasA(it.key))?`<div class="row">${t.items.map(it=>spk(it.key)).join("")}</div>`:""}
-   <details><summary>${bi("Translation, line by line","Перевод по строкам")}</summary><div class="wl">${t.items.map(phraseRow).join("")}</div></details>
+   <details><summary>${bi("Line by line","По строкам")}</summary><div class="wl">${t.items.map(readRow).join("")}</div></details>
    <button type="button" class="btn primary" data-textquiz="${t.id}">${bi("Questions about this text","Вопросы по тексту")}</button></div>`;
 }
 function buildTextQuiz(t){
@@ -848,9 +865,10 @@ function renderStep(){
   const inPair=new Set((st.pairs||[]).flat()),restW=st.W.filter(w=>!inPair.has(w.ar));
   if(st.kind==="story")h+=`<section class="card story"><div class="ar story-t" lang="ar">${st.P.map(p=>esc(p.ar)).join(" ")}</div>
    ${st.P.some(p=>hasA(p.key))?`<div class="row">${st.P.map(p=>spk(p.key)).join("")}</div>`:""}
-   <details><summary>${bi("Sentence by sentence, with translation","По предложениям, с переводом")}</summary><div class="wl">${st.P.map(phraseRow).join("")}</div></details></section>`;
+   <details><summary>${bi("Sentence by sentence","По предложениям")}</summary><div class="wl">${st.P.map(readRow).join("")}</div></details></section>`;
   if(restW.length)h+=`<section class="card"><h2>${bi("Words","Слова")} <small>· ${restW.length}</small></h2><div class="wl">${restW.map(w=>wordRow(w)).join("")}</div></section>`;
   if(st.P.length&&st.kind!=="story")h+=`<section class="card"><h2>${bi("Phrases","Фразы")} <small>· ${st.P.length}</small></h2><div class="wl">${st.P.map(phraseRow).join("")}</div></section>`;
+  h+=diaCard(st);
   const tx=TEXTS.filter(t=>t.step===st);
   if(tx.length)h+=`<section class="card"><h2>${bi("Easy reading","Лёгкое чтение")}</h2>${tx.map(textCard).join("")}</section>`;
   const fs=factsOf(st);if(fs.length)h+=`<section class="card"><h2>${bi("Did you know","А вы знали")}</h2>${fs.map(factCard).join("")}</section>`;
@@ -912,7 +930,8 @@ function gL_form(l){
   if("ءة".includes(l.c))return null;
   const mates=shuffle(famMates(l));if(!mates.length)return null;
   const pos=Math.random()<.55?"middle":(l.conn&&Math.random()<.5?"start":"end");
-  const opts=[l,...mates.slice(0,3)];
+  /* small families (س ش, ر ز) get extra letters that sound or look close, so there are always 4 choices */
+  const opts=uniq([l,...mates.slice(0,3)].concat(lookAlikes(l,8,pool.L).filter(x=>!"اءة".includes(x.c)))).slice(0,4);
   if(Math.random()<.5)return {kind:"choice",item:l,label:["Which letter is this?","Что это за буква?"],
     prompt:bigAr(posForm(l.c,pos),"q-letter")+`<small class="tag">${bi(POSN[pos][0],POSN[pos][1])}</small>`,
     opts:shuffle(opts).map(x=>({k:x.c,html:`<span class="ar">${x.c}</span>`})),ans:l.c};
@@ -931,12 +950,33 @@ function gW_spot(w){
   return {kind:"choice",item:w,label:["Which spelling is right?","Какое написание верное?"],prompt:meanHtml(w)+spk(w.key),
     opts:shuffle([w.ar,...fakes]).map(a=>({k:a,html:`<span class="ar">${esc(a)}</span>`})),ans:w.ar,after:`<div class="ar">${mark}</div>`};
 }
+/* how alike two spellings look: shared letters, same root, similar length, same first letter */
+function lookScore(a,b){
+  const as=nrm(a),bs=nrm(b);let s=0;for(const c of new Set(bs))if(as.includes(c))s++;
+  if(as[0]===bs[0])s+=1;if(as.slice(-1)===bs.slice(-1))s+=.5;s-=Math.abs(as.length-bs.length)*.5;return s;
+}
+const firstSense=t=>String(t).split(/[,;(]/)[0].trim().toLowerCase();
+const bareW=a=>nrm(a).replace(/[؟،.!?,]/g,"");
+const sameSense=(a,b)=>firstSense(a.en)===firstSense(b.en)||firstSense(a.ru)===firstSense(b.ru);
+/* two phrases clash when one contains the other, or their translations share most content words: both would be right */
+const cw=t=>new Set(String(t).toLowerCase().replace(/\([^)]*\)/g,"").split(/[^a-zа-яё']+/).filter(x=>x.length>3));
+function clash(a,b){
+  if(sameSense(a,b))return true;
+  const A=new Set(a.parts.map(bareW)),B=new Set(b.parts.map(bareW));
+  if([...A].every(x=>B.has(x))||[...B].every(x=>A.has(x)))return true;
+  for(const k of ["en","ru"]){const x=cw(a[k]),y=cw(b[k]),n=[...x].filter(w=>y.has(w)).length;if(n&&n>=Math.min(x.size,y.size)*.5)return true}
+  return false;
+}
 function similarWords(w,n){
   const sk=nrm(w.ar);
-  return shuffle(pool.W.filter(x=>x!==w&&nrm(x.ar)!==sk)).map(x=>{const xs=nrm(x.ar);let s=0;for(const c of new Set(xs))if(sk.includes(c))s++;if(x.root&&x.root===w.root)s+=3;s-=Math.abs(xs.length-sk.length)*.5;return [s+Math.random(),x]}).sort((a,b)=>b[0]-a[0]).slice(0,n).map(a=>a[1]);
+  return shuffle(pool.W.filter(x=>x!==w&&nrm(x.ar)!==sk&&!sameSense(x,w))).map(x=>{let s=lookScore(w.ar,x.ar);if(x.root&&x.root===w.root)s+=3;return [s+Math.random(),x]}).sort((a,b)=>b[0]-a[0]).slice(0,n).map(a=>a[1]);
 }
+/* meaning: two options look like the word (a careless reader falls for them), one comes from the same topic */
 function gW_mean(w){
-  const ds=shuffle(pool.W.filter(x=>x!==w&&x.en!==w.en)).sort((a,b)=>(b.step===w.step)-(a.step===w.step)).slice(0,3);if(ds.length<2)return null;
+  const look=similarWords(w,2),topic=shuffle(pool.W.filter(x=>x!==w&&!look.includes(x)&&!sameSense(x,w)&&x.step===w.step));
+  const rest=shuffle(pool.W.filter(x=>x!==w&&!look.includes(x)&&!sameSense(x,w)));
+  const ds=[];for(const x of look.concat(topic,rest)){if(ds.length>=3)break;if(!ds.some(y=>sameSense(x,y)||y.en===x.en))ds.push(x)}
+  if(ds.length<2)return null;
   return {kind:"choice",item:w,label:LBL.mean,prompt:bigAr(esc(vz(w)),"q-word"),opts:shuffle([w,...ds]).map(x=>({k:x.key,html:bi(esc(x.en),esc(x.ru))})),ans:w.key,one:true};
 }
 function gW_pick(w){
@@ -947,11 +987,33 @@ function gW_listen(w){
   if(!hasA(w.key))return null;const ds=similarWords(w,3);if(ds.length<2)return null;
   return {kind:"choice",item:w,label:LBL.listenW,prompt:spk(w.key,true),audio:w.key,opts:shuffle([w,...ds]).map(x=>({k:x.key,html:`<span class="ar">${esc(x.ar)}</span>`})),ans:w.key};
 }
-function gW_spell(w){
-  const s=skel(w.ar);if(/\s/.test(s)||s.length<2||s.length>7)return null;
-  const own=[...s],extra=[];
-  shuffle(own).forEach(c=>{if(extra.length<2&&byC[BASE[c]||c]){const d=lookAlikes(byC[BASE[c]||c],2,LET).map(x=>x.c).find(x=>!own.includes(x)&&!extra.includes(x));if(d)extra.push(d)}});
+function gW_spell(w,easy){
+  const s=skel(w.ar);if(/\s/.test(s)||s.length<2||s.length>(easy?5:7))return null;
+  const own=[...s],extra=[],nx=easy||s.length<=3?1:2;
+  shuffle(own).forEach(c=>{if(extra.length<nx&&byC[BASE[c]||c]){const d=lookAlikes(byC[BASE[c]||c],2,LET).map(x=>x.c).find(x=>!own.includes(x)&&!extra.includes(x));if(d)extra.push(d)}});
   return {kind:"tiles",mode:"spell",item:w,label:LBL.spell,prompt:meanHtml(w)+spk(w.key),tiles:shuffle(own.concat(extra)),target:s,join:"",need:own.length};
+}
+/* missing letter: one letter of a known word is blanked, mostly in the middle.
+   Distractors are letters that sound alike or look alike, so the learner has to know the spelling, not just the shape. */
+const SPELL_NEAR={"ة":"هت","ه":"ةح","ت":"طة","ط":"ت","س":"صث","ص":"س","ث":"سذ","د":"ضذ","ض":"دظ","ذ":"زظ","ز":"ذظ","ظ":"ذض","ح":"هخ","خ":"حغ","غ":"خع","ع":"ءغ","ك":"ق","ق":"كغ","ي":"ىا","ى":"يا","ا":"ىء","أ":"إع","إ":"أي","و":"ؤ","ب":"تن","ن":"بت","ج":"حخ","ف":"ق","ر":"ز","ش":"س","م":"ب","ل":"ن"};
+function gW_miss(w){
+  const cl=clusters(w.ar);if(cl.some(c=>/\s/.test(c))||cl.length<3||cl.length>8)return null;
+  const real=new Set(WORDS.map(x=>skel(x.ar)));
+  const cand=cl.map((c,i)=>SPELL_NEAR[c[0]]?i:-1).filter(i=>i>=0);if(!cand.length)return null;
+  const mid=cand.filter(i=>i>0&&i<cl.length-1);const at=mid.length&&Math.random()<.7?pick(mid):pick(cand);
+  const c=cl[at][0],l=byC[BASE[c]||c];
+  let near=[...SPELL_NEAR[c]];
+  if(l)near=near.concat(famMates(l,LET).map(x=>x.c),(l.sg!=null?LET.filter(x=>x.sg===l.sg&&x!==l).map(x=>x.c):[]));
+  /* a letter is only a distractor if putting it there does not spell another real word */
+  near=uniq(near).filter(x=>x!==c&&!real.has(skel(cl.map((y,i)=>i===at?x:y).join(""))));
+  /* ة, ى and ا only make sense at the end; ة never in the middle */
+  near=near.filter(x=>!("ةى".includes(x)&&at!==cl.length-1));
+  const ds=near.slice(0,2).concat(shuffle(near.slice(2))).slice(0,3);if(ds.length<2)return null;
+  const mark=cl.map((y,i)=>i===at?`<span class="hit">ـ؟ـ</span>`:esc(y)).join("");
+  return {kind:"choice",item:w,label:["Which letter is missing?","Какой буквы не хватает?"],
+    prompt:bigAr(mark,"q-word")+meanHtml(w)+spk(w.key),
+    opts:shuffle([c,...ds]).map(x=>({k:x,html:`<span class="ar">${x}</span>`})),ans:c,
+    after:`<div class="ar">${cl.map((y,i)=>i===at?`<span class="hit">${esc(y)}</span>`:esc(y)).join("")}</div>`};
 }
 function rootInWord(w){
   if(!w.root)return false;const r=[...nrm(w.root)],s=nrm(w.ar);let i=0;for(const c of s)if(c===r[i])i++;
@@ -969,26 +1031,36 @@ function gW_make(w){
 }
 function gW_pat(w){
   if(!w.pat)return null;
-  const others=shuffle(Object.keys(C.pats).filter(k=>k!==w.pat&&C.pats[k].t!==C.pats[w.pat].t)).slice(0,3);
+  /* patterns the learner has met come first, and among them the ones whose shape is closest to the right one */
+  const met=new Set(pool.W.map(x=>x.pat).filter(Boolean)),T0=C.pats[w.pat].t;
+  const ks=Object.keys(C.pats).filter(k=>k!==w.pat&&C.pats[k].t!==T0);
+  const others=ks.map(k=>[(met.has(k)?3:0)+lookScore(T0,C.pats[k].t)+Math.random()*1.5,k]).sort((a,b)=>b[0]-a[0]).slice(0,3).map(a=>a[1]);
   return {kind:"choice",item:w,label:LBL.pat,prompt:bigAr(hl(w.ar,w.root),"q-word"),opts:shuffle([w.pat,...others]).map(k=>({k,html:`<span class="ar sm">${patT(k)}</span><small>${bi(esc(C.pats[k].en),esc(C.pats[k].ru))}</small>`})),ans:w.pat};
 }
 function gP_mean(p){
   const src=p.type==="T"?p.text.items.concat(pool.P):pool.P;
-  const ds=shuffle(src.filter(x=>x!==p&&x.en!==p.en)).slice(0,3);if(ds.length<1)return null;
+  /* prefer lines that share words with this one, so the whole line has to be read */
+  const sc=x=>x.parts.filter(a=>p.parts.includes(a)).length*2+(x.step===p.step?1.5:0)+(/[؟?]/.test(x.ar)===/[؟?]/.test(p.ar)?1:0)+lookScore(p.ar,x.ar)*.2+Math.random()*1.5;
+  const ranked=uniq(src.filter(x=>x!==p&&!clash(x,p))).map(x=>[sc(x),x]).sort((a,b)=>b[0]-a[0]).map(a=>a[1]);
+  const ds=[];for(const x of ranked){if(ds.length>=3)break;if(!ds.some(y=>clash(x,y)))ds.push(x)}if(ds.length<1)return null;
   return {kind:"choice",item:p,label:LBL.mean,prompt:bigAr(esc(vz(p)),"q-phrase"),opts:shuffle([p,...ds]).map(x=>({k:x.key,html:bi(esc(x.en),esc(x.ru))})),ans:p.key,one:true};
 }
 function gP_order(p){
   if(p.parts.length<2)return null;
   const tiles=p.parts.slice();
-  if(p.parts.length>=2){const d=shuffle(pool.W.map(w=>w.ar).filter(a=>!p.parts.includes(a)))[0];if(d)tiles.push(d)}
+  if(p.parts.length>=2){const ref=pick(p.parts),used=new Set(p.parts.map(bareW)),d=pool.W.map(w=>w.ar).filter(a=>!used.has(bareW(a))).map(a=>[lookScore(ref,a)+Math.random()*1.5,a]).sort((a,b)=>b[0]-a[0]).map(a=>a[1])[0];if(d)tiles.push(d)}
   return {kind:"tiles",mode:"order",item:p,label:LBL.order,prompt:meanHtml(p)+spk(p.key),tiles:shuffle(tiles),target:p.parts.join(" "),join:" ",need:p.parts.length,words:true};
 }
 function gP_gap(p){
   if(p.parts.length<2)return null;
   const gi=Math.floor(Math.random()*p.parts.length),gw=p.parts[gi];
-  const ds=shuffle(uniq(pool.W.map(w=>w.ar).concat(pool.P.flatMap(x=>x.parts))).filter(a=>nrm(a)!==nrm(gw))).slice(0,3);if(ds.length<2)return null;
+  const used=new Set(p.parts.map(bareW)),cands=uniq(pool.W.map(w=>w.ar).concat(pool.P.flatMap(x=>x.parts)).map(a=>a.replace(/[؟،.!?,]/g,""))).filter(a=>a&&!used.has(bareW(a)));
+  const ds=cands.map(a=>[lookScore(gw,a)+Math.random()*1.5,a]).sort((a,b)=>b[0]-a[0]).slice(0,3).map(a=>a[1]);if(ds.length<2)return null;
   const html=p.parts.map((w,i)=>i===gi?`<span class="hit">＿＿</span>`:esc(w)).join(" ");
-  return {kind:"choice",item:p,label:LBL.gap,prompt:bigAr(html,"q-phrase")+`<small>${bi(esc(p.en),esc(p.ru))}</small>`,opts:shuffle([gw,...ds]).map(a=>({k:a,html:`<span class="ar sm">${esc(a)}</span>`})),ans:gw};
+  /* punctuation stays in the sentence, so the right option can't be spotted by its question mark */
+  const gc=gw.replace(/[؟،.!?,]/g,""),pn=gw.slice(gc.length);
+  const html2=p.parts.map((w,i)=>i===gi?`<span class="hit">＿＿</span>${esc(pn)}`:esc(w)).join(" ");
+  return {kind:"choice",item:p,label:LBL.gap,prompt:bigAr(html2,"q-phrase")+`<small>${bi(esc(p.en),esc(p.ru))}</small>`,opts:shuffle([gc,...ds]).map(a=>({k:a,html:`<span class="ar sm">${esc(a)}</span>`})),ans:gc};
 }
 /* syllables: which vowel is written, and which syllable has this vowel */
 function gS_read(l){
@@ -1037,17 +1109,31 @@ const picOf=w=>C.pics&&C.pics[w.ar];
 function gW_pic(w){
   const p=picOf(w);if(!p)return null;
   if(Math.random()<.5){
-    const ds=shuffle(uniq(Object.values(C.pics).filter(e=>e!==p))).slice(0,3);
+    const look=similarWords(w,8).map(picOf).filter(e=>e&&e!==p);
+    const ds=uniq(look.concat(shuffle(Object.values(C.pics)))).filter(e=>e!==p).slice(0,3);
     return {kind:"choice",item:w,label:["Which picture?","Какая картинка?"],prompt:bigAr(esc(vz(w)),"q-word"),opts:shuffle([p,...ds]).map(e=>({k:e,html:`<span class="pic">${e}</span>`})),ans:p};
   }
-  const ds=shuffle(pool.W.filter(x=>x!==w&&picOf(x)&&picOf(x)!==p)).slice(0,3);if(ds.length<2)return null;
+  const ds=pool.W.filter(x=>x!==w&&picOf(x)&&picOf(x)!==p&&nrm(x.ar)!==nrm(w.ar)).map(x=>[lookScore(w.ar,x.ar)+Math.random()*2,x]).sort((a,b)=>b[0]-a[0]).slice(0,3).map(a=>a[1]);if(ds.length<2)return null;
   return {kind:"choice",item:w,label:LBL.findW,prompt:`<div class="q-pic">${p}</div>`,opts:shuffle([w,...ds]).map(x=>({k:x.key,html:`<span class="ar">${esc(x.ar)}</span>`})),ans:w.key};
 }
-/* little words that stick: read the parts of a word in Arabic order */
+/* little words that stick: read the parts of a word in Arabic order.
+   Options are whole, natural phrases (“with my coffee”, «с моим кофе»), not word-by-word glosses. */
 const CL_PRE=[["","",""],["وَ","and","и"],["بِ","with","с"],["لِ","for","для"]];
-const CL_SUF=[["ي","my","мой"],["كَ","your (m)","твой (м.)"],["كِ","your (f)","твой (ж.)"],["هُ","his","его"],["ها","her","её"],["نا","our","наш"],["هُم","their","их"]];
-const CL_NOUNS=new Set(["بَيت","كِتاب","قَلب","صَديق","دَرس","مَكتَب","مَدرَسة","سَيّارة","عائِلة","رِسالة","عَمَل","قَهوة","مَطعَم","شارِع"]);
-const firstSense=t=>String(t).split(/[,;(]/)[0].trim();
+/* [arabic, EN, RU key, EN note, RU note] */
+const CL_SUF=[["ي","my","my","",""],["كَ","your","your"," (to a man)"," (мужчине)"],["كِ","your","your"," (to a woman)"," (женщине)"],["هُ","his","his","",""],["ها","her","her","",""],["نا","our","our","",""],["هُم","their","their","",""]];
+/* suffixes a careless reader mixes up */
+const CL_NEAR={"ي":["نا","كِ"],"كَ":["كِ","هُ"],"كِ":["كَ","ي"],"هُ":["ها","هُم"],"ها":["هُ","نا"],"نا":["ها","ي"],"هُم":["هُ","ها"]};
+/* noun: [English, Russian gender, nominative, genitive (для), instrumental (с)] */
+const CL_N={"بَيت":["house","m","дом","дома","домом"],"كِتاب":["book","f","книга","книги","книгой"],"قَلب":["heart","n","сердце","сердца","сердцем"],
+ "صَديق":["friend","m","друг","друга","другом"],"دَرس":["lesson","m","урок","урока","уроком"],"مَكتَب":["office","m","офис","офиса","офисом"],
+ "مَدرَسة":["school","f","школа","школы","школой"],"سَيّارة":["car","f","машина","машины","машиной"],"عائِلة":["family","f","семья","семьи","семьёй"],
+ "رِسالة":["letter","n","письмо","письма","письмом"],"عَمَل":["work","f","работа","работы","работой"],"قَهوة":["coffee","m","кофе","кофе","кофе"],
+ "مَطعَم":["restaurant","m","ресторан","ресторана","рестораном"],"شارِع":["street","f","улица","улицы","улицей"]};
+const CL_NOUNS=new Set(Object.keys(CL_N));
+const RU_POSS={my:{nom:{m:"мой",f:"моя",n:"моё"},gen:{m:"моего",f:"моей",n:"моего"},ins:{m:"моим",f:"моей",n:"моим"}},
+ your:{nom:{m:"твой",f:"твоя",n:"твоё"},gen:{m:"твоего",f:"твоей",n:"твоего"},ins:{m:"твоим",f:"твоей",n:"твоим"}},
+ our:{nom:{m:"наш",f:"наша",n:"наше"},gen:{m:"нашего",f:"нашей",n:"нашего"},ins:{m:"нашим",f:"нашей",n:"нашим"}}};
+const RU_FIX={his:"его",her:"её",their:"их"};
 function attach(noun,pre,suf){
   let st=noun;if(st.endsWith("ة")){st=st.slice(0,-1);if(!HAR.test(st.slice(-1)))st+="َ";st+="ت"}
   const gen=pre[0]==="بِ"||pre[0]==="لِ";let sf=suf[0],cv="";
@@ -1055,14 +1141,66 @@ function attach(noun,pre,suf){
   if(gen){if(sf==="هُ")sf="هِ";if(sf==="هُم")sf="هِم"}
   return pre[0]+st+cv+sf;
 }
-const gloss=(n,pre,suf,ru)=>[pre[ru?2:1],firstSense(ru?n.ru:n.en),suf[ru?2:1]].filter(Boolean).join(" · ");
+function clPhrase(noun,pre,suf,ru){
+  const n=CL_N[noun];
+  if(!ru)return (pre[1]?pre[1]+" ":"")+suf[1]+" "+n[0]+suf[3];
+  const cas=pre[0]==="لِ"?"gen":pre[0]==="بِ"?"ins":"nom",form=n[cas==="gen"?3:cas==="ins"?4:2];
+  const poss=RU_FIX[suf[2]]||RU_POSS[suf[2]][cas][n[1]];
+  return (pre[2]?pre[2]+" ":"")+poss+" "+form+suf[4];
+}
+const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
 function gW_clitic(w){
   if(!CL_NOUNS.has(w.ar))return null;
-  const pre=Math.random()<.4?CL_PRE[0]:pick(CL_PRE.slice(1)),suf=pick(CL_SUF);
-  const vs=[[pre,suf]];shuffle(CL_SUF.filter(x=>x!==suf)).slice(0,2).forEach(x=>vs.push([pre,x]));vs.push([pick(CL_PRE.filter(x=>x!==pre)),suf]);
+  const pre=Math.random()<.35?CL_PRE[0]:pick(CL_PRE.slice(1)),suf=pick(CL_SUF);
+  const bySuf=a=>CL_SUF.find(x=>x[0]===a);
+  const near=shuffle(CL_NEAR[suf[0]].map(bySuf)),vs=[[pre,suf],[pre,near[0]]];
+  /* one more: either the other near suffix, or the same suffix with another little word in front */
+  vs.push(Math.random()<.5?[pre,near[1]]:[pick(CL_PRE.filter(x=>x!==pre)),near[0]]);
+  vs.push([pick(CL_PRE.filter(x=>x!==pre)),suf]);
+  const seen=new Set(),opts=[];
+  vs.forEach(([a,b],i)=>{const e=clPhrase(w.ar,a,b,false),r=clPhrase(w.ar,a,b,true),k=e+"|"+r;if(seen.has(k))return;seen.add(k);opts.push({k:"g"+i,html:bi(esc(cap(e)),esc(cap(r)))})});
+  if(opts.length<3)return null;
+  const parts=[[pre[0],pre[1],pre[2]],[w.ar,CL_N[w.ar][0],CL_N[w.ar][2]],[suf[0],suf[1]+suf[3],({my:"мой",your:"твой",our:"наш"}[suf[2]]||RU_FIX[suf[2]])+suf[4]]].filter(p=>p[0]);
   return {kind:"choice",item:w,label:["What is inside this word?","Что внутри этого слова?"],prompt:bigAr(esc(attach(w.ar,pre,suf)),"q-word"),
-    opts:shuffle(vs.map(([a,b],i)=>({k:"g"+i,html:bi(esc(gloss(w,a,b,false)),esc(gloss(w,a,b,true)))}))),ans:"g0",one:true,
-    after:`<div class="ar">${[pre[0],w.ar,suf[0]].filter(Boolean).map(esc).join(" + ")}</div>`};
+    opts:shuffle(opts),ans:"g0",one:true,
+    after:`<div class="clparts">${parts.map(p=>`<span><b class="ar">${esc(p[0])}</b><small>${bi(esc(p[1]),esc(p[2]))}</small></span>`).join(`<i>+</i>`)}</div>`};
+}
+/* Saudi ↔ Standard: the same meaning said two ways */
+const diaPool=d=>{const near=DIA.filter(x=>x!==d&&x.ph===d.ph&&(learned(x.it)||x.it.step===d.it.step));return near.length>=3?near:DIA.filter(x=>x!==d&&x.ph===d.ph)};
+const lenNear=(a,b)=>Math.abs(skel(a).length-skel(b).length);
+const SA_TAG=`<span class="dtag sa">${bi("Saudi","Саудовский")}</span>`,MSA_TAG=`<span class="dtag">${bi("Standard","Литературный")}</span>`;
+const diaAfter=d=>`<div class="dpair"><span class="ar">${esc(d.sa)}</span><i>⇄</i><span class="ar">${esc(d.msa)}</span></div><small>${bi(esc(d.en),esc(d.ru))}</small>${d.nen?`<small>${bi(esc(d.nen),esc(d.nru))}</small>`:""}`;
+function gD_toMsa(d){
+  const ds=uniq(diaPool(d).filter(x=>x.msa!==d.msa).sort((a,b)=>lenNear(a.msa,d.msa)-lenNear(b.msa,d.msa)+Math.random()*3-1.5).map(x=>x.msa)).slice(0,3);if(ds.length<2)return null;
+  return {kind:"choice",item:d.it,label:["Same meaning in Standard Arabic?","То же самое на литературном?"],prompt:SA_TAG+bigAr(esc(d.sa),"q-word")+spk(d.it.key),
+    opts:shuffle([d.msa,...ds]).map(a=>({k:a,html:`<span class="ar">${esc(a)}</span>`})),ans:d.msa,after:diaAfter(d)};
+}
+function gD_toSa(d){
+  /* never offer another Saudi form of the same Standard word: it would also be right */
+  const ds=uniq(diaPool(d).filter(x=>x.msa!==d.msa&&x.sa!==d.sa).sort((a,b)=>lenNear(a.sa,d.sa)-lenNear(b.sa,d.sa)+Math.random()*3-1.5).map(x=>x.sa)).slice(0,3);if(ds.length<2)return null;
+  return {kind:"choice",item:d.it,label:["How do Saudis say it?","Как это говорят саудовцы?"],prompt:MSA_TAG+bigAr(esc(d.msa),"q-word")+(d.mi?spk(d.mi.key):""),
+    opts:shuffle([d.sa,...ds]).map(a=>({k:a,html:`<span class="ar">${esc(a)}</span>`})),ans:d.sa,after:diaAfter(d)};
+}
+function gD_which(d){
+  /* the Standard twin is the trap; one more Saudi and one more Standard form with other meanings */
+  const o=shuffle(diaPool(d).filter(x=>x.msa!==d.msa&&x.sa!==d.sa));if(o.length<2)return null;
+  const opts=uniq([d.sa,d.msa,o[0].sa,o[1].msa]);
+  return {kind:"choice",item:d.it,label:["Which is the Saudi way to say it?","Как это сказать по-саудовски?"],prompt:meanHtml(d),
+    opts:shuffle(opts).map(a=>({k:a,html:`<span class="ar">${esc(a)}</span>`})),ans:d.sa,after:diaAfter(d)};
+}
+function gD_std(d){
+  /* three Saudi forms and one Standard: spot the Standard one */
+  const o=shuffle(diaPool(d).filter(x=>x.msa!==d.msa&&x.sa!==d.msa&&x.msa!==d.sa)).slice(0,3);if(o.length<2)return null;
+  return {kind:"choice",item:d.it,label:["Three are Saudi. Which one is Standard?","Три саудовских. Какое литературное?"],prompt:`<div class="q-mean">${bi("Only one of these is used in news and books","Только одно из них — для новостей и книг")}</div>`,
+    opts:shuffle([d.msa,...o.map(x=>x.sa)]).map(a=>({k:a,html:`<span class="ar">${esc(a)}</span>`})),ans:d.msa,after:diaAfter(d)};
+}
+const DIA_GENS=[gD_toMsa,gD_toSa,gD_which,gD_std];
+const genDia=it=>{const d=DIA_BY[it.key];return d?shuffle(DIA_GENS).map(g=>g(d)).find(Boolean)||null:null};
+function diaCard(st){
+  const ds=DIA.filter(d=>d.it.step===st);if(!ds.length)return "";
+  return `<section class="card"><h2>${bi("Saudi and Standard side by side","Саудовское и литературное рядом")}</h2><p class="lead">${bi("Same meaning, two ways. You'll read the right column in books and news, and hear the left one in Riyadh and Jeddah.","Одно значение, два способа. Правую колонку вы встретите в книгах и новостях, левую услышите в Эр-Рияде и Джидде.")}</p>
+   <div class="dtab">${ds.map(d=>`<div class="drow"><div class="dsa"><span class="ar" lang="ar">${esc(d.sa)}</span>${spk(d.it.key)}</div><i>⇄</i><div class="dmsa"><span class="ar" lang="ar">${esc(d.msa)}</span>${d.mi?spk(d.mi.key):""}</div>
+    <small class="dm">${bi(esc(d.en),esc(d.ru))}${d.nen?` · ${bi(esc(d.nen),esc(d.nru))}`:""}</small></div>`).join("")}</div></section>`;
 }
 /* odd one out: which word is from a different root */
 function gW_odd(w){
@@ -1075,9 +1213,10 @@ function gW_odd(w){
 }
 
 const TIERS={L:[[gL_name,gL_pick,gS_read,gL_form],[gL_pick,gL_sound,gL_inword,gS_find,gL_form],[gL_inword,gL_sound,gL_form,gS_find]],
-  W:[[gW_mean,gW_pick,gW_pic],[gW_pick,gW_listen,gW_pat,gW_root,gW_spot,gW_pair,gW_clitic,gW_heavy,gW_pic],[gW_spell,gW_root,gW_make,gW_listen,gW_spot,gW_pair,gW_odd,gW_clitic,gT_type]],
+  W:[[gW_mean,gW_pick,gW_pic],[gW_pick,gW_listen,gW_pat,gW_root,gW_spot,gW_pair,gW_clitic,gW_heavy,gW_pic,gW_miss,gW_spell],[gW_spell,gW_miss,gW_root,gW_make,gW_listen,gW_spot,gW_pair,gW_odd,gW_clitic,gT_type]],
   P:[[gP_mean,gP_order],[gP_order,gP_gap],[gP_order,gP_gap]]};
 function genFor(it,tier){
+  if(tier>=1&&DIA_BY[it.key]&&Math.random()<.45){const q=genDia(it);if(q)return q}
   for(let t=tier;t>=0;t--){for(const g of shuffle(TIERS[it.type][t])){const q=g(it);if(q)return q}}
   return null;
 }
@@ -1100,7 +1239,8 @@ function buildStepQuiz(st){
     st.P.forEach(p=>{const q=gP_mean(p);if(q)out.push(q)});
     shuffle(st.P).slice(0,4).forEach(p=>{const q=pick([gP_order,gP_gap])(p)||gP_order(p);if(q)out.push(q)});
     st.W.forEach(w=>{const q=gW_pic(w)||gW_mean(w);if(q)out.push(q)});
-    return out.slice(0,14);
+    if(st.spoken)shuffle(DIA.filter(d=>d.it.step===st||learned(d.it))).slice(0,3).forEach(d=>{const q=genDia(d.it);if(q)out.splice(Math.min(out.length,4+Math.floor(Math.random()*6)),0,q)});
+    return out.slice(0,15);
   }
   if(st.kind==="sound"){
     st.W.forEach(w=>{const q=gW_pair(w);if(q)out.push(q)});
@@ -1114,11 +1254,18 @@ function buildStepQuiz(st){
   if(st.letters.length)st.letters.forEach(l=>{const c=pick([gL_form,gL_inword])(l)||gL_form(l)||gL_inword(l);if(c&&out.length<12)out.push(c)});
   const ph=st.kind==="letters"?st.P.slice(0,1):st.P;
   const ws=st.W.slice(0,Math.max(4,16-out.length-ph.length));
-  const gens=st.kind==="root"||st.kind==="pattern"?[gW_root,gW_make,gW_pat,gW_mean,gW_pick,gW_spot,gW_odd]:st.kind==="spoken"?[gW_mean,gW_pick,gW_pic]:[gW_mean,gW_pick,gW_spell,gW_spot,gW_pic];
+  const gens=st.kind==="root"||st.kind==="pattern"?[gW_root,gW_make,gW_pat,gW_mean,gW_pick,gW_spot,gW_odd,gW_miss]:st.kind==="spoken"?[gW_mean,gW_pick,gW_pic,gW_miss]:[gW_mean,gW_pick,gW_spell,gW_spot,gW_pic,gW_miss];
   ws.forEach((w,i)=>{const q=(i<2?(gW_pic(w)||gW_mean(w)):null)||shuffle(gens).map(g=>g(w)).find(Boolean)||genFor(w,0);if(q)out.push(q)});
+  /* every word step ends its word part with a little spelling: one missing letter, one build-the-word */
+  if(st.W.length>=2){const sp=shuffle(st.W);const a=sp.map(gW_miss).find(Boolean),b=sp.filter(w=>!a||w!==a.item).map(w=>gW_spell(w,true)).find(Boolean);[a,b].forEach(q=>{if(q)out.push(q)})}
   if(st.id==="c01")shuffle(pool.W.filter(w=>CL_NOUNS.has(w.ar))).slice(0,5).forEach(n=>{const q=gW_clitic(n);if(q)out.push(q)});
+  if(st.kind==="spoken"){
+    /* compare with Standard Arabic: one question per pair in this step, four kinds taking turns */
+    const ds=shuffle(DIA.filter(d=>d.it.step===st)),gs=shuffle(DIA_GENS);
+    ds.slice(0,7).forEach((d,i)=>{const q=[gs[i%4],...gs].map(g=>g(d)).find(Boolean);if(q)out.push(q)});
+  }
   ph.forEach(p=>{const q=(st.kind==="letters"?gP_mean(p):null)||gP_order(p)||gP_mean(p);if(q)out.push(q)});
-  return out.slice(0,18);
+  return st.kind==="spoken"?out.slice(0,22):out.slice(0,20);
 }
 function buildReview(){
   setPool();
@@ -1138,12 +1285,18 @@ const DRILLS={
   ear:{t:["Ear and letters","Слух и буквы"],ok:()=>{setPool();return pool.L.length>=2},build:buildEar},
   clitic:{t:["Little words that stick","Прилипающие слова"],ok:()=>WORDS.filter(w=>learned(w)&&CL_NOUNS.has(w.ar)).length>=2,build:()=>{setPool();const ns=pool.W.filter(w=>learned(w)&&CL_NOUNS.has(w.ar));return shuffle(ns.concat(ns,ns)).slice(0,10).map(gW_clitic).filter(Boolean)}},
   type:{t:["Listen and type","Слушайте и печатайте"],ok:()=>WORDS.filter(learned).length>=3,build:()=>{setPool();const a=shuffle([...WORDS,...PHRASES,...TEXTS.flatMap(t=>t.items)].filter(x=>learned(x)&&hasA(x.key)));const b=shuffle(WORDS.filter(learned));return uniq(a.concat(b)).map(gT_type).filter(Boolean).slice(0,10)}},
-  saudi:{t:["Saudi spoken","Саудовская речь"],ok:()=>[...WORDS,...PHRASES].filter(x=>learned(x)&&x.step.kind==="spoken").length>=3,build:()=>{setPool();const it=shuffle([...WORDS,...PHRASES].filter(x=>learned(x)&&(x.step.kind==="spoken"||x.step.spoken)));return it.slice(0,12).map(x=>x.type==="W"?(pick([gW_mean,gW_pick,gW_pic])(x)||gW_mean(x)):(pick([gP_order,gP_mean])(x)||gP_mean(x))).filter(Boolean)}},
+  saudi:{t:["Saudi spoken","Саудовская речь"],ok:()=>[...WORDS,...PHRASES].filter(x=>learned(x)&&x.step.kind==="spoken").length>=3,build:()=>{setPool();const it=shuffle([...WORDS,...PHRASES].filter(x=>learned(x)&&(x.step.kind==="spoken"||x.step.spoken)));
+    /* about half the questions compare Saudi with Standard Arabic */
+    return it.slice(0,14).map((x,i)=>(i%2===0&&DIA_BY[x.key]?genDia(x):null)||(x.type==="W"?(pick([gW_mean,gW_pick,gW_pic,gW_miss])(x)||gW_mean(x)):(pick([gP_order,gP_mean,gP_gap])(x)||gP_mean(x)))).filter(Boolean).slice(0,12)}},
   syll:{t:["Syllables","Слоги"],ok:()=>{setPool();return pool.L.filter(l=>gS_read(l)).length>=2},build:()=>{setPool();const c=pool.L.filter(l=>gS_read(l));return shuffle(c.concat(c,c)).slice(0,12).map(l=>pick([gS_read,gS_find])(l)).filter(Boolean)}},
   inside:{t:["Letters inside words","Буквы внутри слов"],ok:()=>{setPool();return pool.L.filter(l=>gL_form(l)).length>=2},build:()=>{setPool();const ls=pool.L.filter(l=>gL_form(l));const out=[];for(let i=0;i<14;i++){const g=pick([gL_form,gL_form,gL_inword,"spot"]);const q=g==="spot"?gW_spot(pick(pool.W.filter(learned).length?pool.W.filter(learned):pool.W)):g(pick(ls));if(q)out.push(q)}return out.slice(0,12)}},
   alike:{t:["Look-alike letters","Похожие буквы"],ok:()=>{setPool();return pool.L.length>=3},build:()=>{setPool();return shuffle(pool.L).concat(shuffle(pool.L)).slice(0,12).map(l=>pick([gL_pick,gL_inword,gL_name])(l)||gL_pick(l)).filter(Boolean)}},
   sound:{t:["Sound twins","Звуковые близнецы"],ok:()=>{setPool();return pool.L.some(l=>gL_sound(l))},build:()=>{setPool();const c=pool.L.filter(l=>gL_sound(l));return shuffle(c.concat(c)).slice(0,12).map(gL_sound).filter(Boolean)}},
-  spell:{t:["Build words","Собери слово"],ok:()=>{setPool();return WORDS.filter(learned).filter(w=>gW_spell(w)).length>=3},build:()=>{setPool();return shuffle(pool.W.filter(learned)).map(gW_spell).filter(Boolean).slice(0,10)}},
+  spell:{t:["Spelling","Правописание"],ok:()=>{setPool();return WORDS.filter(learned).filter(w=>gW_spell(w)||gW_miss(w)).length>=3},build:()=>{setPool();
+    /* short words first, then longer ones; missing letter, build the word and spot the right spelling take turns */
+    const ws=shuffle(pool.W.filter(learned)).sort((a,b)=>skel(a.ar).length-skel(b.ar).length);const out=[];
+    ws.forEach((w,i)=>{if(out.length>=12)return;const gs=i<4?[w=>gW_spell(w,true),gW_miss]:[gW_miss,gW_spell,gW_spot];const q=shuffle(gs).map(g=>g(w)).find(Boolean);if(q)out.push(q)});
+    return out}},
   roots:{t:["Roots and patterns","Корни и шаблоны"],ok:()=>{setPool();return WORDS.filter(learned).filter(w=>gW_root(w)||gW_pat(w)).length>=3},build:()=>{setPool();return shuffle(pool.W.filter(learned)).map(w=>shuffle([gW_root,gW_make,gW_pat]).map(g=>g(w)).find(Boolean)).filter(Boolean).slice(0,10)}},
   phrases:{t:["Phrases","Фразы"],ok:()=>PHRASES.filter(learned).length>=2,build:()=>{setPool();return shuffle(pool.P).concat(shuffle(pool.P)).slice(0,8).map(p=>pick([gP_order,gP_gap,gP_mean])(p)||gP_order(p)||gP_mean(p)).filter(Boolean)}},
   listen:{t:["Listening","Аудирование"],ok:()=>{setPool();return pool.W.filter(w=>hasA(w.key)).length+pool.L.filter(l=>hasA(l.key)).length>=4},build:()=>{setPool();return shuffle(pool.W.filter(w=>hasA(w.key)).map(gW_listen).concat(pool.L.filter(l=>hasA(l.key)).map(l=>gL_sound(l)||gL_pick(l)))).filter(Boolean).slice(0,12)}}
@@ -1186,7 +1339,7 @@ const SKILLS=[
  ["words",["Word meaning","Значение слов"],.85,["Find the word","Which picture?","Which spelling is right?","What did you hear?"]],
  ["roots",["Roots and patterns","Корни и шаблоны"],.85,["Tap the root letters in order","Root + pattern = ?","Which pattern?","Which word has a different root?"]],
  ["clitics",["Attached words","Прилипающие слова"],.85,["What is inside this word?"]],
- ["typing",["Spelling and typing","Правописание и набор"],.8,["Build the word","Listen and type","Type the word"]],
+ ["typing",["Spelling and typing","Правописание и набор"],.8,["Build the word","Listen and type","Type the word","Which letter is missing?"]],
  ["sentences",["Phrases and reading","Фразы и чтение"],.85,["Put the words in order","Fill the gap"]],
  ["listening",["Listening (with audio)","Аудирование (со звуком)"],.85,[]],
  ["saudi",["Saudi spoken","Саудовская речь"],.85,[]]
@@ -1309,12 +1462,12 @@ function renderPractice(){
    ${d("inside","ـبـ ـتـ ـنـ","Look-alikes at the start, middle and end of words","Похожие буквы в начале, середине и конце слова")}
    ${d("alike","ب ت ث","Dots decide: tell look-alike letters apart","Решают точки: различайте похожие буквы")}
    ${d("sound","س ص ث",na?"Hear it, pick the letter":"Read the sound cue, pick the letter",na?"Слушайте и выбирайте букву":"Читайте подсказку о звуке и выбирайте букву")}
-   ${d("spell","ك ت ا ب","Build words from loose letters","Собирайте слова из отдельных букв")}
+   ${d("spell","كِتا؟","Missing letters, build the word, spot the right spelling. Short words first","Пропущенные буквы, собрать слово, найти верное написание. Сначала короткие слова")}
    ${d("roots","ف ع ل","Find roots, plug them into patterns","Ищите корни, вставляйте в шаблоны")}
    ${d("clitic","وَبَيتُنا","Peel off and, with, my, our…","Отделяйте и, с, мой, наш…")}
    ${d("type","⌨",na?"Hear a word, type it on an Arabic keyboard":"See a meaning, type the word on an Arabic keyboard",na?"Слушайте слово и печатайте на арабской клавиатуре":"Видите значение — печатайте слово на арабской клавиатуре")}
    ${d("phrases","…؟","Order and complete real phrases","Собирайте и дополняйте фразы")}
-   ${d("saudi","وِش تَبغى؟","Everyday Saudi words and phrases","Повседневные саудовские слова и фразы")}
+   ${d("saudi","وِش ⇄ ماذا","Saudi words and phrases, side by side with Standard Arabic","Саудовские слова и фразы рядом с литературным арабским")}
    ${d("listen","🔊",`Pick what you hear (${na} recordings)`,`Выбирайте услышанное (записей: ${na})`)}
   </div>
   <section class="card"><h2>${bi("Easy reading","Лёгкое чтение")} <small>· ${S.readT.length}/${TEXTS.length}</small></h2>
@@ -1540,7 +1693,7 @@ function renderManage(){
    <div class="kv"><span>${bi("Source code","Исходный код")}</span><span><a href="${esc(REPO)}" target="_blank" rel="noopener">${esc(REPO.replace("https://",""))}</a></span></div>
    <div class="kv"><span>${bi("App code","Код приложения")}</span><span><a href="LICENSE">GNU AGPL-3.0-or-later</a></span></div>
    <div class="kv"><span>${bi("Lessons and texts","Уроки и тексты")}</span><span><a href="LICENSE-CONTENT.txt">CC BY-NC-SA 4.0</a></span></div>
-   <div class="kv"><span>${bi("Fonts","Шрифты")}</span><span><a href="fonts/LICENSE-Amiri.txt">Amiri</a>, <a href="fonts/LICENSE-Onest.txt">Onest</a>, <a href="fonts/LICENSE-Unbounded.txt">Unbounded</a>: SIL OFL 1.1</span></div>
+   <div class="kv"><span>${bi("Fonts","Шрифты")}</span><span><a href="fonts/LICENSE-NotoNaskhArabic.txt">Noto Naskh Arabic</a>, <a href="fonts/LICENSE-Onest.txt">Onest</a>, <a href="fonts/LICENSE-Unbounded.txt">Unbounded</a>: SIL OFL 1.1</span></div>
    <div class="kv"><span>${bi("Recordings","Записи")}</span><span>${bi("not licensed: they belong to the speakers","без лицензии: принадлежат дикторам")}</span></div>
    <p class="muted" style="font-size:13px">${bi("You may use, change and share the code, also on a server, if your version stays under the AGPL and its source is offered to its users. You may share and adapt the lessons for non-commercial use, with credit, under the same license. Details are in README.md in the repository.","Код можно использовать, менять и распространять, в том числе на сервере, если ваша версия остаётся под AGPL и её исходный код доступен пользователям. Уроки можно распространять и переделывать в некоммерческих целях, с указанием авторства и под той же лицензией. Подробности — в README.md в репозитории.")}</p></section>`;
 }

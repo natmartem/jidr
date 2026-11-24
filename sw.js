@@ -4,7 +4,7 @@
      falling back to the saved copy when offline or the network is slow.
    - everything else (icons, fonts, manifest): saved on first install, served from the phone.
    If you ever change an icon, a font or the manifest, bump CACHE so phones fetch the new files. */
-const CACHE = "jidr-static-v2";
+const CACHE = "jidr-static-v3";
 const ASSETS = [
   "index.html",
   "course.js",
@@ -15,8 +15,7 @@ const ASSETS = [
   "icons/apple-touch-icon.png",
   "icons/favicon-32.png",
   "fonts/fonts.css",
-  "fonts/amiri-arabic-400-normal.woff2",
-  "fonts/amiri-arabic-700-normal.woff2",
+  "fonts/noto-naskh-arabic-arabic-wght-normal.woff2",
   "fonts/onest-latin-wght-normal.woff2",
   "fonts/onest-latin-ext-wght-normal.woff2",
   "fonts/onest-cyrillic-wght-normal.woff2",
