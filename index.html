@@ -417,7 +417,7 @@ label.btn{display:inline-block}
 "use strict";
 /* ================= basics ================= */
 const C=window.COURSE;
-const APP_VERSION="3.2.0",STATE_VER=2;
+const APP_VERSION="3.2.1",STATE_VER=2;
 const $=(s,r)=>(r||document).querySelector(s);
 const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -867,7 +867,7 @@ function renderStep(){
    ${st.P.some(p=>hasA(p.key))?`<div class="row">${st.P.map(p=>spk(p.key)).join("")}</div>`:""}
    <details><summary>${bi("Sentence by sentence","По предложениям")}</summary><div class="wl">${st.P.map(readRow).join("")}</div></details></section>`;
   if(restW.length)h+=`<section class="card"><h2>${bi("Words","Слова")} <small>· ${restW.length}</small></h2><div class="wl">${restW.map(w=>wordRow(w)).join("")}</div></section>`;
-  if(st.P.length&&st.kind!=="story")h+=`<section class="card"><h2>${bi("Phrases","Фразы")} <small>· ${st.P.length}</small></h2><div class="wl">${st.P.map(phraseRow).join("")}</div></section>`;
+  if(st.P.length&&st.kind!=="story")h+=`<section class="card"><h2>${bi("Phrases","Фразы")} <small>· ${st.P.length}</small></h2><div class="wl">${st.P.map(readRow).join("")}</div></section>`;
   h+=diaCard(st);
   const tx=TEXTS.filter(t=>t.step===st);
   if(tx.length)h+=`<section class="card"><h2>${bi("Easy reading","Лёгкое чтение")}</h2>${tx.map(textCard).join("")}</section>`;
