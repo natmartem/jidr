@@ -372,6 +372,19 @@ details.rt-d .wl{padding:0 14px 8px}
 .ta{width:100%;min-height:90px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);color:var(--ink);font:16px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 .ta.sm{min-height:60px}
 label.btn{display:inline-block}
+/* feedback notes */
+.fbk{border:1px dashed var(--line);border-radius:12px;background:var(--surface)}
+.fbk>summary{list-style:none;cursor:pointer;padding:8px 12px;font-size:13.5px;color:var(--mute);display:flex;align-items:center;gap:6px}
+.fbk>summary::-webkit-details-marker{display:none}
+.fbk[open]>summary{color:var(--ink)}
+.fbk-dot{color:var(--accent);font-weight:700}
+.fbk-in{padding:0 12px 10px;display:flex;flex-direction:column;gap:4px}
+.fbk-ta{width:100%;min-height:72px;resize:vertical;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);color:var(--ink);font:16px/1.4 var(--f-body)}
+.fbk-s{font-size:12px;min-height:1em}
+.fbrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:start;padding:8px 0;border-top:1px solid var(--line)}
+.fbrow p{white-space:pre-wrap;overflow-wrap:anywhere}
+.fbrow .x{border:0;background:none;font-size:22px;line-height:1;color:var(--mute);padding:0 6px}
+.fb-list>summary{cursor:pointer;color:var(--accent);font-weight:500}
 .msg{border-radius:10px;padding:10px 12px;font-size:14px;overflow-wrap:anywhere}
 .msg.ok{background:var(--good-tint)}
 .msg.bad{background:var(--bad-tint)}
@@ -417,7 +430,7 @@ label.btn{display:inline-block}
 "use strict";
 /* ================= basics ================= */
 const C=window.COURSE;
-const APP_VERSION="3.2.1",STATE_VER=2;
+const APP_VERSION="3.3.0",STATE_VER=2;
 const $=(s,r)=>(r||document).querySelector(s);
 const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -477,6 +490,36 @@ try{const raw=localStorage.getItem("jidr-state");if(raw)S=migrate(JSON.parse(raw
 try{localStorage.setItem("jidr-probe","1");localStorage.removeItem("jidr-probe")}catch(e){storageOK=false}
 const save=()=>{try{localStorage.setItem("jidr-state",JSON.stringify(S))}catch(e){storageOK=false}};
 const savePacks=a=>{try{localStorage.setItem("jidr-packs",JSON.stringify(a));return true}catch(e){return false}};
+
+/* ================= feedback notes (localStorage "jidr-feedback") =================
+   A note box under each step, drill question, drill result, reading text and fun fact.
+   Each note keeps what was on screen, so More → "Feedback for Claude" can turn all notes into one prompt. */
+let FB=[];
+try{const a=JSON.parse(localStorage.getItem("jidr-feedback")||"[]");if(Array.isArray(a))FB=a.filter(x=>x&&typeof x.id==="string"&&typeof x.text==="string")}catch(e){}
+const saveFB=()=>{try{localStorage.setItem("jidr-feedback",JSON.stringify(FB));return true}catch(e){return false}};
+const FBCTX={};
+const fbGet=id=>FB.find(x=>x.id===id);
+/* visible text of a bit of app html: English only, no buttons or hidden helpers */
+const plain=html=>{const d=document.createElement("div");d.innerHTML=String(html||"");d.querySelectorAll(".l-ru,.spk,.trv,.splt,[hidden],script").forEach(n=>n.remove());return d.textContent.replace(/\s+/g," ").trim()};
+function fbBox(id,ctx,open){
+  FBCTX[id]=ctx;const e=fbGet(id),v=e?e.text:"";
+  return `<details class="fbk"${v||open?" open":""}><summary>✎ ${bi("Feedback","Отзыв")}${v?` <span class="fbk-dot" aria-label="has a note">•</span>`:""}</summary>
+   <div class="fbk-in"><textarea class="fbk-ta" data-fb="${esc(id)}" rows="3" placeholder="What was confusing, too easy, wrong or nice? · Что было непонятно, слишком легко, неверно или удачно?">${esc(v)}</textarea><small class="fbk-s" aria-live="polite"></small></div></details>`;
+}
+function fbSet(id,text){
+  let e=fbGet(id);
+  if(!text.trim()){if(e){FB=FB.filter(x=>x!==e);saveFB()}return}
+  if(!e){e={id,at:Date.now()};FB.push(e)}
+  e.text=text;const c=FBCTX[id];if(c){try{e.ctx=c()}catch(err){}}
+  return saveFB();
+}
+function fbRefresh(id){const e=fbGet(id),c=FBCTX[id];if(e&&c){try{e.ctx=c()}catch(err){}saveFB()}}
+const fbBusy=()=>{const a=document.activeElement;return !!(a&&a.matches&&a.matches("[data-fb]"))||!!$(".quiz details.fbk[open]")};
+document.addEventListener("input",e=>{
+  const ta=e.target;if(!ta||!ta.matches||!ta.matches("[data-fb]"))return;
+  const ok=fbSet(ta.dataset.fb,ta.value)!==false;
+  const s=ta.parentNode.querySelector(".fbk-s");if(s)s.innerHTML=ok?bi("Saved on this phone","Сохранено на телефоне"):bi("Could not save: storage is full or blocked","Не удалось сохранить: хранилище переполнено или заблокировано");
+});
 
 /* ================= gentle ramp: marks, syllables, word weight =================
    Words are shown lightest first. Each extra mark is explained in the step where it first appears.
@@ -801,14 +844,14 @@ const factsOf=st=>FACTS.filter(f=>f.step===st.id);
 const unlockedFacts=()=>FACTS.filter(f=>!f.step||S.done.includes(f.step));
 function openText(id){
   const t=TEXTS.find(x=>x.id===id);if(!t)return;
-  openSheet(`<div class="row" style="justify-content:space-between"><span class="kind">${bi("Easy reading","Лёгкое чтение")} · ${bi("after step","после шага")} ${t.step.si+1}</span><button type="button" class="x" data-closesheet aria-label="Close">×</button></div>${textCard(t)}`);
+  openSheet(`<div class="row" style="justify-content:space-between"><span class="kind">${bi("Easy reading","Лёгкое чтение")} · ${bi("after step","после шага")} ${t.step.si+1}</span><button type="button" class="x" data-closesheet aria-label="Close">×</button></div>${textCard(t)}${fbBox("t:"+t.id,()=>({kind:"reading",src:`Easy reading “${t.t[0]}” (after step ${t.step.si+1}, id ${t.id})`}))}`);
 }
 function openFact(){
   const all=unlockedFacts();if(!all.length)return;
   const fresh=all.filter(f=>!S.seenF.includes(f.id)),f=pick(fresh.length?fresh:all);
   if(!S.seenF.includes(f.id))S.seenF.push(f.id);markSess("discover");
   openSheet(`<div class="row" style="justify-content:space-between"><span class="kind">${bi("Read and discover","Читать и узнавать")}</span><button type="button" class="x" data-closesheet aria-label="Close">×</button></div>
-   ${factCard(f)}<div class="row"><button type="button" class="btn primary" data-discover>${bi("Another one","Ещё один")}</button><button type="button" class="btn" data-closesheet>${bi("Close","Закрыть")}</button></div>
+   ${factCard(f)}${fbBox("f:"+f.id,()=>({kind:"fact",src:`Fun fact (id ${f.id}): ${f.en}`}))}<div class="row"><button type="button" class="btn primary" data-discover>${bi("Another one","Ещё один")}</button><button type="button" class="btn" data-closesheet>${bi("Close","Закрыть")}</button></div>
    <small class="muted">${S.seenF.filter(id=>all.some(x=>x.id===id)).length}/${all.length} ${bi("facts seen so far. More unlock as you go.","фактов прочитано. Новые открываются по ходу пути.")}</small>`);
 }
 /* today's session: four parts, done marks reset each day, nothing is counted against you */
@@ -872,6 +915,7 @@ function renderStep(){
   const tx=TEXTS.filter(t=>t.step===st);
   if(tx.length)h+=`<section class="card"><h2>${bi("Easy reading","Лёгкое чтение")}</h2>${tx.map(textCard).join("")}</section>`;
   const fs=factsOf(st);if(fs.length)h+=`<section class="card"><h2>${bi("Did you know","А вы знали")}</h2>${fs.map(factCard).join("")}</section>`;
+  h+=fbBox("s:"+st.id,()=>({kind:"step",src:`Step ${st.si+1} “${st.t[0]}” (${plain(kindLabel(st))}, id ${st.id})`}));
   h+=`<div class="sticky-cta"><button type="button" class="btn primary big" data-stepquiz="${st.id}">${done?bi("Drill again","Повторить"):bi("I'm ready: drill it","Готово: тренировка")}</button></div>`;
   if(!done)h+=`<button type="button" class="btn link" data-skip="${st.id}" style="align-self:center">${bi("I already know this, skip","Я это знаю, пропустить")}</button>`;
   return h;
@@ -1303,10 +1347,28 @@ const DRILLS={
 };
 function startQuiz(qs,meta){
   if(!qs.length){toast(bi("Nothing to drill yet","Пока нечего тренировать"));return}
-  Q=Object.assign({qs,i:0,ok:0,picked:[],answered:false,wrong:[]},meta);
+  Q=Object.assign({qs,i:0,ok:0,picked:[],answered:false,wrong:[],res:[],qid:Date.now().toString(36)},meta);
   history.pushState({q:1},"");render();window.scrollTo(0,0);
 }
 function cur(){return Q&&Q.qs[Q.i]}
+/* where a drill came from, in words, for feedback notes */
+function quizSrc(){
+  if(Q.drill&&DRILLS[Q.drill])return `Practice drill “${DRILLS[Q.drill].t[0]}”`;
+  if(Q.step){const st=STEPS.find(s=>s.id===Q.step);return st?`Step ${st.si+1} drill “${st.t[0]}” (id ${st.id})`:"Step drill"}
+  if(Q.text){const t=TEXTS.find(x=>x.id===Q.text);return t?`Reading quiz “${t.t[0]}” (id ${t.id})`:"Reading quiz"}
+  return "Repeat drill of my mistakes";
+}
+function qCtx(q,i){
+  const src=quizSrc(),n=Q.qs.length,Qr=Q;
+  return ()=>{
+    const it=q.item||{},r=Qr.res[i];let opts="",ans="";
+    if(q.kind==="choice"){opts=q.opts.map(o=>plain(o.html)).join(" | ");const a=q.opts.find(o=>String(o.k)===String(q.ans));ans=a?plain(a.html):""}
+    else if(q.kind==="type")ans=q.target;
+    else{opts=(q.tiles||[]).join(" | ");ans=q.mode==="spell"?it.ar:q.target}
+    return {kind:"question",src,n:`${i+1}/${n}`,task:q.label[0],prompt:plain(q.prompt),opts,ans,
+      item:[it.c||it.ar||"",it.en||""].filter(Boolean).join(" — "),key:it.key||"",result:r===undefined?"not answered yet":r?"right":"wrong"};
+  };
+}
 function renderQuiz(){
   if(Q.i>=Q.qs.length)return renderEnd();
   const q=cur(),pct=Math.round(Q.i/Q.qs.length*100);
@@ -1319,7 +1381,7 @@ function renderQuiz(){
   else if(q.kind==="choice")h+=`<div class="opts${q.one?" one":""}">${q.opts.map(o=>`<button type="button" class="opt" data-opt="${esc(o.k)}">${o.html}</button>`).join("")}</div>`;
   else h+=`<div class="built ar" id="built" lang="ar"></div><div class="tiles" dir="rtl">${q.tiles.map((t,i)=>`<button type="button" class="tile${q.words?" w":""}" data-tile="${i}">${esc(t)}</button>`).join("")}</div>
    <div class="row" style="justify-content:center"><button type="button" class="btn" data-undo>⌫ ${bi("Undo","Назад")}</button><button type="button" class="btn primary" data-check disabled>${bi("Check","Проверить")}</button></div>`;
-  h+=`<div id="fb"></div><button type="button" class="btn primary big" data-next hidden>${bi("Next","Дальше")}</button></section>`;
+  h+=`<div id="fb"></div><button type="button" class="btn primary big" data-next hidden>${bi("Next","Дальше")}</button>${fbBox("q:"+Q.qid+":"+Q.i,qCtx(q,Q.i))}</section>`;
   return h;
 }
 function afterQuiz(){
@@ -1360,13 +1422,14 @@ function answer(ok,shownAns){
   const q=cur();Q.answered=true;grade(q.item.key,ok);
   skillsOf(q).forEach(k=>push40(S.sk,k,ok));if(q.ct)push40(S.ct,q.ct,ok);
   if(ok)Q.ok++;else Q.wrong.push(q.item);
+  Q.res[Q.i]=ok;fbRefresh("q:"+Q.qid+":"+Q.i);
   save();
   const fb=$("#fb");
   fb.className="fb "+(ok?"right":"wrong");
   fb.innerHTML=(ok?`<b>${pick([bi("Yes!","Да!"),bi("Right!","Верно!"),bi("Nice!","Отлично!"),bi("Exactly.","Точно.")])}</b>`:`<b>${bi("Not quite.","Не совсем.")}</b>${shownAns||""}`)+(q.after||"")+itemReveal(q.showItem||q.item)+(q.showItem?itemReveal(q.item):"");
   const it=q.item;if(ok&&it.type!=="L"&&hasA(it.key)&&!q.audio)play(it.key,$("#fb .spk"));
   const nx=$("[data-next]");nx.hidden=false;
-  if(ok&&S.auto&&q.kind==="choice"){const i=Q.i;setTimeout(()=>{if(Q&&Q.i===i&&Q.answered)next()},hasA(it.key)&&it.type!=="L"?1900:1100)}
+  if(ok&&S.auto&&q.kind==="choice"){const i=Q.i;setTimeout(()=>{if(Q&&Q.i===i&&Q.answered&&!fbBusy())next()},hasA(it.key)&&it.type!=="L"?1900:1100)}
   else nx.focus({preventScroll:true});
   renderStats();
 }
@@ -1416,6 +1479,8 @@ function renderEnd(){
   }
   if(Q.wrong.length){const ws=uniq(Q.wrong).slice(0,8);h+=`<p class="qlabel">${bi("Worth another look","Стоит повторить")}</p><div class="unl">${ws.map(it=>`<span class="ar">${esc(it.c||it.ar)}</span>`).join("")}</div>
    <button type="button" class="btn" data-again>${bi("Drill these again","Ещё раз эти")}</button>`}
+  {const src=quizSrc(),score=`${Q.ok}/${n}`,wr=uniq(Q.wrong).map(it=>it.c||it.ar).join(" ");
+   h+=fbBox("d:"+Q.qid,()=>({kind:"drill",src,score,wrong:wr}))}
   h+=`<button type="button" class="btn${Q.step?"":" primary big"}" data-endq>${bi("Done","Готово")}</button></section>`;
   return h;
 }
@@ -1613,7 +1678,7 @@ function download(name,text,type){
   document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
 }
 const dayStr=()=>{const d=new Date(),p=n=>String(n).padStart(2,"0");return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())};
-function backupJSON(){S.lastBackup=Date.now();save();return JSON.stringify({app:"jidr",format:2,exported:new Date().toISOString(),state:S,packs:PACKS})}
+function backupJSON(){S.lastBackup=Date.now();save();return JSON.stringify({app:"jidr",format:2,exported:new Date().toISOString(),state:S,packs:PACKS,feedback:FB})}
 function restoreText(text){
   text=String(text||"").trim();
   if(!text)return setMsg("backup","bad",bi("Paste a backup first, or choose a file.","Сначала вставьте копию или выберите файл."));
@@ -1624,7 +1689,7 @@ function restoreText(text){
   if(errs.length)return setMsg("backup","bad","<b>Some lesson packs in this backup could not be read.</b>"+errList(errs));
   if(!confirm("Replace the progress and lessons on this device with this backup?"))return;
   if(!savePacks(packs))return setMsg("backup","bad","Could not save: browser storage is full or blocked.");
-  S=migrate(o.state);S.tab="manage";PACKS=packs;buildData();S.done=S.done.filter(id=>STEPS.some(s=>s.id===id));save();
+  S=migrate(o.state);S.tab="manage";PACKS=packs;if(Array.isArray(o.feedback)){FB=o.feedback.filter(x=>x&&typeof x.id==="string"&&typeof x.text==="string");saveFB()}buildData();S.done=S.done.filter(id=>STEPS.some(s=>s.id===id));save();
   MSG.backup={kind:"ok",html:bi("Backup restored.","Копия восстановлена.")};render();
 }
 async function importAudioText(text){
@@ -1656,7 +1721,7 @@ function renderManage(){
   const loc=Object.values(AUD).flat().filter(a=>a.src==="local").length;
   const perSp=sp=>Object.keys(AUD).filter(k=>ITEMS[k]&&AUD[k].some(x=>x.sp===sp)).length;
   const last=S.lastBackup?new Date(S.lastBackup).toLocaleDateString():null;
-  return `<section class="card"><h2>${bi("Recordings","Записи")}</h2>
+  return fbCard()+`<section class="card"><h2>${bi("Recordings","Записи")}</h2>
    <div class="bar"><i style="width:${Math.round(na/total*100)}%"></i></div>
    <small>${na}/${total} ${bi("recorded","записано")} · ${bi("letters","буквы")} ${by("L")} · ${bi("words","слова")} ${by("W")} · ${bi("phrases","фразы")} ${by("P")} · ${bi("reading","чтение")} ${by("T")}</small>
    <p class="lead">${bi("Each speaker records on their own phone and sends you one file. Load it here, or upload it to your GitHub repo next to index.html so every device gets it. With two voices the app mixes them at random, which trains your ear much better than one.","Каждый диктор записывает на своём телефоне и присылает один файл. Загрузите его здесь или положите в репозиторий GitHub рядом с index.html — тогда записи будут на всех устройствах. С двумя голосами приложение чередует их случайно, и слух тренируется гораздо лучше.")}</p>
@@ -1697,12 +1762,53 @@ function renderManage(){
    <div class="kv"><span>${bi("Recordings","Записи")}</span><span>${bi("not licensed: they belong to the speakers","без лицензии: принадлежат дикторам")}</span></div>
    <p class="muted" style="font-size:13px">${bi("You may use, change and share the code, also on a server, if your version stays under the AGPL and its source is offered to its users. You may share and adapt the lessons for non-commercial use, with credit, under the same license. Details are in README.md in the repository.","Код можно использовать, менять и распространять, в том числе на сервере, если ваша версия остаётся под AGPL и её исходный код доступен пользователям. Уроки можно распространять и переделывать в некоммерческих целях, с указанием авторства и под той же лицензией. Подробности — в README.md в репозитории.")}</p></section>`;
 }
+/* ================= feedback for Claude ================= */
+const FBORDER={general:0,step:1,question:2,drill:3,reading:4,fact:5};
+const fbSorted=()=>FB.slice().sort((a,b)=>((FBORDER[(a.ctx||{}).kind]??9)-(FBORDER[(b.ctx||{}).kind]??9))||(a.at-b.at));
+function fbWhere(x){const c=x.ctx||{};if(c.kind==="question")return `${c.src} · ${c.n} · ${c.task}`;return c.src||"Note"}
+function fbCard(){
+  const list=fbSorted().filter(x=>x.id!=="g"),n=FB.length;
+  return `<section class="card" id="fb-card"><h2>${bi("Feedback for Claude","Отзывы для Claude")} <small>· ${n}</small></h2>
+   <p class="lead">${bi("Notes you leave under steps, drill questions, results, readings and fun facts gather here. Copy them as one message, paste it into a chat with Claude, and get the updated files back.","Заметки, которые вы оставляете под шагами, вопросами, итогами, текстами и фактами, собираются здесь. Скопируйте их одним сообщением, вставьте в чат с Claude и получите обновлённые файлы.")}</p>
+   ${fbBox("g",()=>({kind:"general",src:"General"}),true)}
+   <div class="row"><button type="button" class="btn primary" data-act="fbcopy">${bi("Copy update prompt","Скопировать запрос")}</button>${n?`<button type="button" class="btn" data-act="fbclear">${bi("Clear all notes","Удалить все")}</button>`:""}</div>
+   <textarea id="fb-out" class="ta sm" readonly hidden aria-label="Update prompt"></textarea>
+   <div id="msg-fb" aria-live="polite">${msgInner("fb")}</div>
+   ${list.length?`<details class="fb-list"><summary>${bi("Show notes","Показать заметки")} (${list.length})</summary>${list.map(x=>`<div class="fbrow"><div><small>${esc(fbWhere(x))}</small><p>${esc(x.text)}</p></div><button type="button" class="x" data-act="fbrm" data-id="${esc(x.id)}" aria-label="Delete note">×</button></div>`).join("")}</details>`:""}</section>`;
+}
+function fbPrompt(){
+  const notes=fbSorted(),out=[];
+  out.push(`Here is my feedback from using Jidr ${APP_VERSION} on my phone (${dayStr()}). Please update the app in ${REPO.replace("https://","")} (index.html and course.js) to address it.
+
+Keep my progress, added lessons and recordings working, and don't change the app radically. Give me the changed files ready to upload, and say briefly what you changed for each note (refer to them by number). If a note is unclear or you'd push back on it, say so instead of guessing.`);
+  if(!notes.length){out.push("\n(No notes yet: write my feedback here.)");return out.join("\n")}
+  const head={general:"General",step:"Steps",question:"Drill questions",drill:"Whole drills",reading:"Easy reading",fact:"Fun facts"};
+  let lastK=null;
+  notes.forEach((x,i)=>{
+    const c=x.ctx||{},k=c.kind||"general";
+    if(k!==lastK){out.push(`\n## ${head[k]||"Other"}`);lastK=k}
+    const L=[`${i+1}. ${k==="question"?`${c.src}, question ${c.n}: “${c.task}”`:k==="general"?"General note":c.src||"Note"}`];
+    if(k==="question"){
+      if(c.prompt)L.push(`   Shown: ${c.prompt}`);
+      if(c.opts)L.push(`   Options: ${c.opts}`);
+      if(c.ans)L.push(`   Correct answer: ${c.ans} · I got it ${c.result}`);
+      if(c.item)L.push(`   Item: ${c.item}${c.key?` (${c.key})`:""}`);
+    }
+    if(k==="drill")L.push(`   Score: ${c.score}${c.wrong?` · missed: ${c.wrong}`:""}`);
+    L.push(`   My note: ${x.text.trim().replace(/\n+/g,"\n   ")}`);
+    out.push(L.join("\n"));
+  });
+  return out.join("\n");
+}
 async function copyText(text,k,en,ru){
   try{await navigator.clipboard.writeText(text);setMsg(k,"ok",bi(en,ru))}
-  catch(e){const ta=$(k==="pack"?"#pack-text":"#restore-text");if(ta){ta.value=text;ta.focus();ta.select()}setMsg(k,"bad",bi("Could not copy automatically. The text is in the box: select all and copy.","Не удалось скопировать. Текст в поле: выделите всё и скопируйте."))}
+  catch(e){const ta=$({pack:"#pack-text",fb:"#fb-out"}[k]||"#restore-text");if(ta){ta.hidden=false;ta.value=text;ta.focus();ta.select()}setMsg(k,"bad",bi("Could not copy automatically. The text is in the box: select all and copy.","Не удалось скопировать. Текст в поле: выделите всё и скопируйте."))}
 }
 async function act(t){
   const a=t.dataset.act;
+  if(a==="fbcopy"){const n=FB.length;return copyText(fbPrompt(),"fb",n?`Copied ${n} note${n>1?"s":""}. Paste into a chat with Claude. Clear them here once the update is in.`:"Copied the prompt. There are no notes yet, so add your feedback in the chat.",n?`Скопировано заметок: ${n}. Вставьте в чат с Claude. Когда обновление будет готово, удалите их здесь.`:"Запрос скопирован. Заметок пока нет, допишите отзыв в чате.")}
+  if(a==="fbrm"){FB=FB.filter(x=>x.id!==t.dataset.id);saveFB();const op=!!$(".fb-list[open]");render();if(op){const d=$(".fb-list");if(d)d.open=true}return}
+  if(a==="fbclear"){if(!confirm("Delete all "+FB.length+" feedback notes? Copy them first if you haven't."))return;FB=[];saveFB();MSG.fb={kind:"ok",html:bi("All notes cleared.","Все заметки удалены.")};return render()}
   if(a==="addpack")return importPackText($("#pack-text").value);
   if(a==="prompt")return copyText(claudePrompt(),"pack","Prompt copied. Paste it into a chat with Claude and add the topic.","Запрос скопирован. Вставьте его в чат с Claude и добавьте тему.");
   if(a==="rm"){const p=PACKS.find(x=>x.id===t.dataset.id);if(!p||!confirm("Remove “"+p.title+"”? Your progress is kept."))return;const next=PACKS.filter(x=>x!==p);if(!savePacks(next))return;PACKS=next;buildData();return render()}
@@ -1774,6 +1880,7 @@ document.addEventListener("click",e=>{
   if(d.act)return act(t);
 });
 document.addEventListener("keydown",e=>{
+  if(e.target&&e.target.matches&&e.target.matches("textarea,input"))return;
   if(!Q||Q.i>=Q.qs.length||cur().kind!=="type"||Q.answered)return;
   if(e.key==="Enter"){e.preventDefault();return typeCheck()}
   if(e.key==="Backspace"){e.preventDefault();return typedSet([...(Q.typed||"")].slice(0,-1).join(""))}
