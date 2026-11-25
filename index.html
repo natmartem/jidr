@@ -357,6 +357,8 @@ details.rt-d .wl{padding:0 14px 8px}
 .fb.wrong{background:var(--bad-tint)}
 .fb .ar{font-size:30px;line-height:1.45}
 .fb .row{gap:8px}
+.fb .rpl .pchip{font-size:15px;padding:2px 10px}
+.fb .rpl .ar{font-size:20px;line-height:1.3}
 .score{font:700 46px var(--f-display);text-align:center;color:var(--accent)}
 .unl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .unl>span{background:var(--root-tint);border-radius:10px;padding:2px 12px;font-size:28px}
@@ -430,7 +432,7 @@ label.btn{display:inline-block}
 "use strict";
 /* ================= basics ================= */
 const C=window.COURSE;
-const APP_VERSION="3.3.0",STATE_VER=2;
+const APP_VERSION="3.4.0",STATE_VER=2;
 const $=(s,r)=>(r||document).querySelector(s);
 const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -589,7 +591,7 @@ function sylCard(st){
 /* ================= content model ================= */
 let STEPS=[],WORDS=[],PHRASES=[],ITEMS={},ROOTM={},PAIRS={},TEXTS=[],DIA=[],DIA_BY={};
 function buildData(){
-  ROOTM=Object.assign({},C.roots);
+  ROOTM=Object.assign({},C.roots);ROOT_OF=null;
   STEPS=C.steps.map(s=>Object.assign({},s));
   PACKS.forEach(p=>{
     Object.keys(p.roots||{}).forEach(r=>{if(!ROOTM[r])ROOTM[r]=p.roots[r]});
@@ -1002,14 +1004,38 @@ function lookScore(a,b){
 const firstSense=t=>String(t).split(/[,;(]/)[0].trim().toLowerCase();
 const bareW=a=>nrm(a).replace(/[؟،.!?,]/g,"");
 const sameSense=(a,b)=>firstSense(a.en)===firstSense(b.en)||firstSense(a.ru)===firstSense(b.ru);
-/* two phrases clash when one contains the other, or their translations share most content words: both would be right */
-const cw=t=>new Set(String(t).toLowerCase().replace(/\([^)]*\)/g,"").split(/[^a-zа-яё']+/).filter(x=>x.length>3));
+/* two phrases clash when both would be a right answer: same Arabic, one contains the other,
+   same meaning, or one translation's content words are inside the other's.
+   Exception: the same phrase said to a man and to a woman (كَ / كِ) is a fair, tricky distractor. */
+const cw=t=>new Set(String(t).toLowerCase().replace(/\([^)]*\)/g,"").split(/[^a-zа-яё']+/).filter(x=>x.length>3).map(x=>x.replace(/s$/,"")));
+const GEN_EN=/\s*\(to a (man|woman)\)/,GEN_RU=/\s*\((мужчине|женщине)\)/;
+const genderTwin=(a,b)=>{const x=String(a.en).match(GEN_EN),y=String(b.en).match(GEN_EN);return !!(x&&y&&x[1]!==y[1]&&a.en.replace(GEN_EN,"")===b.en.replace(GEN_EN,""))};
 function clash(a,b){
+  if(bareW(a.ar)===bareW(b.ar)&&!genderTwin(a,b))return true;
+  if(genderTwin(a,b))return false;
   if(sameSense(a,b))return true;
   const A=new Set(a.parts.map(bareW)),B=new Set(b.parts.map(bareW));
   if([...A].every(x=>B.has(x))||[...B].every(x=>A.has(x)))return true;
-  for(const k of ["en","ru"]){const x=cw(a[k]),y=cw(b[k]),n=[...x].filter(w=>y.has(w)).length;if(n&&n>=Math.min(x.size,y.size)*.5)return true}
+  for(const k of ["en","ru"]){const x=cw(a[k]),y=cw(b[k]);if(!x.size||!y.size)continue;
+    const [s,l]=x.size<=y.size?[x,y]:[y,x];if([...s].every(w=>l.has(w))&&(s.size>=2||s.size===l.size))return true}
   return false;
+}
+/* the same phrase for the other gender, made from the translation itself: "Where is your house? (to a woman)" → "(to a man)" */
+function twinOf(p){
+  const e=String(p.en).match(GEN_EN),r=String(p.ru).match(GEN_RU);if(!e||!r)return null;
+  const en=p.en.replace(GEN_EN,e[1]==="man"?" (to a woman)":" (to a man)"),ru=p.ru.replace(GEN_RU,r[1]==="мужчине"?" (женщине)":" (мужчине)");
+  return {key:"tw:"+p.key,en,ru};
+}
+/* roots of the words inside a phrase, found through the word list, also under ال، وَ، بِ، لِ and attached endings */
+let ROOT_OF=null;
+function phraseRoots(p){
+  if(!ROOT_OF){ROOT_OF={};WORDS.forEach(w=>{if(w.root)ROOT_OF[bareW(w.ar)]=w.root})}
+  const out=new Set();
+  p.parts.forEach(a=>{let x=bareW(a);const tries=[x];
+    if(x.startsWith("ال"))tries.push(x.slice(2));if(/^[وبل]/.test(x))tries.push(x.slice(1),x.slice(1).replace(/^ال/,""));
+    tries.slice().forEach(t=>{const m=t.match(/^(.+?)(ها|نا|كم|هم|ي|ك|ه)$/);if(m)tries.push(m[1],m[1].replace(/ت$/,"ة"))});
+    for(const t of tries)if(ROOT_OF[t]){out.add(ROOT_OF[t]);break}});
+  return out;
 }
 function similarWords(w,n){
   const sk=nrm(w.ar);
@@ -1033,6 +1059,8 @@ function gW_listen(w){
 }
 function gW_spell(w,easy){
   const s=skel(w.ar);if(/\s/.test(s)||s.length<2||s.length>(easy?5:7))return null;
+  /* with 3 letters or fewer, tiles give the answer away: type it on the keyboard instead */
+  if(s.length<=3)return {kind:"type",item:w,label:["Type the word","Напечатайте слово"],prompt:meanHtml(w)+spk(w.key),audio:null,target:s,hint:s.replace(/\S/g,"•")};
   const own=[...s],extra=[],nx=easy||s.length<=3?1:2;
   shuffle(own).forEach(c=>{if(extra.length<nx&&byC[BASE[c]||c]){const d=lookAlikes(byC[BASE[c]||c],2,LET).map(x=>x.c).find(x=>!own.includes(x)&&!extra.includes(x));if(d)extra.push(d)}});
   return {kind:"tiles",mode:"spell",item:w,label:LBL.spell,prompt:meanHtml(w)+spk(w.key),tiles:shuffle(own.concat(extra)),target:s,join:"",need:own.length};
@@ -1082,18 +1110,28 @@ function gW_pat(w){
   return {kind:"choice",item:w,label:LBL.pat,prompt:bigAr(hl(w.ar,w.root),"q-word"),opts:shuffle([w.pat,...others]).map(k=>({k,html:`<span class="ar sm">${patT(k)}</span><small>${bi(esc(C.pats[k].en),esc(C.pats[k].ru))}</small>`})),ans:w.pat};
 }
 function gP_mean(p){
-  const src=p.type==="T"?p.text.items.concat(pool.P):pool.P;
-  /* prefer lines that share words with this one, so the whole line has to be read */
-  const sc=x=>x.parts.filter(a=>p.parts.includes(a)).length*2+(x.step===p.step?1.5:0)+(/[؟?]/.test(x.ar)===/[؟?]/.test(p.ar)?1:0)+lookScore(p.ar,x.ar)*.2+Math.random()*1.5;
-  const ranked=uniq(src.filter(x=>x!==p&&!clash(x,p))).map(x=>[sc(x),x]).sort((a,b)=>b[0]-a[0]).map(a=>a[1]);
-  const ds=[];for(const x of ranked){if(ds.length>=3)break;if(!ds.some(y=>clash(x,y)))ds.push(x)}if(ds.length<1)return null;
+  /* options that a reader who catches one word or the number of words would fall for:
+     the same phrase for the other gender, lines that share a word or a root, lines whose translation shares a word,
+     with about the same number of words. Any course line can be a distractor: only its translation is shown. */
+  const src=uniq((p.type==="T"?p.text.items:[]).concat(pool.P,PHRASES,TEXTS.flatMap(t=>t.items)));
+  const pr=phraseRoots(p),pw=new Set(p.parts.map(bareW)),pe=cw(p.en),pq=/[؟?]/.test(p.ar);
+  const sc=x=>{const xr=phraseRoots(x);let s=x.parts.filter(a=>pw.has(bareW(a))).length*2.5+[...xr].filter(r=>pr.has(r)).length*1.5;
+    s+=[...cw(x.en)].filter(w=>pe.has(w)).length*1.5+(genderTwin(x,p)?6:0)+(x.step===p.step?1:0)+(/[؟?]/.test(x.ar)===pq?1:0);
+    s-=Math.abs(x.parts.length-p.parts.length)*.8+Math.abs(String(x.en).split(/\s+/).length-String(p.en).split(/\s+/).length)*.25;
+    return s+(learned(x)?.5:0)+Math.random()*1.5};
+  const ranked=src.filter(x=>x!==p&&!clash(x,p)).map(x=>[sc(x),x]).sort((a,b)=>b[0]-a[0]).map(a=>a[1]);
+  const ds=[],tw=twinOf(p);
+  if(tw&&!ranked.some(x=>x.en===tw.en))ds.push(tw);
+  for(const x of ranked){if(ds.length>=3)break;if(!ds.some(y=>y.en===x.en||y.ru===x.ru||(y.parts&&clash(x,y))))ds.push(x)}if(ds.length<1)return null;
   return {kind:"choice",item:p,label:LBL.mean,prompt:bigAr(esc(vz(p)),"q-phrase"),opts:shuffle([p,...ds]).map(x=>({k:x.key,html:bi(esc(x.en),esc(x.ru))})),ans:p.key,one:true};
 }
 function gP_order(p){
   if(p.parts.length<2)return null;
-  const tiles=p.parts.slice();
-  if(p.parts.length>=2){const ref=pick(p.parts),used=new Set(p.parts.map(bareW)),d=pool.W.map(w=>w.ar).filter(a=>!used.has(bareW(a))).map(a=>[lookScore(ref,a)+Math.random()*1.5,a]).sort((a,b)=>b[0]-a[0]).map(a=>a[1])[0];if(d)tiles.push(d)}
-  return {kind:"tiles",mode:"order",item:p,label:LBL.order,prompt:meanHtml(p)+spk(p.key),tiles:shuffle(tiles),target:p.parts.join(" "),join:" ",need:p.parts.length,words:true};
+  /* tiles carry no punctuation, so a question mark can't tell which word goes last */
+  const parts=p.parts.map(a=>a.replace(/[؟،.!?,]/g,"")).filter(Boolean);if(parts.length<2)return null;
+  const tiles=parts.slice();
+  {const ref=pick(parts),used=new Set(parts.map(bareW)),d=pool.W.map(w=>w.ar.replace(/[؟،.!?,]/g,"")).filter(a=>a&&!used.has(bareW(a))).map(a=>[lookScore(ref,a)+Math.random()*1.5,a]).sort((a,b)=>b[0]-a[0]).map(a=>a[1])[0];if(d)tiles.push(d)}
+  return {kind:"tiles",mode:"order",item:p,label:LBL.order,prompt:meanHtml(p)+spk(p.key),tiles:shuffle(tiles),target:parts.join(" "),join:" ",need:parts.length,words:true};
 }
 function gP_gap(p){
   if(p.parts.length<2)return null;
@@ -1364,7 +1402,7 @@ function qCtx(q,i){
     const it=q.item||{},r=Qr.res[i];let opts="",ans="";
     if(q.kind==="choice"){opts=q.opts.map(o=>plain(o.html)).join(" | ");const a=q.opts.find(o=>String(o.k)===String(q.ans));ans=a?plain(a.html):""}
     else if(q.kind==="type")ans=q.target;
-    else{opts=(q.tiles||[]).join(" | ");ans=q.mode==="spell"?it.ar:q.target}
+    else{opts=(q.tiles||[]).join(" | ");ans=q.mode==="spell"||q.mode==="order"?it.ar:q.target}
     return {kind:"question",src,n:`${i+1}/${n}`,task:q.label[0],prompt:plain(q.prompt),opts,ans,
       item:[it.c||it.ar||"",it.en||""].filter(Boolean).join(" — "),key:it.key||"",result:r===undefined?"not answered yet":r?"right":"wrong"};
   };
@@ -1391,7 +1429,15 @@ function afterQuiz(){
 function itemReveal(it){
   if(!it)return "";
   if(it.type==="L")return `<div class="row"><span class="ar" style="font-size:40px">${it.c}</span><b class="ar lname">${it.name}</b><span>${bi(esc(it.cue[0]),esc(it.cue[1]))}</span>${spk(it.key)}</div>${it.mn?`<small>💡 ${bi(esc(it.mn[0]),esc(it.mn[1]))}</small>`:""}`;
-  return `<div class="row"><span class="ar">${hl(it.ar,it.root)}</span>${spk(it.key)}${splitBtn(it.ar)}${trBtn(it)}</div><div>${bi(esc(it.en),esc(it.ru))}</div>`;
+  return `<div class="row"><span class="ar">${hl(it.ar,it.root)}</span>${spk(it.key)}${splitBtn(it.ar)}${trBtn(it)}</div><div>${bi(esc(it.en),esc(it.ru))}</div>${rpLinks(it)}`;
+}
+/* links from a word to its root card and pattern card */
+const rpLinks=it=>it.root||it.pat?`<div class="row rpl">${it.root&&ROOTM[it.root]?`<button type="button" class="pchip" data-rootsheet="${esc(it.root)}">${bi("Root","Корень")} <span class="ar rt">${spaced(it.root)}</span> ›</button>`:""}${it.pat&&C.pats[it.pat]?`<button type="button" class="pchip" data-pat="${it.pat}">${bi("Pattern","Шаблон")} <span class="ar">${patT(it.pat)}</span> ›</button>`:""}</div>`:"";
+function rootSheet(r){
+  const ws=WORDS.filter(w=>w.root===r).sort((a,b)=>(learned(b)-learned(a))||(a.step.si-b.step.si));
+  return `<div class="row" style="justify-content:space-between"><span class="kind">${bi("Root","Корень")}</span><button type="button" class="x" data-closesheet aria-label="Close">×</button></div>
+   <div class="rootbig ar">${spaced(r)}</div><p style="text-align:center">${ROOTM[r]?bi(esc(ROOTM[r][0]),esc(ROOTM[r][1])):""}</p>
+   <div class="wl">${ws.map(w=>wordRow(w,!learned(w))).join("")}</div>`;
 }
 /* skills: last 40 answers per skill and per sound contrast */
 const SKILLS=[
@@ -1426,10 +1472,10 @@ function answer(ok,shownAns){
   save();
   const fb=$("#fb");
   fb.className="fb "+(ok?"right":"wrong");
-  fb.innerHTML=(ok?`<b>${pick([bi("Yes!","Да!"),bi("Right!","Верно!"),bi("Nice!","Отлично!"),bi("Exactly.","Точно.")])}</b>`:`<b>${bi("Not quite.","Не совсем.")}</b>${shownAns||""}`)+(q.after||"")+itemReveal(q.showItem||q.item)+(q.showItem?itemReveal(q.item):"");
+  fb.innerHTML=(ok?`<b>${pick([bi("Yes!","Да!"),bi("Right!","Верно!"),bi("Nice!","Отлично!"),bi("Exactly.","Точно.")])}</b>`:`<b>${bi("The answer","Ответ")}</b>${shownAns||""}`)+(q.after||"")+itemReveal(q.showItem||q.item)+(q.showItem?itemReveal(q.item):"");
   const it=q.item;if(ok&&it.type!=="L"&&hasA(it.key)&&!q.audio)play(it.key,$("#fb .spk"));
   const nx=$("[data-next]");nx.hidden=false;
-  if(ok&&S.auto&&q.kind==="choice"){const i=Q.i;setTimeout(()=>{if(Q&&Q.i===i&&Q.answered&&!fbBusy())next()},hasA(it.key)&&it.type!=="L"?1900:1100)}
+  if(ok&&S.auto&&q.kind==="choice"){const i=Q.i;setTimeout(()=>{if(Q&&Q.i===i&&Q.answered&&!fbBusy()&&!sheetOpen)next()},hasA(it.key)&&it.type!=="L"?1900:1100)}
   else nx.focus({preventScroll:true});
   renderStats();
 }
@@ -1461,7 +1507,7 @@ function check(){
   const got=q.mode==="root"?nrm(Q.picked.map(i=>q.tiles[i]).join("")):builtStr();
   const ok=got===q.target;
   $("#built").classList.add(ok?"ok":"no");$$(".tile").forEach(b=>b.disabled=true);$("[data-check]").disabled=true;
-  const show=q.mode==="heavy"?`<div class="ar rootbig" style="font-size:34px">${spaced(q.target)}</div>`:q.mode==="root"?`<div class="ar rootbig" style="font-size:34px">${spaced(q.item.root)}</div>`:`<div class="ar">${esc(q.mode==="spell"?q.item.ar:q.target)}</div>`;
+  const show=q.mode==="heavy"?`<div class="ar rootbig" style="font-size:34px">${spaced(q.target)}</div>`:q.mode==="root"?`<div class="ar rootbig" style="font-size:34px">${spaced(q.item.root)}</div>`:`<div class="ar">${esc(q.mode==="spell"||q.mode==="order"?q.item.ar:q.target)}</div>`;
   answer(ok,ok?"":show);
 }
 function renderEnd(){
@@ -1850,6 +1896,7 @@ document.addEventListener("click",e=>{
   if(d.opentext)return openText(d.opentext);
   if(d.sess){const D=DRILLS[d.sess];if(!D||!D.ok())return;return startQuiz(D.build(),{drill:d.sess,sess:d.sess})}
   if(d.pat&&!d.opt)return openPat(d.pat);
+  if(d.rootsheet)return openSheet(rootSheet(d.rootsheet));
   if(d.split!==undefined){const sp=t.nextElementSibling;if(sp){sp.hidden=!sp.hidden;t.setAttribute("aria-pressed",String(!sp.hidden))}return}
   if(d.tr!==undefined){const s=document.createElement("span");s.className="trs";s.textContent=d.tr;t.replaceWith(s);return}
   if(Q){
