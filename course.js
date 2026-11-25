@@ -104,7 +104,7 @@ roots: {
  "رخص":["cheap","дешёвый"], "حسن":["good","хороший"], "رسل":["send","посылать"], "سعد":["happy","счастье"], "تعب":["tire","уставать"],
  "جوع":["hunger","голод"], "مرض":["illness","болезнь"], "خير":["good","добро"], "سلم":["peace","мир"], "كلم":["speak","говорить"],
  "سأل":["ask","спрашивать"], "قدم":["step forward, foot","шаг вперёд, нога"], "ذهب":["go; gold","идти; золото"],
- "دلل":["show the way","указывать путь"], "ضلل":["go astray","сбиваться с пути"], "كلب":["dog","собака"], "هرم":["pyramid, old age","пирамида, старость"],
+ "دلل":["show the way","указывать путь"], "ضلل":["go astray","сбиваться с пути"], "ذلل":["low, humble","низкий, униженный"], "ظلل":["shade","тень"], "كلب":["dog","собака"], "هرم":["pyramid, old age","пирамида, старость"],
  "حرم":["forbidden, sacred","запретный, священный"], "خول":["maternal uncle","дядя по матери"], "حول":["change, state","изменение, состояние"], "ألم":["pain","боль"],
  "تمم":["complete","завершать"], "بغي":["desire","желать"], "روح":["go","идти"], "شوف":["see","видеть"], "بكر":["early","рано"], "جيء":["come","приходить"],
  "تمر":["dates","финики"], "حقق":["truth, right","истина, право"], "خلص":["finish","заканчивать"], "قبل":["face, accept","встречать, принимать"], "كسر":["break","ломать"], "شهر":["month","месяц"], "عفو":["pardon","прощать"], "فضل":["favour","милость"], "سهل":["easy","лёгкий"], "أهل":["family, welcome","семья, родные"]
@@ -373,11 +373,19 @@ steps: [
    ["عِندي سُؤال","ʿindī suʾāl","I have a question","У меня вопрос"],
    ["أَتَكَلَّمُ العَرَبيّةَ قَليلاً","atakallamu l-ʿarabiyyata qalīlan","I speak Arabic a little","Я немного говорю по-арабски"]]},
 
-{ id:"e01", kind:"sound", pairs:[["سَيف","صَيف"],["تين","طين"],["دَلَّ","ضَلَّ"],["كَلب","قَلب"]],
+{ id:"e01", kind:"sound", pairs:[["سَيف","صَيف"],["تين","طين"],["دَلَّ","ضَلَّ"],["ذَليل","ظَليل"],["كَلب","قَلب"]],
   t:["Heavy letters and dark vowels","Тяжёлые буквы и тёмные гласные"],
   en:"ص ض ط ظ are the emphatic, “heavy” letters: the back of the tongue pulls toward the throat. You know the feeling from Russian: «сы» is darker than «си». Arabic pushes it further. The easiest cue is the vowel: after a heavy letter it sounds deep and dark. Compare each pair and listen to the vowel, not the consonant.",
   ru:"ص ض ط ظ — эмфатические, «тяжёлые» буквы: корень языка оттягивается к горлу. Вы знаете это ощущение по-русски: «сы» темнее, чем «си». Арабский идёт дальше. Проще всего слушать гласную: после тяжёлой буквы она звучит глубоко и темно. Сравните каждую пару и слушайте гласную, а не согласную.",
   rec:"Minimal pairs: please say both words of each pair with your natural heavy and light sounds, without exaggerating.",
+  /* how to make the sound, step by step: [title EN, title RU, EN, RU] */
+  how:[
+   ["Start from Russian","Начните с русского","Say си, then сы, slowly. In сы the back of the tongue goes back and down and the mouth feels rounder inside. Russian does this a little, mostly on the vowel. Now hold the tongue where it is for ы and say с alone: it drops lower and duller. That is almost ص.","Скажите медленно: си — сы. Во время сы корень языка уходит назад и вниз, а рот внутри становится «круглее». В русском это движение слабое и затрагивает в основном гласную. Теперь держите язык в положении «ы» и скажите одно с: звук станет глуше и ниже. Это уже почти ص."],
+   ["Let English give you the vowel","Гласную подскажет английский","Compare sad and the American sod: a bright a, then a deep dark one. Arabic ears hear the light and heavy letters largely through this vowel. After س ت د ذ the a is bright, as in sad. After ص ط ض ظ it is dark, as in sod, or like the a of Russian там pushed toward о.","Сравните sad и американское sod: светлое а, потом тёмное и глубокое. Арабское ухо слышит лёгкие и тяжёлые буквы во многом по этой гласной. После س ت د ذ «а» светлая, как в sad. После ص ط ض ظ — тёмная, как в sod или русское «а» в там, сдвинутое к «о»."],
+   ["One more anchor: the dark l","Ещё одна опора: тёмное l","English has a light l in leaf and a dark one in full. The heavy letters are full-l versions of s, t, d and the th of this.","В английском светлое l в leaf и тёмное в full. Тяжёлые буквы — это такие же «full-L»-версии с, т, д и th из this."],
+   ["Hold the mouth","Держите рот","Back of the tongue back, as at the start of a yawn. Lips a little tense and rounded. Imagine the low bass of a big man. Keep this shape for the whole syllable, not just the consonant.","Корень языка назад, как в начале зевка. Губы чуть напряжены и округлены. Представьте низкий бас крупного мужчины. Держите это положение на весь слог, а не только на согласном."],
+   ["Listen to the vowel, not the consonant","Слушайте гласную, а не согласную","If the a is dark and close to o, a heavy letter is next to it. With a long ii the difference is subtler, like Russian сыр and сир. Heaviness spreads: in مِصر and صَباح the whole syllable goes dark, sometimes the next one too. For contrast, both a's in سَلام are light and open.","Если «а» тёмная и близка к «о», рядом тяжёлая буква. С долгим «и» разница тоньше, как в русском сыр и сир. Тяжесть «растекается»: в مِصر и صَباح темнеет весь слог, иногда и соседний. Для контраста: в سَلام обе «а» светлые и открытые."],
+   ["Record yourself","Запишите себя","Say each pair into your phone's recorder, light word first, and compare with the recording here. Most people start hearing light and dark within a few days.","Произнесите каждую пару на диктофон, сначала лёгкое слово, и сравните с записью здесь. Обычно разница «светло — темно» становится слышна через пару дней."]],
   words:[
    ["سَيف","sayf","sword","меч","",""],
    ["صَيف","ṣayf","summer","лето","",""],
@@ -385,6 +393,9 @@ steps: [
    ["طين","ṭīn","mud, clay","глина","",""],
    ["دَلَّ","dalla","he showed the way","он указал путь","دلل",""],
    ["ضَلَّ","ḍalla","he got lost","он заблудился","ضلل",""],
+   ["ذَليل","dhalīl","humiliated","униженный","ذلل","fy"],
+   ["ظَليل","ẓalīl","shady","тенистый","ظلل","fy"],
+   ["مِصر","miṣr","Egypt","Египет","",""],
    ["كَلب","kalb","dog","собака","كلب",""]],
   phrases:[
    ["الصَّيفُ حارّ","aṣ-ṣayfu ḥārr","Summer is hot","Лето жаркое"]]},
@@ -779,6 +790,72 @@ letterInfo: {
  "و":["واو",["w, or long uu","w или долгое уу"],["Shaped like a comma, and on its own it means “and”.","Похожа на запятую, а сама по себе значит «и»."]]
 },
 
+/* More about a letter, shown on its card: [kind, EN, RU]. kinds: howto, mnemonic, parallel, structure, saudi */
+letterTips: {
+ "ص":[
+  ["howto","Say сы slowly and freeze your tongue in the ы position. Now say с: it drops lower and duller. That is almost ص. Keep the shape for the whole syllable.","Скажите медленно сы и замрите языком в положении «ы». Теперь скажите с: звук станет ниже и глуше. Это почти ص. Держите положение весь слог."],
+  ["mnemonic","صَيف summer is heavy and hot; سَيف the sword is light and sharp. The heavy letter carries the heavy season.","صَيف — лето, тяжёлое и жаркое; سَيف — меч, лёгкий и острый. Тяжёлая буква несёт тяжёлый сезон."],
+  ["parallel","Listen to the a: in سَلام it is bright, as in sad; in صَباح it is dark, as in the American sod.","Слушайте «а»: в سَلام она светлая, как в sad; в صَباح тёмная, как в американском sod."]],
+ "ض":[
+  ["howto","The mouth of ص, with voice: start ды, keep the ы tongue and say д. Think of a deep bass.","Рот как для ص, но с голосом: начните ды, оставьте язык в положении «ы» и скажите д. Представьте низкий бас."],
+  ["mnemonic","دَلَّ he showed the way, ضَلَّ he got lost: the dark letter is the one who wandered into the dark.","دَلَّ — указал путь, ضَلَّ — заблудился: тёмная буква у того, кто ушёл в темноту."],
+  ["saudi","Saudis often merge ض and ظ: in Riyadh both usually sound like ظ, with the tongue between the teeth; in Jeddah both usually sound like ض. Spelling keeps them apart.","Саудовцы часто сливают ض и ظ: в Эр-Рияде обе обычно звучат как ظ, с языком между зубами, а в Джидде обе — как ض. На письме они различаются."]],
+ "ط":[
+  ["howto","Back of the tongue down and back, as at the start of a yawn, lips a little tense and round. Then say т: طَيِّب starts almost like «то».","Корень языка вниз и назад, как в начале зевка, губы чуть напряжены и округлены. Теперь скажите т: طَيِّب начинается почти как «то»."],
+  ["mnemonic","طين clay is heavy and dark; تين a fig is light and sweet.","طين — глина, тяжёлая и тёмная; تين — инжир, лёгкий и сладкий."],
+  ["parallel","English splits l the same way: leaf has a light l, full a dark one. ط is the full-l kind of t.","В английском так же делится l: в leaf светлое, в full тёмное. ط — это «тёмное» т, как l в full."]],
+ "ظ":[
+  ["howto","Tongue tip between the teeth as for ذ, back of the tongue pulled down and back: a heavy th, as in this.","Кончик языка между зубами, как для ذ, а корень языка вниз и назад: тяжёлое th, как в this."],
+  ["mnemonic","ظِلّ is shade and ظَليل shady: the dark letter makes the shade. ذَليل, with the light letter, means humiliated.","ظِلّ — тень, ظَليل — тенистый: тёмная буква даёт тень. ذَليل с лёгкой буквой значит «униженный»."],
+  ["saudi","In Riyadh you will often hear ظ where the spelling has ض; in Jeddah, the other way round.","В Эр-Рияде часто слышно ظ там, где пишется ض, а в Джидде — наоборот."]],
+ "س":[["parallel","The light twin of ص. After س the a stays bright, as in sad: both a's in سَلام are light and open.","Лёгкий близнец ص. После س «а» остаётся светлой, как в sad: в سَلام обе «а» светлые и открытые."]],
+ "ت":[["parallel","The light twin of ط: tongue tip, relaxed mouth, bright vowel, as in tea. تين fig, طين clay.","Лёгкий близнец ط: кончик языка, расслабленный рот, светлая гласная. تين — инжир, طين — глина."]],
+ "د":[["parallel","The light twin of ض: a relaxed д with a bright vowel after it. دَلَّ showed the way, ضَلَّ got lost.","Лёгкий близнец ض: расслабленное д и светлая гласная после него. دَلَّ — указал путь, ضَلَّ — заблудился."]],
+ "ذ":[["parallel","The light twin of ظ. ذَليل humiliated, ظَليل shady: only the heaviness changes.","Лёгкий близнец ظ. ذَليل — униженный, ظَليل — тенистый: меняется только тяжесть."]],
+ "ق":[["howto","ق darkens the vowel next to it, like the heavy letters: قَلب heart sounds deeper than كَلب dog. Make the k far back, where you would gargle.","ق тоже затемняет соседнюю гласную, как тяжёлые буквы: قَلب (сердце) звучит глубже, чем كَلب (собака). Делайте «к» далеко сзади, там, где полощут горло."]],
+ "خ":[["structure","One of the seven always-heavy letters: the a after it goes dark too, as in خال.","Одна из семи всегда тяжёлых букв: «а» после неё тоже темнеет, как в خال."]],
+ "غ":[["structure","Always heavy, like خ: listen to the dark a in غَداً.","Всегда тяжёлая, как خ: слушайте тёмное «а» в غَداً."]],
+ "ل":[["structure","ل turns heavy in one word only: الله after a or u, as in والله. After i it stays light: بِسمِ الله.","ل становится тяжёлой только в одном слове: الله после «а» или «у», как в والله. После «и» она остаётся лёгкой: بِسمِ الله."]],
+ "ي":[["structure","ي has two jobs: a consonant, y, when it carries a vowel mark (يَوم), and a long ii when it follows a letter without one (بَيتي). After a, as in بَيت, the two glide into ay.","У ي две роли: согласная «й», когда на ней значок гласной (يَوم), и долгое «ии», когда она идёт после буквы (بَيتي). После «а», как в بَيت, они сливаются в «ай»."]],
+ "و":[["structure","و works like ي: a consonant w when it carries a vowel mark (وَلَد), a long uu after a letter (كوب), and aw after a (يَوم).","و работает как ي: согласная w, когда на ней значок гласной (وَلَد), долгое «уу» после буквы (كوب) и «ау» после «а» (يَوم)."]],
+ "ة":[["structure","ة joins the letter before it when that letter can join (ساعة), and stands alone after one that can't (قَهوة).","ة присоединяется к предыдущей букве, если та умеет соединяться (ساعة), и стоит отдельно после той, что не умеет (قَهوة)."]]
+},
+
+/* Syllables from real words, per letter: [course word, first letter cluster, number of clusters, vowel].
+   Vowels: a i u ā ī ū, or 0 for no vowel. Chosen to vary vowel, position and spelling, earliest steps first. */
+syl: {
+ "ا":[["أَنا",2,1,"ā"],["باب",1,1,"ā"],["اِبن",0,1,"i"]],
+ "ء":[["أَنا",0,1,"a"],["أُمّ",0,1,"u"],["ماء",2,1,"0"],["آكُلُ",0,1,"ā"],["سائِق",2,1,"i"],["إِلى",0,1,"i"]],
+ "ب":[["بَيت",0,1,"a"],["بِنت",0,1,"i"],["باب",0,2,"ā"],["قَلب",2,1,"0"],["حَبيب",1,2,"ī"],["كِتابُهُ",3,1,"u"]],
+ "ت":[["أَنتَ",2,1,"a"],["أَنتِ",2,1,"i"],["بَيت",2,1,"0"],["كِتاب",1,2,"ā"],["تُفّاح",0,1,"u"],["تين",0,2,"ī"]],
+ "ث":[["كَثير",1,2,"ī"],["ثُمَّ",0,1,"u"],["أَكثَر",2,1,"a"],["اِثنان",1,1,"0"]],
+ "ن":[["أَنا",1,2,"ā"],["أَينَ",2,1,"a"],["بِنت",1,1,"0"],["نَعَم",0,1,"a"],["نُقود",0,1,"u"]],
+ "ي":[["يَوم",0,1,"a"],["بَيت",1,1,"0"],["بَيتي",3,1,"ī"],["هِيَ",1,1,"a"],["حَليب",2,1,"ī"]],
+ "ج":[["جَميل",0,1,"a"],["جُبنة",0,1,"u"],["جِدّاً",0,1,"i"],["جامِعة",0,2,"ā"],["زَوج",2,1,"0"]],
+ "ح":[["حَليب",0,1,"a"],["أُحِبّ",1,1,"i"],["لَحم",1,1,"0"],["تُفّاح",3,1,"0"],["حارّ",0,2,"ā"],["حُبّ",0,1,"u"]],
+ "خ":[["أَخ",1,1,"0"],["أُخت",1,1,"0"],["خُبز",0,1,"u"],["خال",0,2,"ā"],["بِخَير",1,1,"a"]],
+ "د":[["وَلَد",2,1,"0"],["جَديد",1,2,"ī"],["قَدَم",1,1,"a"],["قادِم",2,1,"i"],["دَرس",0,1,"a"]],
+ "ذ":[["هٰذا",1,2,"ā"],["هٰذِهِ",1,1,"i"],["أَذهَبُ",1,1,"0"],["ذَليل",0,1,"a"]],
+ "ر":[["رَجُل",0,1,"a"],["رُزّ",0,1,"u"],["بارِد",2,1,"i"],["أُريد",1,2,"ī"],["كَبير",3,1,"0"]],
+ "ز":[["خُبز",2,1,"0"],["مَنزِل",2,1,"i"],["زَوج",0,1,"a"]],
+ "س":[["سوق",0,2,"ū"],["مَساء",1,2,"ā"],["اِسم",1,1,"0"],["شَمس",2,1,"0"],["سَيف",0,1,"a"],["سِتّة",0,1,"i"]],
+ "ش":[["شَمس",0,1,"a"],["شُكراً",0,1,"u"],["شاي",0,2,"ā"],["أَشرَبُ",1,1,"0"]],
+ "ص":[["صَباح",0,1,"a"],["رَخيص",3,1,"0"],["مِصر",1,1,"0"],["صِدق",0,1,"i"],["أَصغَر",1,1,"0"]],
+ "ض":[["بَيض",2,1,"0"],["ضَلَّ",0,1,"a"],["مَريض",3,1,"0"]],
+ "ط":[["طَعام",0,1,"a"],["طالِب",0,2,"ā"],["مَطعَم",1,1,"0"],["طين",0,2,"ī"],["طِفل",0,1,"i"]],
+ "ظ":[["ظُهر",0,1,"u"],["ظَليل",0,1,"a"]],
+ "ع":[["عَلى",0,1,"a"],["عِندي",0,1,"i"],["مَعَ",1,1,"a"],["طَعام",1,2,"ā"],["ساعة",2,1,"0"]],
+ "غ":[["غَداً",0,1,"a"],["صَغير",1,2,"ī"],["أَصغَر",2,1,"a"],["غالي",0,2,"ā"]],
+ "ف":[["فَم",0,1,"a"],["في",0,2,"ī"],["كَيفَ",2,1,"a"],["أَفهَم",1,1,"0"],["سَيف",2,1,"0"]],
+ "ق":[["قَهوة",0,1,"a"],["وَقت",1,1,"0"],["قادِم",0,2,"ā"],["سوق",2,1,"0"],["قِطار",0,1,"i"]],
+ "ك":[["كَم",0,1,"a"],["كُلّ",0,1,"u"],["لٰكِن",1,1,"i"],["كاتِب",0,2,"ā"],["مَكتَب",1,1,"0"],["بَيتُكَ",3,1,"a"]],
+ "ل":[["لا",0,2,"ā"],["لَحم",0,1,"a"],["قَلب",1,1,"0"],["قَليل",1,2,"ī"],["لِأُمّي",0,1,"i"],["آكُلُ",2,1,"u"]],
+ "م":[["مَن",0,1,"a"],["مِن",0,1,"i"],["ما",0,2,"ā"],["يَوم",2,1,"0"],["جَميل",1,2,"ī"],["مُدَرِّس",0,1,"u"]],
+ "ه":[["هُوَ",0,1,"u"],["هِيَ",0,1,"i"],["قَهوة",1,1,"0"],["كِتابُهُ",4,1,"u"],["بَيتُها",3,2,"ā"]],
+ "ة":[["قَهوة",3,1,"a"],["مَكتَبة",4,1,"a"],["ساعة",3,1,"a"]],
+ "و":[["وَ",0,1,"a"],["هُوَ",1,1,"a"],["يَوم",1,1,"0"],["كوب",1,1,"ū"],["وَلَد",0,1,"a"]]
+},
+
 /* Pictures for concrete words: used for drills without English */
 pics: {
  "بَيت":"🏠","باب":"🚪","بِنت":"👧","قَهوة":"☕","قَلب":"❤️","فَم":"👄","حَليب":"🥛","لَحم":"🥩","ماء":"💧","تُفّاح":"🍎",
@@ -862,6 +939,8 @@ facts: [
  ["s01","structure","Hamza changes its seat but never its sound: أ إ on alif at the start, ؤ on و, ئ on a dotless ي, or ء alone on the line. آ is a hamza plus a long ā, as in آكُل I eat.","Хамза меняет подставку, но не звук: أ إ на алифе в начале слова, ؤ на و, ئ на ي без точек или ء одна на строке. آ — хамза плюс долгое ā, как в آكُل «я ем»."],
  ["s02","structure","Sun letters: ت ث د ذ ر ز س ش ص ض ط ظ ل ن. Moon letters: ء ب ج ح خ ع غ ف ق ك م ه و ي. Sun letters are all made with the tip of the tongue, right where l is made, so the l blends into them.","Солнечные буквы: ت ث د ذ ر ز س ش ص ض ط ظ ل ن. Лунные: ء ب ج ح خ ع غ ف ق ك م ه و ي. Все солнечные произносятся кончиком языка, там же, где «л», поэтому «л» в них растворяется."],
  ["s02","mnemonic","It isn't the sonorant split: ل ن ر are sun letters, but م و ي are moon letters. And ج is a moon letter because it was once a hard g at the back of the mouth.","Это не деление на сонорные: ل ن ر солнечные, а م و ي лунные. ج лунная, потому что раньше это было твёрдое «г» в глубине рта."],
+ ["e01","parallel","Russian hard consonants and Arabic heavy ones use the same move: the back of the tongue pulls back. Russian does it lightly, mostly on the vowel; Arabic goes deeper and holds it. That's why «сы» is your best starting point.","Русские твёрдые согласные и арабские тяжёлые делают одно движение: корень языка оттягивается назад. Русский делает это слегка, в основном на гласной, а арабский — глубже и дольше. Поэтому «сы» — лучшая отправная точка."],
+ ["e01","saudi","Saudi speech often merges ض and ظ: in Riyadh both tend to sound like ظ, in Jeddah like ض. Writing keeps them apart, so learn both and don't worry when you hear them swapped.","В саудовской речи ض и ظ часто сливаются: в Эр-Рияде обе звучат скорее как ظ, в Джидде — как ض. На письме они различаются, так что учите обе и не удивляйтесь, если услышите их перепутанными."],
 ],
 
 /* Easy reading: short texts unlocked after a step. Lines: [arabic, transliteration ("" = none), English, Russian]. Audio key "T:" + arabic. */

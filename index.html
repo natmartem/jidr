@@ -219,6 +219,23 @@ button.pc .tag{margin-top:4px}
 .peq-m{font-size:14px}
 body.noscroll{overflow:hidden}
 
+.sylr{display:grid;grid-template-columns:38px minmax(0,1fr);gap:8px;align-items:start;padding:8px 0;border-top:1px dashed var(--line)}
+.sylr:first-of-type{border-top:0}
+.sylL{font-size:34px;line-height:1.7;text-align:center;color:var(--accent)}
+.sytg{display:flex;flex-wrap:wrap;gap:6px;direction:rtl}
+.syt{display:flex;flex-direction:column;align-items:center;flex:1 1 66px;min-width:66px;max-width:104px;background:var(--tint);border:0;border-radius:8px;padding:0 4px 5px;color:inherit;font:inherit;text-align:center}
+.syt .syc{font-size:28px;line-height:1.85;direction:rtl}
+.syt small{font-size:11.5px;line-height:1.2}
+.syt .syw{font-size:17px;line-height:1.7;color:var(--mute)}
+.syt .syw .hit{color:var(--hit)}
+.syt.playing{box-shadow:0 0 0 2px var(--accent)}
+.ltips{grid-column:1 / -1;display:flex;flex-direction:column;gap:6px;margin-top:2px}
+.ltip{background:var(--tint);border-radius:8px;padding:6px 10px;display:flex;flex-direction:column;gap:2px}
+.ltip .fk{font-size:11.5px;font-weight:600;letter-spacing:.02em;color:var(--accent)}
+.ltip p{font-size:13.5px}
+.how{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px}
+.how b{font-weight:600}
+.how p{font-size:14px;color:var(--mute);margin-top:2px}
 .sylg{display:grid;grid-template-columns:34px repeat(6,minmax(0,1fr));gap:5px;align-items:center}
 .sylg .vh{text-align:center;font-size:12.5px;color:var(--mute);font-weight:600}
 .sylg .sy{text-align:center;background:var(--tint);border-radius:8px;font-size:28px;line-height:1.9;min-width:0}
@@ -432,7 +449,7 @@ label.btn{display:inline-block}
 "use strict";
 /* ================= basics ================= */
 const C=window.COURSE;
-const APP_VERSION="3.4.0",STATE_VER=2;
+const APP_VERSION="3.5.0",STATE_VER=2;
 const $=(s,r)=>(r||document).querySelector(s);
 const $$=(s,r)=>[...(r||document).querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -566,8 +583,23 @@ function sylFor(l,ks){
   Object.keys(VLONG).forEach(v=>{const [m,c]=VLONG[v];if(ks.has(c))out.push({ar:l.c+m+c,v})});
   return out;
 }
-const vhead=()=>`<span></span>${VK.map(v=>`<span class="vh">${bi(VLAB[v][0],VLAB[v][1])}</span>`).join("")}`;
-const sylRow=(l,ks)=>{const sy=sylFor(l,ks);return `<span class="sys">${spk(l.key)}</span>${VK.map(v=>{const x=sy.find(o=>o.v===v);return x?`<span class="sy ar" lang="ar">${x.ar}</span>`:"<span></span>"}).join("")}`};
+VLAB["0"]=["no vowel","без гласной"];
+const VALL=["a","i","u","ā","ī","ū","0"];
+/* syllables from real words (course.js syl): a slice of a course word, with ـ where the word joins on either side.
+   Each letter gets its own few, chosen to vary the vowel, the place in the word and the shape. */
+const joins=c=>{const l=byC[BASE[c]||c];return !!(l&&l.conn)};
+function sylOf(l){
+  const def=(C.syl||{})[l.c];if(!def)return null;
+  return def.map(([w,i,n,v])=>{
+    const it=ITEMS["W:"+w];if(!it||!VLAB[v])return null;const k=clusters(w);if(i<0||i+n>k.length)return null;
+    const pre=i>0&&joins(k[i-1][0])?"ـ":"",post=i+n<k.length&&joins(k[i+n-1][0])?"ـ":"";
+    return {ar:pre+k.slice(i,i+n).join("")+post,v,w:it,html:k.map((c,j)=>j>=i&&j<i+n?`<span class="hit">${esc(c)}</span>`:esc(c)).join("")};
+  }).filter(Boolean);
+}
+/* the syllables a learner who knows these letters can read; letters without a list fall back to letter + each vowel */
+function sylItems(l,ks){const c=sylOf(l);return c?c.filter(x=>x.w.need.every(q=>ks.has(q))):sylFor(l,ks)}
+const sylTile=x=>{const a=x.w&&hasA(x.w.key),tag=a?"button":"div";
+  return `<${tag} ${a?`type="button" data-play="${esc(x.w.key)}" aria-label="Play ${esc(x.w.en)}"`:""} class="syt"><span class="ar syc" lang="ar">${esc(x.ar)}</span><small>${bi(VLAB[x.v][0],VLAB[x.v][1])}</small>${x.w?`<span class="ar syw" lang="ar">${x.html}</span>`:""}</${tag}>`};
 const lettersUpTo=st=>new Set(STEPS.slice(0,st.si+1).flatMap(s=>s.letters.map(l=>l.c)));
 const splitHtml=ar=>clusters(ar).map(c=>c===" "?"\u2003":esc(c)).join(" ");
 const splitBtn=ar=>clusters(ar).filter(c=>c.trim()).length<3?"":`<button type="button" class="trv" data-split>${bi("Split","По буквам")}</button><span class="splt ar" lang="ar" hidden>${splitHtml(ar)}</span>`;
@@ -582,10 +614,10 @@ function marksCard(st){
   return `<section class="card"><h2>${bi("New in the writing","Новое в письме")}</h2>${st.marks.map(m=>`<div class="mrk"><div class="ar mrk-ex" lang="ar">${esc(m.ex)}</div><div><b>${bi(m.t[0],m.t[1])}</b><p class="bl">${bi(m.en,m.ru)}</p></div></div>`).join("")}</section>`;
 }
 function sylCard(st){
-  const ks=lettersUpTo(st),ls=st.letters.filter(l=>sylFor(l,ks).length);
-  if(!ls.length)return "";
-  return `<section class="card"><h2>${bi("Read these first","Сначала слоги")}</h2><p class="lead">${bi("Each new letter with each vowel. The column tells you the vowel; the letter is yours to recognize.","Каждая новая буква с каждой гласной. Столбец подсказывает гласную, а букву узнавайте сами.")}</p>
-  <div class="sylg">${vhead()}${ls.map(l=>sylRow(l,ks)).join("")}</div></section>`;
+  const ks=lettersUpTo(st),rows=st.letters.map(l=>[l,sylItems(l,ks)]).filter(r=>r[1].length);
+  if(!rows.length)return "";
+  return `<section class="card"><h2>${bi("Read these first","Сначала слоги")}</h2><p class="lead">${bi("Real syllables with each new letter, cut from words in this course: different vowels, places in the word and shapes. The word underneath shows where it came from; tap to hear it if it's recorded.","Настоящие слоги с каждой новой буквой, взятые из слов курса: разные гласные, места в слове и формы. Слово под слогом показывает, откуда он; нажмите, чтобы послушать, если есть запись.")}</p>
+  ${rows.map(([l,sy])=>`<div class="sylr"><span class="ar sylL" lang="ar">${l.c}</span><div class="sytg">${sy.map(sylTile).join("")}</div></div>`).join("")}</section>`;
 }
 
 /* ================= content model ================= */
@@ -759,6 +791,12 @@ function letterExamples(l){
 /* Sun letters (tongue tip): the l of الـ melts into them. ة and ى never follow الـ, so they get no badge. */
 const SUN=new Set([..."تثدذرزسشصضطظلن"]);
 const smBadge=l=>"ةى".includes(l.c)?"":`<span class="sm ${SUN.has(l.c)?"sun":"moon"}">${SUN.has(l.c)?"☀ "+bi("sun letter","солнечная"):"☾ "+bi("moon letter","лунная")}</span>`;
+/* more about a letter (course.js letterTips): how to say it, memory tricks, parallels, Saudi notes */
+const TIPK={howto:["👄",["How to say it","Как произнести"]]};
+function tipsHtml(l){
+  const ts=(C.letterTips||{})[l.c];if(!ts||!ts.length)return "";
+  return `<div class="ltips">${ts.map(t=>{const k=TIPK[t[0]]||FK[t[0]]||FK.structure;return `<div class="ltip"><span class="fk">${k[0]} ${bi(k[1][0],k[1][1])}</span><p class="bl">${bi(esc(t[1]),esc(t[2]))}</p></div>`}).join("")}</div>`;
+}
 function letterCard(l,withEx){
   const fam=LET.filter(x=>x.fam===l.fam),sg=l.sg!=null?C.sounds[l.sg]:null;
   return `<div class="lcard"><div class="big ar">${l.c}</div>
@@ -769,7 +807,8 @@ function letterCard(l,withEx){
   <div class="forms">${forms(l).map(f=>`<div class="fm"><span class="ar">${f[2]}</span><small>${bi(f[0],f[1])}</small></div>`).join("")}</div>
   ${fam.length>1?`<div class="alike"><small>${bi("Looks like","Похожа на")}</small>${fam.map(x=>`<span class="ar${x===l?" me":""}">${x.c}</span>`).join("")}</div>`:""}
   ${sg?`<div class="alike"><small>${bi("Sounds like","Звучит похоже")}</small>${[...sg.L].map(c=>`<span class="ar${c===l.c?" me":""}">${c}</span>`).join("")}<small>${bi(sg.en,sg.ru)}</small></div>`:""}
-  ${withEx?(()=>{const all=new Set(LET.map(x=>x.c));return sylFor(l,all).length?`<div class="lex"><small>${bi("Syllables","Слоги")}</small><div class="sylg">${vhead()}${sylRow(l,all)}</div></div>`:""})():""}
+  ${tipsHtml(l)}
+  ${withEx?(()=>{const sy=sylItems(l,new Set(LET.map(x=>x.c)));return sy.length?`<div class="lex"><small>${bi("Syllables from real words","Слоги из настоящих слов")}</small><div class="sytg">${sy.map(sylTile).join("")}</div></div>`:""})():""}
   ${withEx?(()=>{const ex=letterExamples(l);return ex.length?`<div class="lex"><small>${bi("In words","В словах")}</small>${ex.map(e=>`<div class="lx"><span class="ar" lang="ar">${e.html}</span><span><small class="tag">${bi(e.en,e.ru)}</small> ${bi(esc(e.w.en),esc(e.w.ru))}${learned(e.w)?"":` <span class="need">· ${bi("step","шаг")} ${e.w.step.si+1}</span>`}</span>${spk(e.w.key)}</div>`).join("")}</div>`:""})():""}</div>`;
 }
 function vowelCard(){
@@ -905,6 +944,7 @@ function renderStep(){
   h+=marksCard(st);
   if(st.root&&st.kind!=="grammar")h+=`<section class="card"><div class="rootbig ar">${spaced(st.root)}</div><p style="text-align:center">${ROOTM[st.root]?bi(esc(ROOTM[st.root][0]),esc(ROOTM[st.root][1])):""}</p></section>`;
   if(st.pat)h+=`<section class="card"><button type="button" class="patbig ar pbtn" data-pat="${st.pat}">${patT(st.pat)}</button><p style="text-align:center">${bi(esc(C.pats[st.pat].en),esc(C.pats[st.pat].ru))}</p></section>`;
+  if(st.how&&st.how.length)h+=`<details class="card disc"><summary><h2>👄 ${bi("How to say them","Как их произносить")} <small>· ${st.how.length} ${bi("steps","шагов")}</small></h2></summary><ol class="how">${st.how.map(x=>`<li><b>${bi(esc(x[0]),esc(x[1]))}</b><p class="bl">${bi(esc(x[2]),esc(x[3]))}</p></li>`).join("")}</ol></details>`;
   if(st.pairs&&st.pairs.length)h+=`<section class="card"><h2>${bi("Listen for the difference","Слушайте разницу")}</h2><p class="lead">${bi("Each pair differs by one sound. Read both, play both if they're recorded, and notice what changes.","Слова в паре отличаются одним звуком. Прочитайте оба, включите запись, если она есть, и заметьте разницу.")}</p>
    ${st.pairs.map(([a,b])=>{const A=ITEMS["W:"+a],B=ITEMS["W:"+b];return `<div class="pair">${[A,B].map(x=>`<div class="pw"><span class="ar" lang="ar">${esc(x.ar)}</span><small>${bi(esc(x.en),esc(x.ru))}</small>${spk(x.key)}</div>`).join(`<span class="vs">≠</span>`)}</div>`}).join("")}</section>`;
   const inPair=new Set((st.pairs||[]).flat()),restW=st.W.filter(w=>!inPair.has(w.ar));
@@ -1145,17 +1185,26 @@ function gP_gap(p){
   return {kind:"choice",item:p,label:LBL.gap,prompt:bigAr(html2,"q-phrase")+`<small>${bi(esc(p.en),esc(p.ru))}</small>`,opts:shuffle([gc,...ds]).map(a=>({k:a,html:`<span class="ar sm">${esc(a)}</span>`})),ans:gc};
 }
 /* syllables: which vowel is written, and which syllable has this vowel */
+/* syllables come from real words (sylItems). ا و ي standing as a bare long vowel or glide are left out of
+   “which vowel?”: the letter itself is the vowel there, so the question has no fair answer. */
+const sylPool=l=>sylItems(l,new Set(pool.L.map(o=>o.c)));
+const sylAfter=x=>x.w?`<div class="ar">${x.html}</div><small>${bi(esc(x.w.en),esc(x.w.ru))}</small>`:"";
 function gS_read(l){
-  const sy=sylFor(l,new Set(pool.L.map(o=>o.c)));if(sy.length<3)return null;
-  const x=pick(sy),ds=shuffle(sy.filter(o=>o.v!==x.v)).slice(0,3);
-  return {kind:"choice",item:l,label:["Which vowel?","Какая гласная?"],prompt:bigAr(x.ar,"q-letter"),opts:shuffle([x,...ds]).map(o=>({k:o.v,html:`<b class="vl">${bi(VLAB[o.v][0],VLAB[o.v][1])}</b>`})),ans:x.v};
+  if(l.c==="ة")return null;
+  const sy=sylPool(l).filter(x=>!("اوي".includes(l.c)&&!/[َ-ِ]/.test(x.ar)));if(!sy.length)return null;
+  const x=pick(sy),near=uniq(sylPool(l).map(o=>o.v)).filter(v=>v!==x.v);
+  const ds=uniq(shuffle(near).concat(shuffle(VALL))).filter(v=>v!==x.v).slice(0,3);
+  return {kind:"choice",item:l,label:["Which vowel?","Какая гласная?"],prompt:bigAr(esc(x.ar),"q-letter"),opts:shuffle([x.v,...ds]).map(v=>({k:v,html:`<b class="vl">${bi(VLAB[v][0],VLAB[v][1])}</b>`})),ans:x.v,after:sylAfter(x)};
 }
 function gS_find(l){
-  const ks=new Set(pool.L.map(o=>o.c)),sy=sylFor(l,ks);if(sy.length<3)return null;
-  const x=pick(sy),own=shuffle(sy.filter(o=>o.v!==x.v)).slice(0,2);
-  const m=uniq(famMates(l,pool.L).concat(lookAlikes(l,3))).filter(o=>!"اءة".includes(o.c)&&o!==l)[0];
-  const opts=uniq([x.ar,...own.map(o=>o.ar)].concat(m?[m.c+x.ar.slice(1)]:[])).slice(0,4);if(opts.length<3)return null;
-  return {kind:"choice",item:l,label:["Find this syllable","Найдите этот слог"],prompt:`<div class="ar q-letter">${l.c}</div><div class="vchip">+ ${bi(VLAB[x.v][0],VLAB[x.v][1])}</div>`,opts:shuffle(opts).map(a=>({k:a,html:`<span class="ar">${a}</span>`})),ans:x.ar};
+  const sy=sylPool(l);if(!sy.length)return null;
+  const x=pick(sy),set=MATCH[l.c]||l.c;
+  const own=uniq(shuffle(sy.filter(o=>o.v!==x.v)).map(o=>o.ar)).filter(a=>a!==x.ar).slice(0,2);
+  /* the same syllable with a look-alike letter that joins the same way, so the shape stays honest */
+  const at=[...x.ar].findIndex(c=>set.includes(c));
+  const swaps=at<0?[]:uniq(famMates(l,pool.L).concat(lookAlikes(l,6))).filter(o=>!"اءة".includes(o.c)&&o!==l&&o.conn===l.conn).map(o=>{const a=[...x.ar];a[at]=o.c;return a.join("")}).filter(a=>a!==x.ar);
+  const opts=uniq([x.ar,...own,...swaps.slice(0,Math.max(1,3-own.length))]).slice(0,4);if(opts.length<3)return null;
+  return {kind:"choice",item:l,label:["Find this syllable","Найдите этот слог"],prompt:`<div class="ar q-letter">${l.c}</div><div class="vchip">+ ${bi(VLAB[x.v][0],VLAB[x.v][1])}</div>`,opts:shuffle(opts).map(a=>({k:a,html:`<span class="ar">${esc(a)}</span>`})),ans:x.ar,after:sylAfter(x)};
 }
 
 /* ear: two words that differ by one sound (heavy/light, throat, vowel length) */
@@ -1594,7 +1643,7 @@ function renderLetters(){
   const groups=byShape?uniq(LET.map(l=>l.fam)).map(f=>({t:C.shapes[f],L:LET.filter(l=>l.fam===f)})):C.sounds.map(g=>({t:g.t,L:[...g.L].map(c=>byC[c]),en:g.en,ru:g.ru,lt:spaced(g.L)}));
   h+=groups.map(g=>{const open=g.L.find(l=>l.c===UI.openL);const any=g.L.some(l=>hasA(l.key));
     return `<section class="card"><div class="row" style="justify-content:space-between"><h2>${g.lt?`<span class="ar gl">${g.lt}</span> `:""}${bi(esc(g.t[0]),esc(g.t[1]))}</h2>${!byShape&&any?`<button type="button" class="btn" data-playall="${g.L.map(l=>l.c).join("")}">▶ ${bi("Play all","Все")}</button>`:""}</div>
-    ${g.en?`<p class="lead">${bi(esc(g.en),esc(g.ru))}</p>`:""}<div class="ltiles">${g.L.map(tile).join("")}</div>${open?letterCard(open,true):""}</section>`}).join("");
+    ${g.en?`<p class="lead">${bi(esc(g.en),esc(g.ru))}</p>`:""}${!byShape&&g.L.some(l=>"صضطظ".includes(l.c))&&STEPS.some(s=>s.id==="e01")?`<button type="button" class="btn link" data-step="e01" style="align-self:flex-start">${bi("How to say heavy letters ›","Как произносить тяжёлые буквы ›")}</button>`:""}<div class="ltiles">${g.L.map(tile).join("")}</div>${open?letterCard(open,true):""}</section>`}).join("");
   return h+vowelCard();
 }
 
